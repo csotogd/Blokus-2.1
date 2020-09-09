@@ -1,0 +1,119 @@
+package Tools;
+
+/**
+ * A Vector2d belongs to the R2 plane where x and y are real numbers
+ */
+public class Vector2d {
+    private float x;
+    private float y;
+
+    /**
+     * Constructs a default vector at the origin
+     */
+    public Vector2d(){
+        x = 0;
+        y = 0;
+    }
+
+    /**
+     * Constructs a vector with a given x and y
+     * @param x real number on the x axis
+     * @param y real number on the y axis
+     */
+    public Vector2d(float x, float y){
+        this.x = x;
+        this.y = y;
+    }
+
+    /**
+     * @return Gets the value of x
+     */
+    public float get_x(){
+        return x;
+    }
+
+    /**
+     * Sets the value of x
+     * @param x value to set x
+     */
+    public void set_x(float x){
+        this.x = x;
+    }
+
+    /**
+     * @return Gets the value of y
+     */
+    public float get_y(){
+        return y;
+    }
+
+    /**
+     * Sets the value of y
+     * @param y value to set y
+     */
+    public void set_y(float y){
+        this.y = y;
+    }
+
+    /**
+     * Adds parameter vector to the vector using vector addition
+     * @param vector given vector to add
+     * @return A new vector that is the sum of the two vectors
+     */
+    public Vector2d add(Vector2d vector){
+        return new Vector2d(x + vector.get_x(), y + vector.get_y());
+    }
+
+    /**
+     * Subtracts parameter vector from the vector using vector subtraction
+     * @param vector given vector to subtract
+     * @return A new vector that is the result of subtracting the two vectors
+     */
+    public Vector2d subtract(Vector2d vector){
+        return new Vector2d(x - vector.get_x(), y - vector.get_y());
+    }
+
+    /**
+     * Multiplies a vector by a given scalar
+     * @param scalar scalar to multiply the vector
+     * @return A new vector that is the result of the product of the vector and scalar
+     */
+    public Vector2d scale(float scalar){
+        return new Vector2d(x * scalar, y * scalar);
+    }
+
+    /**
+     * @return Gets the magnitude of a vector (or the distance from the origin)
+     */
+    public float magnitude(){
+        return (float) Math.sqrt((x*x) + (y*y));
+    }
+
+    /**
+     * @return Gets the normalised vector (a vector of length one with same direction)
+     */
+    public Vector2d normalise(){
+        return new Vector2d(x/magnitude(), y/magnitude());
+    }
+
+    /*
+    public float dotProduct(Vector2d vector){
+        return (x * vector.get_x()) + (y * vector.get_y());
+    }
+
+    // cos0 = A.B / |A|*|B|
+    public float theta(Vector2d vector){
+        return Math.acos((this.dotProduct(vector)) / (this.magnitude() * vector.magnitude()));
+    }
+
+    public Vector2d rotate(float angle){
+        return new Vector2d((x * Math.cos(angle)) + (y * Math.sin(angle)),((-x) * Math.sin(angle) ) + (y * Math.cos(angle)));
+    }*/
+
+    /**
+     * Prints the vector in a readable form.
+     */
+    public void printVector(){
+        System.out.println("x = " + x + " y = " + y);
+    }
+}
