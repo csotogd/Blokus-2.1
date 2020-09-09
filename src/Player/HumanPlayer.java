@@ -8,4 +8,11 @@ public class HumanPlayer extends Player {
         this.name= name;
         this.humanPlayer=true;
     }
+
+    public HumanPlayer(int number)
+    {
+        this.number = number;
+
+        this.humanPlayer=true;
+    }
 }

@@ -4,8 +4,8 @@ package Tools;
  * A Vector2d belongs to the R2 plane where x and y are real numbers
  */
 public class Vector2d {
-    private float x;
-    private float y;
+    private int x;
+    private int y;
 
     /**
      * Constructs a default vector at the origin
@@ -20,7 +20,7 @@ public class Vector2d {
      * @param x real number on the x axis
      * @param y real number on the y axis
      */
-    public Vector2d(float x, float y){
+    public Vector2d(int x, int y){
         this.x = x;
         this.y = y;
     }
@@ -28,7 +28,7 @@ public class Vector2d {
     /**
      * @return Gets the value of x
      */
-    public float get_x(){
+    public int get_x(){
         return x;
     }
 
@@ -36,14 +36,14 @@ public class Vector2d {
      * Sets the value of x
      * @param x value to set x
      */
-    public void set_x(float x){
+    public void set_x(int x){
         this.x = x;
     }
 
     /**
      * @return Gets the value of y
      */
-    public float get_y(){
+    public int get_y(){
         return y;
     }
 
@@ -51,7 +51,7 @@ public class Vector2d {
      * Sets the value of y
      * @param y value to set y
      */
-    public void set_y(float y){
+    public void set_y(int y){
         this.y = y;
     }
 
@@ -78,15 +78,15 @@ public class Vector2d {
      * @param scalar scalar to multiply the vector
      * @return A new vector that is the result of the product of the vector and scalar
      */
-    public Vector2d scale(float scalar){
+    public Vector2d scale(int scalar){
         return new Vector2d(x * scalar, y * scalar);
     }
 
     /**
      * @return Gets the magnitude of a vector (or the distance from the origin)
      */
-    public float magnitude(){
-        return (float) Math.sqrt((x*x) + (y*y));
+    public int magnitude(){
+        return (int) Math.sqrt((x*x) + (y*y));
     }
 
     /**
@@ -97,16 +97,16 @@ public class Vector2d {
     }
 
     /*
-    public float dotProduct(Vector2d vector){
+    public int dotProduct(Vector2d vector){
         return (x * vector.get_x()) + (y * vector.get_y());
     }
 
     // cos0 = A.B / |A|*|B|
-    public float theta(Vector2d vector){
+    public int theta(Vector2d vector){
         return Math.acos((this.dotProduct(vector)) / (this.magnitude() * vector.magnitude()));
     }
 
-    public Vector2d rotate(float angle){
+    public Vector2d rotate(int angle){
         return new Vector2d((x * Math.cos(angle)) + (y * Math.sin(angle)),((-x) * Math.sin(angle) ) + (y * Math.cos(angle)));
     }*/
 
