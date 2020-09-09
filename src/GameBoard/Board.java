@@ -23,7 +23,6 @@ public class Board {
                 board[i][j]=0;
             }
         }
-        board[0][0]=1;
     }
 
     public boolean caseUsed(int col, int row){
