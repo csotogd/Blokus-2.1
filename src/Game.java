@@ -1,10 +1,26 @@
+import GameBoard.Board;
 import Player.Player;
 import Tools.Vector2d;
 import Player.HumanPlayer;
+import javafx.application.Application;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import GameBoard.BoardUI;
 
 import java.util.ArrayList;
 
-public class Game {
+public class Game extends Application {
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        BoardUI gameBoard = new BoardUI(4);
+        Parent root = gameBoard.gameBoardRep;
+        stage.setTitle("Hello World");
+        Scene scene = new Scene(root, 620, 620);
+        stage.setScene(scene);
+        stage.show();
+    }
 
     public enum GameStatus {
         INTRO,
@@ -25,7 +41,7 @@ public class Game {
 //NO BOT OPTION
     public void initializeNewGame(int numberOfPlayers, Vector2d boardDimensions){
 
-        this.board= new Board(boardDimensions);
+        //this.board= new Board(boardDimensions);
         players= new Player[numberOfPlayers];
         for(int i=1; i<= numberOfPlayers; i++){
             players[i-1]=new HumanPlayer(i);
