@@ -45,7 +45,7 @@ public class Game {
         if (currentTurn.getPlayerNumber()<numberOfPlayers)
             currentTurn=players[currentTurn.getPlayerNumber()]; //player 2 occupies index 1 in array of players
         else
-            currentTurn=players[0]
+            currentTurn=players[0];
     }
 
     public void setNumberOfPlayers(int numberOfPlayers) {
