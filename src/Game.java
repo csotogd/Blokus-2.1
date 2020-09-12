@@ -7,7 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import GameBoard.BoardUI;
-
+import DataBase.*;
 import java.util.ArrayList;
 
 public class Game extends Application {
@@ -37,6 +37,7 @@ public class Game extends Application {
     private GameStatus status;
     private ArrayList<Move> movesPlayed= new ArrayList<>();
     private int numberOfPlayers;
+    private ArrayList<Move> movesLog=new ArrayList<>();
 
 //NO BOT OPTION
     public void initializeNewGame(int numberOfPlayers, Vector2d boardDimensions){
@@ -53,7 +54,8 @@ public class Game extends Application {
     }
 
 
-    public void newTurn(){
+
+    public void nextTurn(){
         /*If if it is player 1 turn, then next turn will correspond to player 2,
          after the last player, we go back to the first one
          */
@@ -63,6 +65,16 @@ public class Game extends Application {
         else
             currentTurn=players[0];
     }
+
+    //writes the piece into the board and adds it to the log
+    public void makeMove(Piece piece, Vector2d position){
+        Move move = new Move(currentTurn, piece, position);
+
+            movesLog.add(move);
+
+        }
+
+
 
     public void setNumberOfPlayers(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;
