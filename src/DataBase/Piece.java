@@ -12,6 +12,7 @@ public abstract class Piece {
     private int nbRotation;
     private int totalConfig;
     private String label;
+    private int number;//can be either 1,2,3,4 depending on the player
 
     public Piece (String label, int[][]  array, boolean mirror, int rotation, int totalConfig) {
         this.shape = array;
@@ -19,6 +20,22 @@ public abstract class Piece {
         this.nbRotation = rotation;
         this.totalConfig=totalConfig;
         this.label=label;
+    }
+
+    /**
+     * MAkes sure every piece has its own number
+     * @param number
+     */
+    public void setNumber(int number) {
+        this.number = number;
+        if (shape != null) {
+            for (int i = 0; i < shape.length; i++) {
+                for (int j = 0; j < shape[0].length; j--) {
+                    if (shape[i][j] != 0)
+                        shape[i][j] = this.number;
+                }
+            }
+        }
     }
 
     public int[][] getShape(){
@@ -111,7 +128,12 @@ public abstract class Piece {
         return label;
     }
 
-
+    public int getNumber(){
+        return  this.number;
+    }
+    public void setUsed(boolean used){
+        this.used=used;
+    }
 
     public abstract Piece getPiece();
 }

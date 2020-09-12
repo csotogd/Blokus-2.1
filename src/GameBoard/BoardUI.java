@@ -1,12 +1,11 @@
 package GameBoard;
 
-import GameBoard.Board;
+import DataBase.Pieces.FPiece;
 import javafx.scene.Parent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 
 //TEST
 public class BoardUI{
@@ -22,6 +21,8 @@ public class BoardUI{
     public Parent createBoard() {
 
         GridPane gameBoard = new GridPane();
+        FPiece fPiece = new FPiece();
+        Parent pieceTest = drawPiece(fPiece.piece,Color.RED);
 
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
@@ -36,8 +37,11 @@ public class BoardUI{
                 int finalI = i;
                 int finalJ = j;
                 tile.setOnMouseClicked(event -> drawCase(tile,finalI, finalJ));
+
             }
         }
+        gameBoard.add(pieceTest,50,50);
+
         return gameBoard;
     }
 
@@ -48,6 +52,25 @@ public class BoardUI{
             tile.setStroke(Color.GREEN);
         }
 
+    }
+
+    public Parent drawPiece(int [][] pieceTable, Color playerColor){
+        GridPane piece = new GridPane();
+
+        for (int i = 0; i < pieceTable.length; i++) {
+            for (int j = 0; j < pieceTable.length; j++) {
+
+                Rectangle tile = new Rectangle(30, 30);
+                if(pieceTable[i][j]==1){
+                    tile.setFill(playerColor);
+                    tile.setStrokeWidth(2.0);
+                    tile.setStroke(Color.BLACK);
+                    piece.add(new StackPane(tile), j, i);
+                }
+
+            }
+        }
+        return piece;
     }
 
     public  Color paintColor(int col, int row){
