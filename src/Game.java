@@ -17,7 +17,8 @@ public class Game extends Application {
         BoardUI gameBoard = new BoardUI(4);
         Parent root = gameBoard.gameBoardRep;
         stage.setTitle("Hello World");
-        Scene scene = new Scene(root, 640, 640);
+        //Scene scene = new Scene(root, 640, 700);
+        Scene scene = new Scene(root, 1000, 800);
         stage.setScene(scene);
         stage.show();
     }

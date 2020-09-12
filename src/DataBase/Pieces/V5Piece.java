@@ -8,6 +8,8 @@ import DataBase.Piece;
  *          ###
  */
 public class V5Piece extends Piece {
+    public int[][] piece =  new int[][]{{1,0,0},{1,0,0},{1,1,1}};
+
     public V5Piece() {
         super("V5", new int[][]{{1,0,0},{1,0,0},{1,1,1}}, true,4, 4);
     }
