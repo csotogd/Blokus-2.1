@@ -1,7 +1,8 @@
 import GameBoard.Board;
+import GameBoard.BoardUI;
+import Player.HumanPlayer;
 import Player.Player;
 import Tools.Vector2d;
-import Player.HumanPlayer;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
