@@ -54,10 +54,16 @@ public class BoardUI{
 
     public GridPane pieceOfPlayer(){
         GridPane allPieces = new GridPane();
+        Color[] colors = {Color.RED,Color.YELLOW,Color.GREEN,Color.BLUE};
+        int colorCounter = 0;
         for (int i = 0;i<players.length;i++) {
+            int pieceCounter = 0;
             for (Piece pieceLeft:players[i].getPiecesList()) {
-                allPieces.add(drawPiece(pieceLeft.getShape(),Color.RED),0,0);
+                //TODO fix the issue that the pieces are over others
+                allPieces.add(drawPiece(pieceLeft.getShape(),colors[colorCounter]),i,pieceCounter);
+                pieceCounter++;
             }
+            colorCounter++;
         }
         return allPieces;
     }
