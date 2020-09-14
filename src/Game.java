@@ -1,3 +1,4 @@
+import DataBase.Pieces.FPiece;
 import GameBoard.Board;
 import Player.Player;
 import Tools.Vector2d;
@@ -9,15 +10,24 @@ import javafx.stage.Stage;
 import GameBoard.BoardUI;
 import DataBase.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Game extends Application {
 
+    private Player[] players;
+    private Board board;
+    private Player currentTurn;
+    private GameStatus status;
+    private ArrayList<Move> movesPlayed= new ArrayList<>();
+    private int numberOfPlayers;
+    private ArrayList<Move> movesLog=new ArrayList<>();
+
     @Override
-    public void start(Stage stage) throws Exception {
-        BoardUI gameBoard = new BoardUI(4);
+    public void start(Stage stage){
+        initializeNewGame(2,new Vector2d(50,50));
+        BoardUI gameBoard = new BoardUI(4,players);
         Parent root = gameBoard.gameBoardRep;
         stage.setTitle("Hello World");
-        //Scene scene = new Scene(root, 640, 700);
         Scene scene = new Scene(root, 1000, 800);
         stage.setScene(scene);
         stage.show();
@@ -31,15 +41,6 @@ public class Game extends Application {
 
     }
 
-
-    private Player[] players;
-    private Board board;
-    private Player currentTurn;
-    private GameStatus status;
-    private ArrayList<Move> movesPlayed= new ArrayList<>();
-    private int numberOfPlayers;
-    private ArrayList<Move> movesLog=new ArrayList<>();
-
 //NO BOT OPTION
     public void initializeNewGame(int numberOfPlayers, Vector2d boardDimensions){
 
@@ -47,10 +48,13 @@ public class Game extends Application {
         players= new Player[numberOfPlayers];
         for(int i=1; i<= numberOfPlayers; i++){
             players[i-1]=new HumanPlayer(i);
+            LinkedList<Piece> pieces = new LinkedList<>();
+            pieces.add(new FPiece());
+            players[i-1].setPiecesList(pieces);
 
         }
         //Draw everything
-    currentTurn=players[0];
+        currentTurn=players[0];
 
     }
 
@@ -79,5 +83,9 @@ public class Game extends Application {
 
     public void setNumberOfPlayers(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;
+    }
+
+    public Player[] getPlayers() {
+        return players;
     }
 }

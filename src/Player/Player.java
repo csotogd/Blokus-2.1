@@ -23,6 +23,10 @@ public abstract class Player {
         return piecesList;
     }
 
+    public void setPiecesList(List<Piece> piecesList) {
+        this.piecesList = piecesList;
+    }
+
     public boolean isHumanPlayer()
     {
         return this.humanPlayer == true;
