@@ -1,4 +1,6 @@
 import DataBase.Pieces.FPiece;
+import DataBase.Pieces.I1Piece;
+import DataBase.Pieces.I2Piece;
 import GameBoard.Board;
 import Player.Player;
 import Tools.Vector2d;
@@ -28,7 +30,7 @@ public class Game extends Application {
         BoardUI gameBoard = new BoardUI(4,players);
         Parent root = gameBoard.gameBoardRep;
         stage.setTitle("Hello World");
-        Scene scene = new Scene(root, 1000, 800);
+        Scene scene = new Scene(root, 1200, 800);
         stage.setScene(scene);
         stage.show();
     }
@@ -49,7 +51,7 @@ public class Game extends Application {
         for(int i=1; i<= numberOfPlayers; i++){
             players[i-1]=new HumanPlayer(i);
             LinkedList<Piece> pieces = new LinkedList<>();
-            pieces.add(new FPiece());
+            pieces.add(new FPiece());pieces.add(new I1Piece());pieces.add((new I2Piece()));
             players[i-1].setPiecesList(pieces);
 
         }

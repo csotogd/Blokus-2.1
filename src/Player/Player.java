@@ -1,6 +1,7 @@
 package Player;
 
 import DataBase.Piece;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ public abstract class Player {
     protected List<Piece> piecesList = new ArrayList<Piece>();
     protected String name;
     protected boolean humanPlayer;
+    protected Color color;
 
     public int getPlayerNumber(){
         return this.number;
@@ -25,6 +27,10 @@ public abstract class Player {
 
     public void setPiecesList(List<Piece> piecesList) {
         this.piecesList = piecesList;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 
     public boolean isHumanPlayer()
