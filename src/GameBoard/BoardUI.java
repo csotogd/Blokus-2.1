@@ -4,8 +4,10 @@ import DataBase.Piece;
 import DataBase.Pieces.FPiece;
 import Player.Player;
 import javafx.scene.Parent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -26,7 +28,9 @@ public class BoardUI{
     }
 
     public Parent createBoard() {
-        GridPane principal = new GridPane();
+        BorderPane principal = new BorderPane();
+        Background background = createBackGround();
+        principal.setBackground(background);
 
         GridPane gameBoard = new GridPane();
 
@@ -45,27 +49,58 @@ public class BoardUI{
                 tile.setOnMouseClicked(event -> drawCase(tile,finalI, finalJ));
             }
         }
+        principal.setCenter(gameBoard);
 
-        principal.add(gameBoard,0,0);
-        principal.add(pieceOfPlayer(),1,0);
+        principal.setTop(pieceOfPlayer(0));
+        principal.setRight(pieceOfPlayer(1));
+        principal.setLeft(pieceOfPlayer(3));
+        principal.setBottom(pieceOfPlayer(2));
 
         return principal;
     }
 
-    public GridPane pieceOfPlayer(){
-        GridPane allPieces = new GridPane();
-        Color[] colors = {Color.RED,Color.YELLOW,Color.GREEN,Color.BLUE};
-        int colorCounter = 0;
-        for (int i = 0;i<players.length;i++) {
-            int pieceCounter = 0;
-            for (Piece pieceLeft:players[i].getPiecesList()) {
-                //TODO fix the issue that the pieces are over others
-                allPieces.add(drawPiece(pieceLeft.getShape(),colors[colorCounter]),i,pieceCounter);
-                pieceCounter++;
-            }
-            colorCounter++;
+    public Background createBackGround(){
+        Image image = new Image("https://images.hdqwalls.com/wallpapers/simple-gray-background-4k-br.jpg",800,800,false,true);
+
+        BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
+
+        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+
+        Background background = new Background(backgroundImage);
+        return background;
+    }
+
+    public FlowPane pieceOfPlayer(int playerNbr){
+        FlowPane allPieces = new FlowPane();
+        allPieces.getChildren().add(new Text("Player " + players[playerNbr].getNumber() + " pieces left:  "));
+        int pieceCounter = 0;
+        for (Piece pieceLeft:players[playerNbr].getPiecesList()) {
+            //TODO fix the issue that the pieces are over others
+            allPieces.getChildren().add(new Text(++pieceCounter + "  "));
+            allPieces.getChildren().add(drawPiece(pieceLeft.getShape(),players[playerNbr].getColor()));
         }
         return allPieces;
+    }
+
+    public Parent drawPiece(int [][] pieceTable, Color playerColor){
+        GridPane piece = new GridPane();
+        for (int i = 0; i < pieceTable.length; i++) {
+            for (int j = 0; j < pieceTable[i].length; j++) {
+
+                Rectangle tile = new Rectangle(20, 20);
+                if(pieceTable[i][j]==1){
+                    tile.setFill(playerColor);
+                    tile.setStrokeWidth(2.0);
+                    tile.setStroke(Color.BLACK);
+                    piece.add(new StackPane(tile),i,j);
+                }else{
+                    tile.setFill(Color.TRANSPARENT);
+                    piece.add(new StackPane(tile),i,j);
+                }
+
+            }
+        }
+        return piece;
     }
 
     public void drawCase(Rectangle tile,int col, int row) {
