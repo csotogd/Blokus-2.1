@@ -37,5 +37,13 @@ public abstract class Player {
     {
         return this.humanPlayer == true;
     }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public int getNumber() {
+        return number;
+    }
 }
 

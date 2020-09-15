@@ -6,7 +6,6 @@ import DataBase.Piece;
  *          ###
  */
 public class I3Piece extends Piece {
-    public int[][] piece = new int[][]{{1,1,1}};
     public I3Piece() {
         super("I3", new int[][]{{1,1,1}}, false, 2, 2);
     }

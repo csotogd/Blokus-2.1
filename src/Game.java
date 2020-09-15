@@ -1,16 +1,24 @@
 import DataBase.Pieces.FPiece;
 import DataBase.Pieces.I1Piece;
 import DataBase.Pieces.I2Piece;
+import DataBase.Pieces.L5Piece;
 import GameBoard.Board;
+import GameBoard.BoardUI;
+import Player.HumanPlayer;
 import Player.Player;
 import Tools.Vector2d;
-import Player.HumanPlayer;
+import com.sun.glass.ui.Screen;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import GameBoard.BoardUI;
 import DataBase.*;
+import org.w3c.dom.css.Rect;
+
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -26,12 +34,13 @@ public class Game extends Application {
 
     @Override
     public void start(Stage stage){
-        initializeNewGame(2,new Vector2d(50,50));
+        initializeNewGame(4,new Vector2d(50,50));
         BoardUI gameBoard = new BoardUI(4,players);
         Parent root = gameBoard.gameBoardRep;
-        stage.setTitle("Hello World");
-        Scene scene = new Scene(root, 1200, 800);
+        stage.setTitle("Blokus Game Group 15");
+        Scene scene = new Scene(root, 800, 800);
         stage.setScene(scene);
+        stage.setFullScreen(true);
         stage.show();
     }
 
@@ -45,15 +54,15 @@ public class Game extends Application {
 
 //NO BOT OPTION
     public void initializeNewGame(int numberOfPlayers, Vector2d boardDimensions){
-
+        Color[] colors = {Color.RED,Color.YELLOW,Color.GREEN,Color.BLUE};
         //this.board= new Board(boardDimensions);
         players= new Player[numberOfPlayers];
         for(int i=1; i<= numberOfPlayers; i++){
             players[i-1]=new HumanPlayer(i);
             LinkedList<Piece> pieces = new LinkedList<>();
-            pieces.add(new FPiece());pieces.add(new I1Piece());pieces.add((new I2Piece()));
+            pieces.add(new FPiece());pieces.add(new I1Piece());pieces.add((new L5Piece()));
             players[i-1].setPiecesList(pieces);
-
+            players[i-1].setColor(colors[i-1]);
         }
         //Draw everything
         currentTurn=players[0];
