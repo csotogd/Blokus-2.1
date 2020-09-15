@@ -8,7 +8,6 @@ import DataBase.Piece;
  *          #
  */
 public class PPiece extends Piece {
-    public int[][] piece = new int[][]{{1,1},{1,1},{1,0}};
     public PPiece() {
         super("P", new int[][]{{1,1},{1,1},{1,0}}, true, 4, 8);
     }

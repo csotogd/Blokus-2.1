@@ -8,6 +8,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 
 import java.util.List;
 
@@ -42,7 +43,6 @@ public class BoardUI{
                 int finalI = i;
                 int finalJ = j;
                 tile.setOnMouseClicked(event -> drawCase(tile,finalI, finalJ));
-
             }
         }
 
@@ -75,25 +75,6 @@ public class BoardUI{
             tile.setStroke(Color.GREEN);
         }
 
-    }
-
-    public Parent drawPiece(int [][] pieceTable, Color playerColor){
-        GridPane piece = new GridPane();
-
-        for (int i = 0; i < pieceTable.length; i++) {
-            for (int j = 0; j < pieceTable.length; j++) {
-
-                Rectangle tile = new Rectangle(30, 30);
-                if(pieceTable[i][j]==1){
-                    tile.setFill(playerColor);
-                    tile.setStrokeWidth(2.0);
-                    tile.setStroke(Color.BLACK);
-                    piece.add(new StackPane(tile), j, i);
-                }
-
-            }
-        }
-        return piece;
     }
 
     public  Color paintColor(int col, int row){
