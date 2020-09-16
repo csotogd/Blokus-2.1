@@ -53,12 +53,7 @@ public class Move {
             for (int j = 0; j < piece.getShape()[i].length; j++) {
                 if (piece.getShape()[i][j] == 0)
                     ; //arbitrary operation to check for out of bounds Exception
-            }
-        }
-    }catch(ArrayIndexOutOfBoundsException e){
-            return false;
-        }
-       return true;
+
     }
 
 
@@ -72,8 +67,6 @@ public class Move {
     //every block occupies an empty space?
     for(int i=0; i<piece.getShape().length; i++){
         for(int j=0; j<piece.getShape()[0].length; j++){
-            if(piece.getShape()[i][j]==0)
-                ;//that´s not a block
             else{
                 if (board.board[i+position.get_x()][j+position.get_y()] != 0)
                     return false;
@@ -92,6 +85,13 @@ public class Move {
      * @return true if no direct contact exists
      */
     private boolean noDirectContact(Board board){
+        return true; //!! it doesn't check if there is already a piece that occupies this position because
+    // it assumes it was already checked
+    for(int x=0;x<piece.getShape()[0].length;x++) {
+        for (int y = 0; y < piece.getShape().length; y++) {
+            if(piece.getShape()[position.get_y()+y][position.get_x()+x]!=0){
+                if(position.get_y()+y+1<board.getDIMENSION().get_y() && board.board[position.get_y()+y+1][position.get_x()+x]==player.getPlayerNumber()) return false;
+                if(position.get_y()+y-1>=0 && board.board[position.get_y()+y-1][position.get_x()+x]==player.getPlayerNumber()) return false;
 
     //NONE of the blocks is in contact with another piece of the same player in a none- CORNER context?
 
@@ -147,7 +147,6 @@ public class Move {
      *
      */
     private boolean cornerContact(Board board){
-
     for(int i=0; i<piece.getShape().length; i++){
         for(int j=0; j<piece.getShape()[0].length; j++){
             if(piece.getShape()[i][j]==0)
@@ -186,6 +185,20 @@ public class Move {
     }
     return false;
 }
+
+     * @param board the game board
+     * @return
+     */
+    private boolean isCorner(Vector2d p1, Vector2d p2, Board board) {
+        int count=0;
+        for (int i = Math.min(p1.get_y(),p2.get_y()); i < 2; i++) {
+            for (int j = Math.min(p1.get_x(), p2.get_x()); j < 2; j++) {
+                if(board.board[i][j]==player.getPlayerNumber()) count++;
+            }
+        }
+        if(count == 1) return true;
+        return false;
+    }
 
     /**
      *writes the piece into the board,no further calculations.
