@@ -10,6 +10,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 import java.util.List;
@@ -85,7 +86,10 @@ public class BoardUI{
 
     public FlowPane pieceOfPlayer(int playerNbr){
         FlowPane allPieces = new FlowPane();
-        allPieces.getChildren().add(new Text("Player " + players[playerNbr].getNumber() + " pieces left:  "));
+        Text text = new Text("Player " + players[playerNbr].getNumber() + " pieces left:  ");
+        text.setFont(Font.font("Verdana", 20));
+        text.setFill(Color.WHITE);
+        allPieces.getChildren().add(text);
         int pieceCounter = 0;
         for (Piece pieceLeft:players[playerNbr].getPiecesList()) {
             //TODO fix the issue that the pieces are over others
