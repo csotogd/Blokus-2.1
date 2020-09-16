@@ -29,6 +29,15 @@ public class BoardUI{
 
     public Parent createBoard() {
         BorderPane principal = new BorderPane();
+        StackPane left = new StackPane();
+        left.setTranslateY(350);
+        StackPane right = new StackPane();
+        right.setTranslateY(350);
+        StackPane top = new StackPane();
+        top.setTranslateX(350);
+        StackPane bottom = new StackPane();
+        bottom.setTranslateX(350);
+
         Background background = createBackGround();
         principal.setBackground(background);
 
@@ -37,7 +46,7 @@ public class BoardUI{
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
 
-                Rectangle tile = new Rectangle(30, 30);
+                Rectangle tile = new Rectangle(33, 33);
                 tile.setFill(paintColor(i,j));
                 tile.setStrokeWidth(2.0);
                 tile.setStroke(Color.BLACK);
@@ -51,10 +60,14 @@ public class BoardUI{
         }
         principal.setCenter(gameBoard);
 
-        principal.setTop(pieceOfPlayer(0));
-        principal.setRight(pieceOfPlayer(1));
-        principal.setLeft(pieceOfPlayer(3));
-        principal.setBottom(pieceOfPlayer(2));
+        top.getChildren().add(pieceOfPlayer(0));
+        principal.setTop(top);
+        right.getChildren().add(pieceOfPlayer(1));
+        principal.setRight(right);
+        left.getChildren().add(pieceOfPlayer(3));
+        principal.setLeft(left);
+        bottom.getChildren().add(pieceOfPlayer(2));
+        principal.setBottom(bottom);
 
         return principal;
     }
@@ -78,6 +91,7 @@ public class BoardUI{
             //TODO fix the issue that the pieces are over others
             allPieces.getChildren().add(new Text(++pieceCounter + "  "));
             allPieces.getChildren().add(drawPiece(pieceLeft.getShape(),players[playerNbr].getColor()));
+            allPieces.getChildren().add(new Text("\t"));
         }
         return allPieces;
     }
@@ -86,7 +100,6 @@ public class BoardUI{
         GridPane piece = new GridPane();
         for (int i = 0; i < pieceTable.length; i++) {
             for (int j = 0; j < pieceTable[i].length; j++) {
-
                 Rectangle tile = new Rectangle(20, 20);
                 if(pieceTable[i][j]==1){
                     tile.setFill(playerColor);

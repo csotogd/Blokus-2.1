@@ -1,7 +1,4 @@
-import DataBase.Pieces.FPiece;
-import DataBase.Pieces.I1Piece;
-import DataBase.Pieces.I2Piece;
-import DataBase.Pieces.L5Piece;
+import DataBase.Pieces.*;
 import GameBoard.Board;
 import GameBoard.BoardUI;
 import Player.HumanPlayer;
@@ -60,7 +57,7 @@ public class Game extends Application {
         for(int i=1; i<= numberOfPlayers; i++){
             players[i-1]=new HumanPlayer(i);
             LinkedList<Piece> pieces = new LinkedList<>();
-            pieces.add(new FPiece());pieces.add(new I1Piece());pieces.add((new L5Piece()));
+            pieces.add(new FPiece());pieces.add(new I1Piece());pieces.add((new L5Piece()));;pieces.add((new L4Piece()));;pieces.add((new NPiece()));
             players[i-1].setPiecesList(pieces);
             players[i-1].setColor(colors[i-1]);
         }
