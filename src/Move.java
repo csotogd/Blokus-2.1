@@ -7,7 +7,7 @@ import java.util.Vector;
 
 public class Move {
     private Player player;
-    private Piece piece;
+    private Piece piece;//needs to be rotated, mirror as the players wants
     private Vector2d position; //Position of the top-left corner of the piece. top-left corner of the board is 0,0
 
 
@@ -46,13 +46,13 @@ public class Move {
 
 
     private boolean inBounds(Board board){
-<<<<<<< Updated upstream
-    try {
-        //every block occupies an empty space?
-        for (int i = 0; i < piece.getShape().length; i++) {
-            for (int j = 0; j < piece.getShape()[i].length; j++) {
-                if (piece.getShape()[i][j] == 0)
-                    ; //arbitrary operation to check for out of bounds Exception
+
+
+    if(this.position.get_x()<0||this.position.get_y()<0||
+            this.position.get_x()>=board.getDIMENSION().get_x()||this.position.get_y()>=board.getDIMENSION().get_y()) return false;
+    if(this.position.get_x()+piece.getShape()[0].length>=board.getDIMENSION().get_x()||
+            this.position.get_y()+piece.getShape().length>=board.getDIMENSION().get_y()) return false;
+    return true;
 
     }
 
@@ -67,10 +67,9 @@ public class Move {
     //every block occupies an empty space?
     for(int i=0; i<piece.getShape().length; i++){
         for(int j=0; j<piece.getShape()[0].length; j++){
-            else{
-                if (board.board[i+position.get_x()][j+position.get_y()] != 0)
-                    return false;
-            }
+            if(piece.getShape()[i][j]!=0 &&
+                    board.board[i+position.get_x()][j+position.get_y()] != 0)
+                return false;
 
         }
     }
@@ -85,6 +84,13 @@ public class Move {
      * @return true if no direct contact exists
      */
     private boolean noDirectContact(Board board){
+ /*   boolean corner = false;
+    for(int x=0;x<piece.getShape()[0].length;x++)
+        for (int y = 0; y < piece.getShape().length; y++)
+            if(position.get_x()+x==player.getCorner().get_x()&&
+            position.get_y()+y==player.getCorner().get_y()&&
+            piece.getShape()[y][x]!=0) corner=true;
+    if(corner)
         return true; //!! it doesn't check if there is already a piece that occupies this position because
     // it assumes it was already checked
     for(int x=0;x<piece.getShape()[0].length;x++) {
@@ -92,6 +98,13 @@ public class Move {
             if(piece.getShape()[position.get_y()+y][position.get_x()+x]!=0){
                 if(position.get_y()+y+1<board.getDIMENSION().get_y() && board.board[position.get_y()+y+1][position.get_x()+x]==player.getPlayerNumber()) return false;
                 if(position.get_y()+y-1>=0 && board.board[position.get_y()+y-1][position.get_x()+x]==player.getPlayerNumber()) return false;
+                if(position.get_x()+x+1<board.getDIMENSION().get_x() && board.board[position.get_y()+y][position.get_x()+x+1]==player.getPlayerNumber()) return false;
+                if(position.get_x()+x-1>=0 && board.board[position.get_y()+y][position.get_x()+x-1]==player.getPlayerNumber()) return false;
+
+            }
+        }
+    }
+    return true;*/
 
     //NONE of the blocks is in contact with another piece of the same player in a none- CORNER context?
 
@@ -147,6 +160,13 @@ public class Move {
      *
      */
     private boolean cornerContact(Board board){
+  /*  for(int i=0; i< piece.getCornersContacts().size();i+=2){
+        Vector2d board_cor=piece.getCornersContacts().get(i+1).add(position);
+        if(board.inBoard(board_cor) &&
+        board.board[board_cor.get_y()][board_cor.get_x()]==player.getPlayerNumber() &&
+        isCorner(piece.getCornersContacts().get(i).add(position),board_cor, board)) return true;
+    }
+    return false;*/
     for(int i=0; i<piece.getShape().length; i++){
         for(int j=0; j<piece.getShape()[0].length; j++){
             if(piece.getShape()[i][j]==0)
@@ -186,6 +206,10 @@ public class Move {
     return false;
 }
 
+    /**
+     * this method checks if two positions on the board is effectively touching corners to corners
+     * @param p1 first position
+     * @param p2 second position
      * @param board the game board
      * @return
      */
