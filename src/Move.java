@@ -48,7 +48,7 @@ public class Move {
     try {
         //every block occupies an empty space?
         for (int i = 0; i < piece.getShape().length; i++) {
-            for (int j = 0; j < piece.getShape()[0].length; j++) {
+            for (int j = 0; j < piece.getShape()[i].length; j++) {
                 if (piece.getShape()[i][j] == 0)
                     ; //arbitrary operation to check for out of bounds Exception
             }
