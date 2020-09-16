@@ -1,6 +1,7 @@
 package Player;
 
 import DataBase.Piece;
+import Tools.Vector2d;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ public abstract class Player {
     protected String name;
     protected boolean humanPlayer;
     protected Color color;
+    protected Vector2d startingCorner;//TODO: implement logic of finding the appropriate corner, and find the location in the code to do it
 
     public int getPlayerNumber(){
         return this.number;
@@ -45,5 +47,7 @@ public abstract class Player {
     public int getNumber() {
         return number;
     }
+
+    public Vector2d getStartingCorner() { return startingCorner; }
 }
 

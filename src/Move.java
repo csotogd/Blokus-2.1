@@ -18,6 +18,7 @@ public class Move {
         this.piece= piece;
         this.position=position;
 
+
     }
 
 
@@ -45,6 +46,7 @@ public class Move {
 
 
     private boolean inBounds(Board board){
+<<<<<<< Updated upstream
     try {
         //every block occupies an empty space?
         for (int i = 0; i < piece.getShape().length; i++) {

@@ -32,4 +32,15 @@ public class Board {
         return false;
     }
 
+
+    public Vector2d getDIMENSION() {
+        return DIMENSION;
+    }
+
+    public boolean inBoard(Vector2d position){
+        if(position.get_y()<0||position.get_x()<0||
+        position.get_x()>=DIMENSION.get_x()||
+        position.get_y()>=DIMENSION.get_y()) return false;
+        return true;
+    }
 }
