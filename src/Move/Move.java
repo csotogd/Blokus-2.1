@@ -1,9 +1,9 @@
+package Move;
+
 import DataBase.Piece;
 import Player.Player;
 import Tools.Vector2d;
 import GameBoard.Board;
-
-import java.util.Vector;
 
 public class Move {
     private Player player;
@@ -30,12 +30,12 @@ public class Move {
      */
     public boolean isAllowed(Board board){
         /*
-         *  For a move to be allowed, the following 3 conditions have to be TRUE
+         *  For a move to be allowed, the following 5 conditions have to be TRUE
          *
          * 1. every "block" of the piece should be occupying an empty board space
          * 2. There has to be a piece touching the corner of at least ONE of the blocks
          * 3. NONE of the blocks is in contact with a piece of the same player in a none- CORNER context
-         * 4. none of its pieces is out of bounds
+         * 4. none of its blocks is out of bounds
          * 5. piece was not used
          */
 
@@ -59,6 +59,8 @@ public class Move {
 
     /**
      * checks if every piece block can be place in an empty square of the board
+     * throws a not caught exception if piece is out of bounds.
+     * to be executed together with inBOunds (if this method is after InBounds() in a conditional it will never be executed if is not in bounds)
      * @param board
      * @return
      */
@@ -79,7 +81,7 @@ public class Move {
 
 
     /**
-     * checks if any of the pieces block is in direct contact of another piece of the same player
+     * checks if any of the pieces block is in direct contact (none corner) of another piece of the same player
      * @param board
      * @return true if no direct contact exists
      */
@@ -251,10 +253,24 @@ public void writePieceIntoBoard(Board board) {
             //add piece to the board
             this.writePieceIntoBoard(board);
             piece.setUsed(true);
+            player.getMoveLog().push(this);
+
             return true;
         }
+        else
+            System.out.println("Move not allowed");
         return false;
         }
 
+    public Player getPlayer() {
+        return player;
+    }
 
+    public Piece getPiece() {
+        return piece;
+    }
+
+    public Vector2d getPosition() {
+        return position;
+    }
 }
