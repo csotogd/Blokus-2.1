@@ -1,9 +1,12 @@
 package Move;
 
 import DataBase.Piece;
+import GameBoard.Corner;
 import Player.Player;
 import Tools.Vector2d;
 import GameBoard.Board;
+
+import java.util.ArrayList;
 
 public class Move {
     private Player player;
@@ -162,13 +165,19 @@ public class Move {
      *
      */
     private boolean cornerContact(Board board){
-  /*  for(int i=0; i< piece.getCornersContacts().size();i+=2){
-        Vector2d board_cor=piece.getCornersContacts().get(i+1).add(position);
-        if(board.inBoard(board_cor) &&
-        board.board[board_cor.get_y()][board_cor.get_x()]==player.getPlayerNumber() &&
-        isCorner(piece.getCornersContacts().get(i).add(position),board_cor, board)) return true;
-    }
-    return false;*/
+        /**
+         * it gets all corners from the piece with coordinates on the board,
+         * it then checks for expected position on the board if it's occupied by a block of the player
+         * finally calls isCorner that checks if there is only one block on the board
+         */
+    /*    for(Corner pieceCorner: piece.getCornersContacts(position)){
+            for(Vector2d board_cor:pieceCorner.getToCornerPositions()) {
+                if (board.inBoard(board_cor) &&
+                        board.board[board_cor.get_y()][board_cor.get_x()] == player.getPlayerNumber() &&
+                        isCorner(pieceCorner.getPosition(), board_cor, board)) return true;
+            }
+        }
+        return false;*/
     for(int i=0; i<piece.getShape().length; i++){
         for(int j=0; j<piece.getShape()[0].length; j++){
             if(piece.getShape()[i][j]==0)
