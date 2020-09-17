@@ -39,7 +39,7 @@ public class PieceFactory {
         return singleton;
     }
 
-    public List<Piece> getAllPieces(){
+    public ArrayList<Piece> getAllPieces(){
         ArrayList<Piece> result = new ArrayList<>();
         for(Piece p : prototype) result.add(p.getPiece());
 

@@ -17,6 +17,7 @@ import org.w3c.dom.css.Rect;
 
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.LinkedList;
 
 public class Game extends Application {
@@ -51,24 +52,45 @@ public class Game extends Application {
 
 //NO BOT OPTION
     public void initializeNewGame(int numberOfPlayers, Vector2d boardDimensions){
-        Color[] colors = {Color.RED,Color.YELLOW,Color.GREEN,Color.BLUE};
-        //this.board= new Board(boardDimensions);
-        players= new Player[numberOfPlayers];
-        for(int i=1; i<= numberOfPlayers; i++){
-            players[i-1]=new HumanPlayer(i);
-            LinkedList<Piece> pieces = new LinkedList<>();
-            pieces.add(new FPiece());pieces.add(new I1Piece());pieces.add((new L5Piece()));;pieces.add((new L4Piece()));;pieces.add((new NPiece()));
-            players[i-1].setPiecesList(pieces);
-            players[i-1].setColor(colors[i-1]);
-        }
+
+        this.board= new Board(numberOfPlayers);
+        initializePlayers(numberOfPlayers);
+
         //Draw everything
         currentTurn=players[0];
 
+
+
+    }
+    private void initializePlayers(int numberOfPlayers){
+        players= new Player[numberOfPlayers];
+        for(int i=1; i<= numberOfPlayers; i++){
+            players[i-1]=new HumanPlayer(i);
+        }
+        initializePlayerPieces(numberOfPlayers);
+        initializePlayersColours(numberOfPlayers);
     }
 
+    private void initializePlayersColours(int numberOfPlayers){
+        Color[] colors = {Color.RED,Color.YELLOW,Color.GREEN,Color.BLUE};
+        for(int i=1; i<= numberOfPlayers; i++){
+            players[i-1].setColor(colors[i-1]);
+        }
+    }
 
+    private void initializePlayerPieces(int numberOfPlayers){
 
-    public void nextTurn(){
+        for(int i=1; i<= numberOfPlayers; i++){
+            PieceFactory pieceFactory= PieceFactory.get();
+            List<Piece> pieces = pieceFactory.getAllPieces();
+
+            players[i-1].setPiecesList(pieces);
+
+        }
+
+    }
+
+    private void nextTurn(){
         /*If if it is player 1 turn, then next turn will correspond to player 2,
          after the last player, we go back to the first one
          */
@@ -80,10 +102,14 @@ public class Game extends Application {
     }
 
     //writes the piece into the board and adds it to the log
-    public void makeMove(Piece piece, Vector2d position){
+    public boolean makeMove(Piece piece, Vector2d position){
         Move move = new Move(currentTurn, piece, position);
-
-            movesLog.add(move);
+            if(move.makeMove(board)) {
+                movesLog.add(move);
+                nextTurn();
+                return true;
+            }
+            return false;
 
         }
 
