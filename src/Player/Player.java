@@ -13,7 +13,10 @@ public abstract class Player {
     protected String name;
     protected boolean humanPlayer;
     protected Color color;
-    protected Vector2d startingCorner;//TODO: implement logic of finding the appropriate corner, and find the location in the code to do it
+    protected Vector2d startingCorner;
+    protected boolean skippedLastMove=false; //If the LAST move was not made due to no possible moves
+
+    //TODO: implement logic of finding the appropriate corner, and find the location in the code to do it
 
     public int getPlayerNumber(){
         return this.number;
@@ -47,6 +50,15 @@ public abstract class Player {
     public int getNumber() {
         return number;
     }
+
+    public boolean getSkippedLastMove() {
+        return skippedLastMove;
+    }
+
+    public void setSkippedLastMove(boolean skippedLastMove) {
+        this.skippedLastMove = skippedLastMove;
+    }
+
 
     public Vector2d getStartingCorner() { return startingCorner; }
 }

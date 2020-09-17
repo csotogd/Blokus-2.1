@@ -12,6 +12,7 @@ public abstract class Piece {
     private static List<int[][]> permutations=null;
     private boolean mirror;
     private int nbRotation;
+    private int numberOfBlocks;
     private int totalConfig;
     private String label;
     private int number;//can be either 1,2,3,4 depending on the player
@@ -113,6 +114,9 @@ public abstract class Piece {
         }
         return permutations;
     }
+    public int getNumberOfBlocks(){
+        return this.numberOfBlocks;
+    }
 
     public boolean isMirror() {
         return mirror;
@@ -136,7 +140,17 @@ public abstract class Piece {
     public void setUsed(boolean used){
         this.used=used;
     }
+    protected void calculateNumberOfBlocks() {
+        int blocks=0;
 
+        for (int i = 0; i < shape.length; i++) {
+            for (int j = 0; j < shape[0].length; j++) {
+                if(shape[i][j]==1)
+                    blocks++;
+            }
+        }
+        numberOfBlocks=blocks;
+    }
     public abstract Piece getPiece();
 
     /**
