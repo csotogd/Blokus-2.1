@@ -1,6 +1,7 @@
 
 package DataBase;
 
+import DataBase.Pieces.*;
 import GameBoard.Corner;
 import Tools.Vector2d;
 
@@ -10,11 +11,10 @@ import java.util.List;
 public abstract class Piece {
     private int[][] shape;
     private boolean used;
-    private static List<int[][]> permutations=null;
-    private boolean mirror;
-    private int nbRotation;
+    protected boolean mirror;
+    protected int nbRotation;
     private int numberOfBlocks;
-    private int totalConfig;
+    protected int totalConfig;
     private String label;
     private int number;//can be either 1,2,3,4 depending on the player
 
@@ -91,30 +91,7 @@ public abstract class Piece {
         return used;
     }
 
-    public List<int[][]> getPermutations() {
-        if(permutations==null){
-            permutations=new ArrayList<>();
-            int count=0;
-
-            for (int i = 0; i < nbRotation; i++) {
-                permutations.add(getShape());
-                rotateRight();
-                count++;
-            }
-            if(count<nbRotation){
-                rotateUpsideDown();
-                for (int i = 0; i < nbRotation; i++) {
-                    permutations.add(getShape());
-                    rotateRight();
-                    count++;
-                }
-                rotateUpsideDown();
-            }
-            assert(count==totalConfig);
-
-        }
-        return permutations;
-    }
+    public abstract List<int[][]> getPermutations();
     public int getNumberOfBlocks(){
         return this.numberOfBlocks;
     }
@@ -227,6 +204,56 @@ public abstract class Piece {
         result.add(new Vector2d(corners[3].get_x()+1,corners[3].get_y()+1));
         result.add(corners[3]);
       */  return result;
+    }
+
+    public String toString(){
+        StringBuilder s = new StringBuilder();
+        s.append(label+": \n\n");
+        for(int[] line : shape) {
+            for (int i : line) {
+                s.append(i);
+            }
+            s.append("\n");
+        }
+        return s.toString();
+    }
+
+    public static void main(String[]args){
+        int count = 1;
+        //for(Piece p: PieceFactory.get().getAllPieces()) System.out.println((count++)+" "+p);
+
+        Piece p = new WPiece();
+        for(int[][] perm : p.getPermutations()){
+            for (int i = 0; i < perm.length; i++) {
+                for (int j = 0; j < perm[0].length; j++) {
+                    System.out.print(perm[i][j]);
+                }
+                System.out.println();
+            }
+            System.out.println();
+        }
+
+        Piece p2 = new FPiece();
+        for(int[][] perm : p2.getPermutations()){
+            for (int i = 0; i < perm.length; i++) {
+                for (int j = 0; j < perm[0].length; j++) {
+                    System.out.print(perm[i][j]);
+                }
+                System.out.println();
+            }
+            System.out.println();
+        }
+
+        Piece p3 = new I1Piece();
+        for(int[][] perm : p3.getPermutations()){
+            for (int i = 0; i < perm.length; i++) {
+                for (int j = 0; j < perm[0].length; j++) {
+                    System.out.print(perm[i][j]);
+                }
+                System.out.println();
+            }
+            System.out.println();
+        }
     }
 }
 
