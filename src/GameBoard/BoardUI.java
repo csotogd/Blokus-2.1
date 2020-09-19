@@ -74,14 +74,13 @@ public class BoardUI{
         principal.setCenter(center);
         top.getChildren().add(pieceOfPlayer(0));
         principal.setTop(top);
-        right.getChildren().add(pieceOfPlayer(1));
+        right.getChildren().addAll(pieceOfPlayer(1),rotationButtons());
         principal.setRight(right);
-        left.getChildren().addAll(pieceOfPlayer(3),rotationButtons());
+        left.getChildren().addAll(pieceOfPlayer(3),playersTurn());
         principal.setLeft(left);
         bottom.getChildren().add(pieceOfPlayer(2));
         principal.setBottom(bottom);
 
-        principal.getChildren().addAll(playersTurn());
         return principal;
     }
 
@@ -91,13 +90,17 @@ public class BoardUI{
         principal.setStroke(Color.WHITE);
         principal.setHeight(RECTANGLE_SIZE.get_x());
         principal.setWidth(RECTANGLE_SIZE.get_y());
-        Text text = new Text("Turn of player : " + actualPlayer.getName());
+        principal.setTranslateX(-50);
+        Text text = new Text("Turn of player:");
+        text.setTranslateY(-30); text.setTranslateX(-50);
         text.setFont(Font.font("Verdana", 20));
         text.setFill(Color.WHITE);
+        Text text1 = new Text(actualPlayer.getName());
+        text1.setTranslateY(15);text1.setTranslateX(-50);
+        text1.setFont(Font.font("Verdana", 30));
+        text1.setFill(actualPlayer.getColor());
         StackPane layout = new StackPane();
-        layout.getChildren().addAll(principal,text);
-        layout.setAlignment(principal, Pos.TOP_LEFT);
-        layout.setAlignment(text, Pos.TOP_LEFT);
+        layout.getChildren().addAll(principal,text,text1);
 
 
         return layout;
@@ -107,27 +110,35 @@ public class BoardUI{
         Rectangle principal = new Rectangle();
         principal.setFill(Color.TRANSPARENT);
         principal.setStroke(Color.WHITE);
-        principal.setHeight(RECTANGLE_SIZE.get_x()*2);
+        principal.setHeight(RECTANGLE_SIZE.get_x()*2.3f);
         principal.setWidth(RECTANGLE_SIZE.get_y()*1.5f);
 
         //TODO buttons error not understood
         Button rightRotate = new Button("Right rotation");
+        rightRotate.setTranslateX(70); rightRotate.setTranslateY(-20);
         Button leftRotate = new Button("Left rotation");
-        leftRotate.setTranslateX(-80);
+        leftRotate.setTranslateX(-80); leftRotate.setTranslateY(-20);
         Text text = new Text("Rotate piece number:");
-        text.setTranslateX(-50);text.setTranslateY(-50);
+        text.setTranslateX(-50);text.setTranslateY(-70);
         text.setFont(Font.font("Verdana", 20));
         text.setFill(Color.WHITE);
+        Text text1 = new Text("Move the selected piece with the arrows");
+        text1.setTranslateY(30);
+        text1.setFont(Font.font("Verdana", 20));
+        text1.setFill(Color.WHITE);
         ChoiceBox choiceBox = new ChoiceBox();
-        choiceBox.setTranslateX(85);choiceBox.setTranslateY(-50);
+        choiceBox.setTranslateX(100);choiceBox.setTranslateY(-70);
         for (int i = 0; i < actualPlayer.getPiecesList().size(); i++) {
             choiceBox.getItems().add(i+1);
         }
+        Button enter = new Button("ENTER");
+        enter.setTranslateY(80);
         StackPane layout = new StackPane();
-        layout.getChildren().addAll(text,principal,rightRotate,leftRotate,choiceBox);
+        layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,choiceBox,enter);
 
         return layout;
     }
+
 
     public Background createBackGround(){
         Image image = new Image("https://images.hdqwalls.com/wallpapers/simple-gray-background-4k-br.jpg",800,800,false,true);
