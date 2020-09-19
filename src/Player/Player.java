@@ -76,5 +76,9 @@ public abstract class Player {
     }
 
     public Vector2d getStartingCorner() { return startingCorner; }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
 

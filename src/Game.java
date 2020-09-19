@@ -8,12 +8,15 @@ import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import DataBase.*;
 import com.sun.glass.ui.Screen;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Rectangle;
 import GameBoard.BoardUI;
+
+import java.awt.*;
 import java.util.ArrayList;
 import GameBoard.BoardUI;
 import java.util.List;
@@ -35,7 +38,7 @@ public class Game extends Application {
         BoardUI gameBoard = new BoardUI(4,players);
         Parent root = gameBoard.gameBoardRep;
         stage.setTitle("Blokus Game Group 15");
-        Scene scene = new Scene(root, 800, 800);
+        Scene scene = new Scene(root, 1920, 1080);
         stage.setScene(scene);
         stage.setFullScreen(true);
         stage.show();
@@ -61,20 +64,16 @@ public class Game extends Application {
 
     }
     private void initializePlayers(int numberOfPlayers){
+        Color[] colors = {Color.RED,Color.YELLOW,Color.GREEN,Color.BLUE};
         players= new Player[numberOfPlayers];
         for(int i=1; i<= numberOfPlayers; i++){
             players[i-1]=new HumanPlayer(i);
+            players[i-1].setColor(colors[i-1]);
+            players[i-1].setName("Martin");
         }
         initializePlayerPieces(numberOfPlayers);
-        initializePlayersColours(numberOfPlayers);
     }
 
-    private void initializePlayersColours(int numberOfPlayers){
-        Color[] colors = {Color.RED,Color.YELLOW,Color.GREEN,Color.BLUE};
-        for(int i=1; i<= numberOfPlayers; i++){
-            players[i-1].setColor(colors[i-1]);
-        }
-    }
 
     private void initializePlayerPieces(int numberOfPlayers){
 

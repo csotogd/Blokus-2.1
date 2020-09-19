@@ -15,6 +15,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import menu.MenuTitle;
@@ -71,7 +72,7 @@ public class SettingsScreen extends Application {
         grid.setVgap(10);
 //        grid.setPadding(new Insets(25, 25, 25, 25));
 
-        Label opt1 = new Label("First");
+        Text opt1 = new Text("First");
         Font font = Font.loadFont("file:res/fonts/PlayMeGames-Demo.otf", 20);
         opt1.setFont(font);
         grid.add(opt1, 0, 1);
@@ -83,7 +84,6 @@ public class SettingsScreen extends Application {
 
         // create a choiceBox
         ChoiceBox c1 = new ChoiceBox(FXCollections.observableArrayList(options1));
-
 
         grid.add(c1, 1, 1);
 
