@@ -29,16 +29,16 @@ public class Game extends Application {
     private Player currentTurn;
     private GameStatus status;
     private ArrayList<Move> movesPlayed= new ArrayList<>();
-    private int numberOfPlayers = 4;
+    private int numberOfPlayers = 2;
     private ArrayList<Move> movesLog=new ArrayList<>();
 
     @Override
     public void start(Stage stage){
         initializeNewGame(numberOfPlayers,new Vector2d(50,50));
-        BoardUI gameBoard = new BoardUI(4,players);
+        BoardUI gameBoard = new BoardUI(numberOfPlayers,players);
         Parent root = gameBoard.gameBoardRep;
         stage.setTitle("Blokus Game Group 15");
-        Scene scene = new Scene(root, 1920, 1080);
+        Scene scene = new Scene(root, 1000, 1000);
         stage.setScene(scene);
         stage.setFullScreen(true);
         stage.show();

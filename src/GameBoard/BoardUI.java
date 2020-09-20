@@ -74,12 +74,23 @@ public class BoardUI{
         principal.setCenter(center);
         top.getChildren().add(pieceOfPlayer(0));
         principal.setTop(top);
-        right.getChildren().addAll(pieceOfPlayer(1),rotationButtons());
-        principal.setRight(right);
-        left.getChildren().addAll(pieceOfPlayer(3),playersTurn());
-        principal.setLeft(left);
-        bottom.getChildren().add(pieceOfPlayer(2));
-        principal.setBottom(bottom);
+        if(players.length==2){
+            right.getChildren().addAll(rotationButtons());
+            principal.setRight(right);
+            bottom.getChildren().addAll(pieceOfPlayer(1));
+            principal.setBottom(bottom);
+            left.getChildren().addAll(playersTurn());
+            principal.setLeft(left);
+        }else{
+            right.getChildren().addAll(pieceOfPlayer(1),rotationButtons());
+            principal.setRight(right);
+            left.getChildren().addAll(pieceOfPlayer(3),playersTurn());
+            principal.setLeft(left);
+            bottom.getChildren().add(pieceOfPlayer(2));
+            principal.setBottom(bottom);
+        }
+
+
 
         return principal;
     }
