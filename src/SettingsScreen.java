@@ -42,7 +42,7 @@ public class SettingsScreen extends Application {
         Scene scene = new Scene(root, 800, 800);
         addContent();
         scene.setFill(Color.BLACK);
-        scene.getStylesheets().addAll(this.getClass().getResource("style.css").toExternalForm());
+        //TODO fix issues with the settings
         primaryStage.setTitle("Blockus Settings Screen");
         primaryStage.setScene(scene);
         primaryStage.show();
