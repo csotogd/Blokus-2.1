@@ -211,11 +211,6 @@ public class BoardUI{
         return piece;
     }
 
-    public void dragPiece(Parent piece) {
-
-
-    }
-
     public  Color paintColor(int col, int row){
         if(board.board[col][row]==0){
             return Color.WHITE;
