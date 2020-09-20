@@ -7,6 +7,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *           ##
  *          ##
@@ -16,6 +19,8 @@ public class FPiece extends Piece {
     public Color playerColor;
     public int [][] pieceTable = new int[][]{{0,1,1},{1,1,0},{0,1,0}};
     public Parent pieceUI;
+    private static List<int[][]> permutations=null;
+
     public FPiece() {
         super("F", new int[][]{{0,1,1},{1,1,0},{0,1,0}}, true, 4,8);
         pieceUI = createPieceUI();
@@ -41,6 +46,37 @@ public class FPiece extends Piece {
             }
         }
         return piece;
+    }
+
+    /**
+     * methods that returns a list of arrays that contains possible permutations
+     * @return list of arrays that contains possible permutations
+     */
+
+    @Override
+    public List<int[][]> getPermutations() {
+        if(FPiece.permutations==null){
+            FPiece.permutations=new ArrayList<>();
+            int count=0;
+
+            for (int i = 0; i < nbRotation; i++) {
+                FPiece.permutations.add(getShape());
+                rotateRight();
+                count++;
+            }
+            if(count<totalConfig){
+                rotateUpsideDown();
+                for (int i = 0; i < nbRotation; i++) {
+                    FPiece.permutations.add(getShape());
+                    rotateRight();
+                    count++;
+                }
+                rotateUpsideDown();
+            }
+            assert(count==totalConfig);
+
+        }
+        return FPiece.permutations;
     }
 
     @Override

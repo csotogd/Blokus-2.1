@@ -33,13 +33,17 @@ public class PieceFactory {
         prototype.add(new Z4Piece());
         prototype.add(new Z5Piece());
 
+        for (Piece piece : prototype){
+            piece.calculateNumberOfBlocks();
+        }
+
     }
     public static PieceFactory get(){
         if(singleton==null) singleton=new PieceFactory();
         return singleton;
     }
 
-    public List<Piece> getAllPieces(){
+    public ArrayList<Piece> getAllPieces(){
         ArrayList<Piece> result = new ArrayList<>();
         for(Piece p : prototype) result.add(p.getPiece());
 
