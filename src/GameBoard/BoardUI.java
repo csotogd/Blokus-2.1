@@ -65,10 +65,6 @@ public class BoardUI{
                 tile.setStroke(Color.BLACK);
 
                 gameBoard.add(new StackPane(tile), j, i);
-
-                int finalI = i;
-                int finalJ = j;
-                tile.setOnMouseClicked(event -> drawCase(tile,finalI, finalJ));
             }
         }
         center.getChildren().add(gameBoard);
@@ -112,8 +108,13 @@ public class BoardUI{
         text1.setFont(Font.font("Verdana", 30));
         text1.setFill(actualPlayer.getColor());
         StackPane layout = new StackPane();
-        Node player4 = pieceOfPlayer(3);
-        layout.getChildren().addAll(principal,text,text1,player4);
+        if(players.length!=2){
+            Node player4 = pieceOfPlayer(3);
+            layout.getChildren().addAll(principal,text,text1,player4);
+        }else {
+            layout.getChildren().addAll(principal,text,text1);
+        }
+
 
 
         return layout;
@@ -147,8 +148,14 @@ public class BoardUI{
         Button enter = new Button("ENTER");
         enter.setTranslateY(80);
         StackPane layout = new StackPane();
-        Node player2 = pieceOfPlayer(1);
-        layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,choiceBox,enter,player2);
+        if(players.length!=2){
+            Node player2 = pieceOfPlayer(1);
+            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,choiceBox,enter,player2);
+        }else {
+            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,choiceBox,enter);
+        }
+
+
 
         return layout;
     }
