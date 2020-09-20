@@ -10,7 +10,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -66,6 +65,10 @@ public class BoardUI{
                 tile.setStroke(Color.BLACK);
 
                 gameBoard.add(new StackPane(tile), j, i);
+
+                int finalI = i;
+                int finalJ = j;
+                tile.setOnMouseClicked(event -> drawCase(tile,finalI, finalJ));
             }
         }
         center.getChildren().add(gameBoard);
@@ -128,7 +131,7 @@ public class BoardUI{
         rightRotate.setTranslateX(70); rightRotate.setTranslateY(-20);
         Button leftRotate = new Button("Left rotation");
         leftRotate.setTranslateX(-80); leftRotate.setTranslateY(-20);
-        Text text = new Text("Choose piece number:");
+        Text text = new Text("Rotate piece number:");
         text.setTranslateX(-50);text.setTranslateY(-70);
         text.setFont(Font.font("Verdana", 20));
         text.setFill(Color.WHITE);
@@ -191,6 +194,7 @@ public class BoardUI{
                     tile.setFill(Color.TRANSPARENT);
                     piece.add(new StackPane(tile),i,j);
                 }
+
             }
         }
         piece.setOnMouseDragged(event -> {piece.setScaleX(2);piece.setScaleY(2);piece.setManaged(false);

@@ -29,7 +29,7 @@ public class Game extends Application {
     private Player currentTurn;
     private GameStatus status;
     private ArrayList<Move> movesPlayed= new ArrayList<>();
-    private int numberOfPlayers = 4;
+    private int numberOfPlayers = 2;
     private ArrayList<Move> movesLog=new ArrayList<>();
 
     @Override
