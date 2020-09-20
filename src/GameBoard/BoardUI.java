@@ -4,6 +4,7 @@ import DataBase.Piece;
 import Player.Player;
 import Tools.Vector2d;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 
 import javafx.scene.control.Button;
@@ -64,10 +65,6 @@ public class BoardUI{
                 tile.setStroke(Color.BLACK);
 
                 gameBoard.add(new StackPane(tile), j, i);
-
-                int finalI = i;
-                int finalJ = j;
-                tile.setOnMouseClicked(event -> drawCase(tile,finalI, finalJ));
             }
         }
         center.getChildren().add(gameBoard);
@@ -75,16 +72,16 @@ public class BoardUI{
         top.getChildren().add(pieceOfPlayer(0));
         principal.setTop(top);
         if(players.length==2){
-            right.getChildren().addAll(rotationButtons());
+            right.getChildren().add(rotationButtons());
             principal.setRight(right);
-            bottom.getChildren().addAll(pieceOfPlayer(1));
+            bottom.getChildren().add(pieceOfPlayer(1));
             principal.setBottom(bottom);
-            left.getChildren().addAll(playersTurn());
+            left.getChildren().add(playersTurn());
             principal.setLeft(left);
         }else{
-            right.getChildren().addAll(pieceOfPlayer(1),rotationButtons());
+            right.getChildren().add(rotationButtons());
             principal.setRight(right);
-            left.getChildren().addAll(pieceOfPlayer(3),playersTurn());
+            left.getChildren().add(playersTurn());
             principal.setLeft(left);
             bottom.getChildren().add(pieceOfPlayer(2));
             principal.setBottom(bottom);
@@ -111,7 +108,8 @@ public class BoardUI{
         text1.setFont(Font.font("Verdana", 30));
         text1.setFill(actualPlayer.getColor());
         StackPane layout = new StackPane();
-        layout.getChildren().addAll(principal,text,text1);
+        Node player4 = pieceOfPlayer(3);
+        layout.getChildren().addAll(principal,text,text1,player4);
 
 
         return layout;
@@ -145,7 +143,8 @@ public class BoardUI{
         Button enter = new Button("ENTER");
         enter.setTranslateY(80);
         StackPane layout = new StackPane();
-        layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,choiceBox,enter);
+        Node player2 = pieceOfPlayer(1);
+        layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,choiceBox,enter,player2);
 
         return layout;
     }
@@ -191,18 +190,17 @@ public class BoardUI{
                     tile.setFill(Color.TRANSPARENT);
                     piece.add(new StackPane(tile),i,j);
                 }
-
             }
         }
+        piece.setOnMouseDragged(event -> {piece.setScaleX(2);piece.setScaleY(2);piece.setManaged(false);
+            piece.setTranslateX(event.getX() + piece.getTranslateX());
+            piece.setTranslateY(event.getY() + piece.getTranslateY());
+            event.consume();});
         return piece;
     }
 
-    public void drawCase(Rectangle tile,int col, int row) {
-        if(board.caseUsed(col,row)){
-            tile.setStroke(Color.RED);
-        }else{
-            tile.setStroke(Color.GREEN);
-        }
+    public void dragPiece(Parent piece) {
+
 
     }
 
