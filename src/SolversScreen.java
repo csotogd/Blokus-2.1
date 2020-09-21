@@ -43,7 +43,7 @@ public class SolversScreen extends Application {
         addContent();
         scene.setFill(Color.BLACK);
         scene.getStylesheets().addAll(this.getClass().getResource("style.css").toExternalForm());
-        primaryStage.setTitle("Blockus Solvers Screen");
+        primaryStage.setTitle("Blokus Solvers Screen");
         primaryStage.setScene(scene);
         primaryStage.show();
         stage = primaryStage;
@@ -59,7 +59,7 @@ public class SolversScreen extends Application {
     }
 
     private void addTitle() {
-        MenuTitle title = new MenuTitle("BLOCKUS:Solvers");
+        MenuTitle title = new MenuTitle("BLOKUS:Solvers");
         title.setTranslateX(WIDTH / 2 - title.getTitleWidth() / 2);
         title.setTranslateY(HEIGHT / 3);
         root.getChildren().add(title);

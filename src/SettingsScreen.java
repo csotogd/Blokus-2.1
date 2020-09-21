@@ -43,7 +43,7 @@ public class SettingsScreen extends Application {
         addContent();
         scene.setFill(Color.BLACK);
         //TODO fix issues with the settings
-        primaryStage.setTitle("Blockus Settings Screen");
+        primaryStage.setTitle("Blokus Settings Screen");
         primaryStage.setScene(scene);
         primaryStage.show();
         stage = primaryStage;
@@ -51,17 +51,17 @@ public class SettingsScreen extends Application {
 
     private void addContent() {
         addTitle();
-        double lineX = WIDTH / 2 - 100;
-        double lineY = HEIGHT / 3 + 50;
+        double lineX = WIDTH / 2. - 100;
+        double lineY = HEIGHT / 3. + 50;
         addMenu(lineX + 5, lineY + 5);
 
         startAnimation();
     }
 
     private void addTitle() {
-        MenuTitle title = new MenuTitle("BLOCKUS:Settings");
-        title.setTranslateX(WIDTH / 2 - title.getTitleWidth() / 2);
-        title.setTranslateY(HEIGHT / 3);
+        MenuTitle title = new MenuTitle("BLOKUS:Settings");
+        title.setTranslateX(WIDTH / 2. - title.getTitleWidth() / 2);
+        title.setTranslateY(HEIGHT / 3.);
         root.getChildren().add(title);
     }
 
