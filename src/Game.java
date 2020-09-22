@@ -34,7 +34,7 @@ public class Game extends Application {
     @Override
     public void start(Stage stage){
         initializeNewGame(numberOfPlayers,new Vector2d(50,50));
-        BoardUI gameBoard = new BoardUI(numberOfPlayers,players);
+        BoardUI gameBoard = new BoardUI(players);
         Parent root = gameBoard.gameBoard;
         stage.setTitle("Blokus Game Group 15");
         Scene scene = new Scene(root, 1000, 1000);

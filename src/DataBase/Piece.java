@@ -24,6 +24,7 @@ public abstract class Piece {
         this.nbRotation = rotation;
         this.totalConfig=totalConfig;
         this.label=label;
+        this.used = false;
     }
 
     /**

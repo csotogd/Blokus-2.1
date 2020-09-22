@@ -29,11 +29,13 @@ public class BoardUI{
     private final int CELL_SIZE = 25;
     private Player actualPlayer;
 
-    public BoardUI(int nbrPlayer,Player[] players){
-        this.actualPlayer = players[0];
-        this.board = new Board();
-        this.players = players;
+    FlowPane allPieces;
 
+    public BoardUI(Player[] players){
+        this.actualPlayer = players[0];
+        this.players = players;
+        //TODO fix issue with allPieces variables
+        this.board = new Board(players,allPieces);
         this.background = createBackGround();
         this.gameBoard = createBoard();
 
@@ -56,8 +58,6 @@ public class BoardUI{
 
         principal.setBackground(background);
 
-        center.getChildren().add(board);
-        principal.setCenter(center);
         top.getChildren().add(pieceOfPlayer(0));
         principal.setTop(top);
         if(players.length==2){
@@ -75,6 +75,9 @@ public class BoardUI{
             bottom.getChildren().add(pieceOfPlayer(2));
             principal.setBottom(bottom);
         }
+
+        center.getChildren().add(board);
+        principal.setCenter(center);
 
 
 
@@ -162,16 +165,18 @@ public class BoardUI{
     }
 
     public FlowPane pieceOfPlayer(int playerNbr){
-        FlowPane allPieces = new FlowPane();
+        allPieces = new FlowPane();
         Text text = new Text("Player " + players[playerNbr].getNumber() + " pieces left:  ");
         text.setFont(Font.font("Verdana", 20));
         text.setFill(Color.WHITE);
         allPieces.getChildren().add(text);
         int pieceCounter = 0;
         for (Piece pieceLeft:players[playerNbr].getPiecesList()) {
-            allPieces.getChildren().add(new Text(Integer.toString(++pieceCounter)));
-            allPieces.getChildren().add(drawPiece(pieceLeft.getShape(),players[playerNbr].getColor(),pieceLeft));
-            allPieces.getChildren().add(new Text(" "));
+            if(!pieceLeft.isUsed()){
+                allPieces.getChildren().add(new Text(Integer.toString(++pieceCounter)));
+                allPieces.getChildren().add(drawPiece(pieceLeft.getShape(),players[playerNbr].getColor(),pieceLeft));
+                allPieces.getChildren().add(new Text(" "));
+            }
         }
         return allPieces;
     }
@@ -216,6 +221,7 @@ public class BoardUI{
                 Vector2d gameBoardPos = new Vector2d((int)gameBoard.getTranslateX(),(int)gameBoard.getTranslateY());
                 Move move = new Move(actualPlayer,pieceRoot,new Vector2d(0,0));
                 move.makeMove(board);
+                allPieces.getChildren().remove(piece);
                 piece.setManaged(false);
                 event.consume();
             }
@@ -223,5 +229,6 @@ public class BoardUI{
 
         return piece;
     }
+
 
 }

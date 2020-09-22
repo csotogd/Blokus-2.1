@@ -14,7 +14,7 @@ public class Move {
     private Piece piece;//needs to be rotated, mirror as the players wants
     private Vector2d position; //Position of the top-left corner of the piece. top-left corner of the board is 0,0
 
-
+    private Board board;
 
     public Move(Player player, Piece piece, Vector2d position)
     {
@@ -29,10 +29,9 @@ public class Move {
     //TODO test this method
     /**
      * Has not been tested yet
-     * @param board board in which we place want to place the piece
      * @return whether it is possible to place that piece
      */
-    public boolean isAllowed(Board board){
+    public boolean isAllowed(){
         return true;
         /*
          *  For a move to be allowed, the following 5 conditions have to be TRUE
@@ -50,8 +49,7 @@ public class Move {
     }
 
 
-    private boolean inBounds(Board board){
-
+    private boolean inBounds(){
 
     if(this.position.get_x()<0||this.position.get_y()<0||
             this.position.get_x()>=board.getDIMENSION().get_x()||this.position.get_y()>=board.getDIMENSION().get_y()) return false;
@@ -66,10 +64,9 @@ public class Move {
      * checks if every piece block can be place in an empty square of the board
      * throws a not caught exception if piece is out of bounds.
      * to be executed together with inBOunds (if this method is after InBounds() in a conditional it will never be executed if is not in bounds)
-     * @param board
      * @return
      */
-    private boolean emptySpace(Board board){
+    private boolean emptySpace(){
 
     //every block occupies an empty space?
     for(int i=0; i<piece.getShape().length; i++){
@@ -161,12 +158,11 @@ public class Move {
 
     /**
      *
-     * @param board
      * @return true if there is any direct contact with ANY of the blocks. * (none-limiting blocks including)
      * since it will be used with methods noDirectContact() and emptySpace(), * should not be a problem.
      *
      */
-    private boolean cornerContact(Board board){
+    private boolean cornerContact(){
         /**
          * it gets all corners from the piece with coordinates on the board,
          * it then checks for expected position on the board if it's occupied by a block of the player
@@ -223,10 +219,9 @@ public class Move {
      * this method checks if two positions on the board is effectively touching corners to corners
      * @param p1 first position
      * @param p2 second position
-     * @param board the game board
      * @return
      */
-    private boolean isCorner(Vector2d p1, Vector2d p2, Board board) {
+    private boolean isCorner(Vector2d p1, Vector2d p2) {
         int count=0;
         for (int i = Math.min(p1.get_y(),p2.get_y()); i < 2; i++) {
             for (int j = Math.min(p1.get_x(), p2.get_x()); j < 2; j++) {
@@ -242,15 +237,15 @@ public class Move {
      * If the move is not possible it will aim to do it anyway.
      * To be used after isALlowed
      */
-public void writePieceIntoBoard(Board board) {
+public void writePieceIntoBoard() {
     for (int i=0; i<piece.getShape().length; i++){
         for(int j=0; j<piece.getShape()[0].length; j++){
-            if ( board.board[position.get_x()+ i][ position.get_y()+ j] !=0)
-            board.board[position.get_x()+ i][ position.get_y()+ j] =player.getPlayerNumber();
-            board.paint1();
+            if ( board.board[position.get_x()+ i][ position.get_y()+ j] ==0){
+                board.board[position.get_x()+ i][ position.get_y()+ j]=player.getPlayerNumber();
+                System.out.println(player.getPlayerNumber());
+            }
         }
     }
-
 }
 
     /**
@@ -261,11 +256,14 @@ public void writePieceIntoBoard(Board board) {
      * @return true if it was possible, false if the move was not executed
      */
     public boolean makeMove(Board board){
-        if(this.isAllowed(board)) {
+        this.board = board;
+        if(this.isAllowed()) {
             //add piece to the board
-            this.writePieceIntoBoard(board);
+            this.writePieceIntoBoard();
             piece.setUsed(true);
             player.getMoveLog().push(this);
+            this.board.paint();
+            this.board.updatePieces();
 
             System.out.println("Move allowed");
             return true;
