@@ -1,15 +1,17 @@
 package GameBoard;
 
 import DataBase.Piece;
+import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
-import javafx.geometry.Pos;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -20,7 +22,7 @@ import javafx.scene.text.Text;
 public class BoardUI{
     private final int BOARD_SIZE = 20;
     public Board board;
-    public Parent gameBoardRep;
+    public Parent gameBoard;
     public Player[] players;
     private Background background;
     private final Vector2d RECTANGLE_SIZE = new Vector2d(100,280);
@@ -29,11 +31,11 @@ public class BoardUI{
 
     public BoardUI(int nbrPlayer,Player[] players){
         this.actualPlayer = players[0];
-        this.board = new Board(nbrPlayer);
+        this.board = new Board();
         this.players = players;
 
         this.background = createBackGround();
-        this.gameBoardRep=createBoard();
+        this.gameBoard = createBoard();
 
     }
 
@@ -54,20 +56,7 @@ public class BoardUI{
 
         principal.setBackground(background);
 
-        GridPane gameBoard = new GridPane();
-
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
-
-                Rectangle tile = new Rectangle(CELL_SIZE, CELL_SIZE);
-                tile.setFill(paintColor(i,j));
-                tile.setStrokeWidth(2.0);
-                tile.setStroke(Color.BLACK);
-
-                gameBoard.add(new StackPane(tile), j, i);
-            }
-        }
-        center.getChildren().add(gameBoard);
+        center.getChildren().add(board);
         principal.setCenter(center);
         top.getChildren().add(pieceOfPlayer(0));
         principal.setTop(top);
@@ -181,13 +170,13 @@ public class BoardUI{
         int pieceCounter = 0;
         for (Piece pieceLeft:players[playerNbr].getPiecesList()) {
             allPieces.getChildren().add(new Text(Integer.toString(++pieceCounter)));
-            allPieces.getChildren().add(drawPiece(pieceLeft.getShape(),players[playerNbr].getColor()));
+            allPieces.getChildren().add(drawPiece(pieceLeft.getShape(),players[playerNbr].getColor(),pieceLeft));
             allPieces.getChildren().add(new Text(" "));
         }
         return allPieces;
     }
 
-    public Parent drawPiece(int [][] pieceTable, Color playerColor){
+    public Parent drawPiece(int [][] pieceTable, Color playerColor,Piece pieceRoot){
         GridPane piece = new GridPane();
         for (int i = 0; i < pieceTable.length; i++) {
             for (int j = 0; j < pieceTable[i].length; j++) {
@@ -204,25 +193,35 @@ public class BoardUI{
 
             }
         }
-        piece.setOnMouseDragged(event -> {piece.setScaleX(2);piece.setScaleY(2);piece.setManaged(false);
-            piece.setTranslateX(event.getX() + piece.getTranslateX());
-            piece.setTranslateY(event.getY() + piece.getTranslateY());
-            event.consume();});
+
+        piece.setOnMousePressed(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                piece.setScaleX(2);piece.setScaleY(2);piece.setManaged(false);
+                event.consume();
+            }
+        });
+
+        piece.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                piece.setScaleX(2);piece.setScaleY(2);piece.setManaged(false);
+                piece.setTranslateX(event.getX() + piece.getTranslateX());
+                piece.setTranslateY(event.getY() + piece.getTranslateY());
+                event.consume();
+            }
+        });
+
+        piece.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                Vector2d MousePos = new Vector2d((int)event.getX(),(int)event.getY());
+                Vector2d gameBoardPos = new Vector2d((int)gameBoard.getTranslateX(),(int)gameBoard.getTranslateY());
+                Move move = new Move(actualPlayer,pieceRoot,new Vector2d(0,0));
+                move.makeMove(board);
+                piece.setManaged(false);
+                event.consume();
+            }
+        });
+
         return piece;
     }
 
-    public  Color paintColor(int col, int row){
-        if(board.board[col][row]==0){
-            return Color.WHITE;
-        }else if(board.board[col][row]==1){
-            return Color.YELLOW;
-        }else if(board.board[col][row]==2){
-            return Color.RED;
-        }else if(board.board[col][row]==3){
-            return Color.BLUE;
-        }else if(board.board[col][row]==4){
-            return Color.GREEN;
-        }
-        return null;
-    }
 }

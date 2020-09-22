@@ -7,6 +7,7 @@ import Tools.Vector2d;
 import GameBoard.Board;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Move {
     private Player player;
@@ -32,6 +33,7 @@ public class Move {
      * @return whether it is possible to place that piece
      */
     public boolean isAllowed(Board board){
+        return true;
         /*
          *  For a move to be allowed, the following 5 conditions have to be TRUE
          *
@@ -43,8 +45,8 @@ public class Move {
          */
 
 
-        return (!piece.isUsed()) && inBounds(board) &&
-                emptySpace(board) && cornerContact(board) && noDirectContact(board) ;
+        //return (!piece.isUsed()) && inBounds(board) &&
+          //      emptySpace(board) && cornerContact(board) && noDirectContact(board) ;
     }
 
 
@@ -245,6 +247,7 @@ public void writePieceIntoBoard(Board board) {
         for(int j=0; j<piece.getShape()[0].length; j++){
             if ( board.board[position.get_x()+ i][ position.get_y()+ j] !=0)
             board.board[position.get_x()+ i][ position.get_y()+ j] =player.getPlayerNumber();
+            board.paint1();
         }
     }
 
@@ -264,6 +267,7 @@ public void writePieceIntoBoard(Board board) {
             piece.setUsed(true);
             player.getMoveLog().push(this);
 
+            System.out.println("Move allowed");
             return true;
         }
         else
