@@ -11,7 +11,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import DataBase.*;
-import com.sun.glass.ui.Screen;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Rectangle;
 import GameBoard.BoardUI;

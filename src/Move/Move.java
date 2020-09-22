@@ -1,8 +1,9 @@
 package Move;
 
 import DataBase.Piece;
+import DataBase.PieceFactory;
 import GameBoard.Corner;
-import Player.Player;
+import Player.*;
 import Tools.Vector2d;
 import GameBoard.Board;
 
@@ -42,7 +43,7 @@ public class Move {
          * 5. piece was not used
          */
 
-
+        //TODO: add a method or just a variable to see if it's the first piece instead of verifying it in noDirectContact AND cornerContact
         return (!piece.isUsed()) && inBounds(board) &&
                 emptySpace(board) && cornerContact(board) && noDirectContact(board) ;
     }
@@ -89,11 +90,12 @@ public class Move {
      * @return true if no direct contact exists
      */
     private boolean noDirectContact(Board board){
- /*   boolean corner = false;
+        //TODO: this bit here can go in a method
+    boolean corner = false;
     for(int x=0;x<piece.getShape()[0].length;x++)
         for (int y = 0; y < piece.getShape().length; y++)
-            if(position.get_x()+x==player.getCorner().get_x()&&
-            position.get_y()+y==player.getCorner().get_y()&&
+            if(position.get_x()+x==player.getStartingCorner().get_x()&&
+            position.get_y()+y==player.getStartingCorner().get_y()&&
             piece.getShape()[y][x]!=0) corner=true;
     if(corner)
         return true; //!! it doesn't check if there is already a piece that occupies this position because
@@ -109,11 +111,11 @@ public class Move {
             }
         }
     }
-    return true;*/
+    return true;
 
     //NONE of the blocks is in contact with another piece of the same player in a none- CORNER context?
 
-    for(int i=0; i<piece.getShape().length; i++){
+  /*  for(int i=0; i<piece.getShape().length; i++){
         for(int j=0; j<piece.getShape()[0].length; j++){
             if(piece.getShape()[i][j]==0)
                 ;//that´s not a block
@@ -153,7 +155,7 @@ public class Move {
 
         }
     }
-    return true;
+    return true;        */
 
 }
 
@@ -170,15 +172,25 @@ public class Move {
          * it then checks for expected position on the board if it's occupied by a block of the player
          * finally calls isCorner that checks if there is only one block on the board
          */
-    /*    for(Corner pieceCorner: piece.getCornersContacts(position)){
+        //TODO: this bit here as well
+        boolean corner = false;
+        for(int x=0;x<piece.getShape()[0].length;x++)
+            for (int y = 0; y < piece.getShape().length; y++)
+                if(position.get_x()+x==player.getStartingCorner().get_x()&&
+                        position.get_y()+y==player.getStartingCorner().get_y()&&
+                        piece.getShape()[y][x]!=0) corner=true;
+        if(corner)
+            return true;
+
+        for(Corner pieceCorner: piece.getCornersContacts(position)){
             for(Vector2d board_cor:pieceCorner.getToCornerPositions()) {
                 if (board.inBoard(board_cor) &&
                         board.board[board_cor.get_y()][board_cor.get_x()] == player.getPlayerNumber() &&
                         isCorner(pieceCorner.getPosition(), board_cor, board)) return true;
             }
         }
-        return false;*/
-    for(int i=0; i<piece.getShape().length; i++){
+        return false;
+ /*   for(int i=0; i<piece.getShape().length; i++){
         for(int j=0; j<piece.getShape()[0].length; j++){
             if(piece.getShape()[i][j]==0)
                 ;//that´s not a block
@@ -214,7 +226,7 @@ public class Move {
 
         }
     }
-    return false;
+    return false;       */
 }
 
     /**
@@ -281,5 +293,18 @@ public void writePieceIntoBoard(Board board) {
 
     public Vector2d getPosition() {
         return position;
+    }
+
+    public static void main(String[] args){
+        Board board= new Board(2);
+        HumanPlayer player1 = new HumanPlayer(1);
+        HumanPlayer player2=new HumanPlayer(2);
+        player1.setStartingCorner(new Vector2d(0,0));
+        player2.setStartingCorner(new Vector2d(board.getDIMENSION().get_x()-1,board.getDIMENSION().get_y()-1));
+        player1.setPiecesList(PieceFactory.get().getAllPieces());
+        System.out.println(player1.getPiecesList().get(1));
+        Move move = new Move(player1,player1.getPiecesList().get(1),new Vector2d(0,0));
+        System.out.println(move.isAllowed(board));
+
     }
 }
