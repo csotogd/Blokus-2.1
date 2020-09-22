@@ -25,7 +25,6 @@ import java.util.LinkedList;
 public class Game extends Application {
 
     private Player[] players;
-    private Board board;
     private Player currentTurn;
     private GameStatus status;
     private ArrayList<Move> movesPlayed= new ArrayList<>();
@@ -36,7 +35,7 @@ public class Game extends Application {
     public void start(Stage stage){
         initializeNewGame(numberOfPlayers,new Vector2d(50,50));
         BoardUI gameBoard = new BoardUI(numberOfPlayers,players);
-        Parent root = gameBoard.gameBoardRep;
+        Parent root = gameBoard.gameBoard;
         stage.setTitle("Blokus Game Group 15");
         Scene scene = new Scene(root, 1000, 1000);
         stage.setScene(scene);
@@ -54,7 +53,6 @@ public class Game extends Application {
 //NO BOT OPTION
     public void initializeNewGame(int numberOfPlayers, Vector2d boardDimensions){
 
-        this.board= new Board(numberOfPlayers);
         initializePlayers(numberOfPlayers);
 
         //Draw everything
@@ -97,7 +95,7 @@ public class Game extends Application {
         else
             currentTurn=players[0];
     }
-
+/*
     //writes the piece into the board and adds it to the log
     public boolean makeMove(Piece piece, Vector2d position){
         Move move = new Move(currentTurn, piece, position);
@@ -109,6 +107,8 @@ public class Game extends Application {
             return false;
 
         }
+
+ */
 
     //To be called after every move
     private void updateState(){
