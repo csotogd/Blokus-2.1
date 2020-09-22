@@ -4,8 +4,8 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.effect.BoxBlur;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -60,6 +60,7 @@ public class StartScreen extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         root.setId("start-screen-pane");
+        root.setBackground(createBackGround());
         Scene scene = new Scene(root, 800, 800);
         addContent();
         scene.setFill(Color.BLACK);
@@ -92,6 +93,17 @@ public class StartScreen extends Application {
         title.setTranslateX(WIDTH / 2 - title.getTitleWidth() / 2);
         title.setTranslateY(HEIGHT / 3);
         root.getChildren().add(title);
+    }
+
+    public Background createBackGround(){
+        Image image = new Image("https://images.hdqwalls.com/wallpapers/simple-gray-background-4k-br.jpg",800,800,false,true);
+
+        BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
+
+        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+
+        Background background = new Background(backgroundImage);
+        return background;
     }
 
     private void addMenu(double x, double y) {

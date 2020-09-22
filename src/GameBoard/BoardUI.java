@@ -10,7 +10,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -109,8 +108,13 @@ public class BoardUI{
         text1.setFont(Font.font("Verdana", 30));
         text1.setFill(actualPlayer.getColor());
         StackPane layout = new StackPane();
-        Node player4 = pieceOfPlayer(3);
-        layout.getChildren().addAll(principal,text,text1,player4);
+        if(players.length!=2){
+            Node player4 = pieceOfPlayer(3);
+            layout.getChildren().addAll(principal,text,text1,player4);
+        }else {
+            layout.getChildren().addAll(principal,text,text1);
+        }
+
 
 
         return layout;
@@ -128,7 +132,7 @@ public class BoardUI{
         rightRotate.setTranslateX(70); rightRotate.setTranslateY(-20);
         Button leftRotate = new Button("Left rotation");
         leftRotate.setTranslateX(-80); leftRotate.setTranslateY(-20);
-        Text text = new Text("Choose piece number:");
+        Text text = new Text("Rotate piece number:");
         text.setTranslateX(-50);text.setTranslateY(-70);
         text.setFont(Font.font("Verdana", 20));
         text.setFill(Color.WHITE);
@@ -144,8 +148,14 @@ public class BoardUI{
         Button enter = new Button("ENTER");
         enter.setTranslateY(80);
         StackPane layout = new StackPane();
-        Node player2 = pieceOfPlayer(1);
-        layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,choiceBox,enter,player2);
+        if(players.length!=2){
+            Node player2 = pieceOfPlayer(1);
+            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,choiceBox,enter,player2);
+        }else {
+            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,choiceBox,enter);
+        }
+
+
 
         return layout;
     }
@@ -191,6 +201,7 @@ public class BoardUI{
                     tile.setFill(Color.TRANSPARENT);
                     piece.add(new StackPane(tile),i,j);
                 }
+
             }
         }
         piece.setOnMouseDragged(event -> {piece.setScaleX(2);piece.setScaleY(2);piece.setManaged(false);
@@ -198,11 +209,6 @@ public class BoardUI{
             piece.setTranslateY(event.getY() + piece.getTranslateY());
             event.consume();});
         return piece;
-    }
-
-    public void dragPiece(Parent piece) {
-
-
     }
 
     public  Color paintColor(int col, int row){
