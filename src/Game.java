@@ -68,11 +68,21 @@ public class Game extends Application {
         for(int i=1; i<= numberOfPlayers; i++){
             players[i-1]=new HumanPlayer(i);
             players[i-1].setColor(colors[i-1]);
-            players[i-1].setName("Martin");
         }
         initializePlayerPieces(numberOfPlayers);
+        initPlayersStartCorner(numberOfPlayers);
     }
 
+
+    private void initPlayersStartCorner(int numberOfPlayers){
+        Vector2d boardDimension= board.getDIMENSION();
+        players[0].setStartingCorner(new Vector2d(0,0));
+        players[1].setStartingCorner(new Vector2d(boardDimension.get_x()-1, boardDimension.get_y()-1));
+        if(numberOfPlayers>2)
+            players[2].setStartingCorner(new Vector2d(boardDimension.get_x()-1, 0));
+        if(numberOfPlayers>3)
+            players[3].setStartingCorner(new Vector2d(0,boardDimension.get_y()-1));
+    }
 
     private void initializePlayerPieces(int numberOfPlayers){
 

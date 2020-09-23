@@ -51,4 +51,7 @@ public class Board {
         if(board[position.get_y()][position.get_x()]==player) return true;
         return false;
     }
+    public Vector2d getBoardDimension(){
+        return this.DIMENSION;
+    }
 }
