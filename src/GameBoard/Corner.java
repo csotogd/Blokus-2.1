@@ -1,9 +1,15 @@
 package GameBoard;
 
+import DataBase.Piece;
+import DataBase.PieceFactory;
+import Move.Move;
+import Player.HumanPlayer;
 import Tools.Vector2d;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class Corner {
     private Vector2d position; //coordinates on the board
@@ -168,5 +174,21 @@ public class Corner {
 
         }
     }
-    
+    public static void main(String[] args){
+        Board board = new Board(2);
+        HumanPlayer jesus = new HumanPlayer(1, "Jesus");
+        jesus.setPiecesList(PieceFactory.get().getAllPieces());
+        Piece fpiece=null;
+        for(Piece p: jesus.getPiecesList()){
+            if(p.getLabel().equals("F")) fpiece = p;
+        }
+
+        Move move = new Move(jesus,fpiece,new Vector2d(0,0));
+        System.out.println(fpiece);
+        for(Corner c: fpiece.getCornersContacts(move.getPosition())){
+            System.out.print(c.getPosition().get_x()+" "+c.getPosition().get_y()+" -- ");
+            for(Vector2d complement:c.getToCornerPositions()) System.out.print(complement.get_x()+" "+complement.get_y()+"/");
+            System.out.println();
+        }
+    }
 }

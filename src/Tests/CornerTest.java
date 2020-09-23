@@ -23,6 +23,7 @@ public class CornerTest {
         }
 
         Move move = new Move(jesus,fpiece,new Vector2d(0,0));
-        fpiece.getCornersContacts(move.getPosition());
+        assertEquals(fpiece.getCornersContacts(move.getPosition()).size(),4);
+
     }
 }

@@ -138,7 +138,6 @@ public abstract class Piece {
      */
     public ArrayList<Corner> getCornersContacts(Vector2d position){
         ArrayList<Corner> result = new ArrayList<>();
-        //Vector2d[] corners = new Vector2d[4]; //find the corners
         for (int y = 0; y < shape.length; y++) {
             for (int x = 0; x < shape[0].length; x++) {
                 if(shape[y][x]!=0){
