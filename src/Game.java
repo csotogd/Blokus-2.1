@@ -29,6 +29,7 @@ public class Game extends Application {
     private ArrayList<Move> movesPlayed= new ArrayList<>();
     private int numberOfPlayers = 4;
     private ArrayList<Move> movesLog=new ArrayList<>();
+    private final Vector2d DIMENSION = new Vector2d(20, 20);
 
     @Override
     public void start(Stage stage){
@@ -81,7 +82,7 @@ public class Game extends Application {
 
 
     private void initPlayersStartCorner(int numberOfPlayers){
-        Vector2d boardDimension= board.getDIMENSION();
+        Vector2d boardDimension= DIMENSION;
         players[0].setStartingCorner(new Vector2d(0,0));
         players[1].setStartingCorner(new Vector2d(boardDimension.get_x()-1, boardDimension.get_y()-1));
         if(numberOfPlayers>2)

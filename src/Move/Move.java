@@ -110,9 +110,9 @@ public class Move {
 
                 }
             }
-        }
+        } return true;
     }
-    return true;
+
 
         //NONE of the blocks is in contact with another piece of the same player in a none- CORNER context?
 
@@ -158,7 +158,7 @@ public class Move {
     }
     return true;        */
 
-    }
+
 
     /**
      *
@@ -260,13 +260,15 @@ public class Move {
      * To be used after isALlowed
      */
 public void writePieceIntoBoard(Board board) {
-    for (int i=0; i<piece.getShape().length; i++){
-        for(int j=0; j<piece.getShape()[0].length; j++){
-            if ( board.board[position.get_y()+ i][ position.get_x()+ j] ==0 &&
-            piece.getShape()[i][j]!=0) board.board[position.get_y()+ i][ position.get_x()+ j] = player.getPlayerNumber();
+    for (int i = 0; i < piece.getShape().length; i++) {
+        for (int j = 0; j < piece.getShape()[0].length; j++) {
+            if (board.board[position.get_y() + i][position.get_x() + j] == 0 &&
+                    piece.getShape()[i][j] != 0)
+                board.board[position.get_y() + i][position.get_x() + j] = player.getPlayerNumber();
         }
     }
 
+}
     /**
      * 1. check is piece is allowed
      * 2. writes it into the board
@@ -300,7 +302,7 @@ public void writePieceIntoBoard(Board board) {
     public Vector2d getPosition() {
         return position;
     }
-
+/*
     public static void main(String[] args){
         Board board= new Board(2);
         HumanPlayer player1 = new HumanPlayer(1);
@@ -338,4 +340,6 @@ public void writePieceIntoBoard(Board board) {
 
 
     }
+
+ */
 }
