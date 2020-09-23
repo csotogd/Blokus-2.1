@@ -57,7 +57,8 @@ public class BoardUI{
         center.setTranslateY(80);
 
         principal.setBackground(background);
-
+        center.getChildren().add(board);
+        principal.setCenter(center);
         top.getChildren().add(pieceOfPlayer(0));
         principal.setTop(top);
         if(players.length==2){
