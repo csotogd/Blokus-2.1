@@ -95,6 +95,7 @@ public abstract class Piece {
     }
 
     public abstract List<int[][]> getPermutations();
+
     public int getNumberOfBlocks(){
         return this.numberOfBlocks;
     }
@@ -152,13 +153,12 @@ public abstract class Piece {
     }
     public abstract Piece getPiece();
 
-    /**
+    /** //TODO: should we move this method to move class?
      * Methods that finds coordinates of the corners of the piece and the coordinates of the corner of the piece on the board
      * @return the positions of the hypothetical corners w.r.t. coordinates of the board !!
      */
     public ArrayList<Corner> getCornersContacts(Vector2d position){
         ArrayList<Corner> result = new ArrayList<>();
-        //Vector2d[] corners = new Vector2d[4]; //find the corners
         for (int y = 0; y < shape.length; y++) {
             for (int x = 0; x < shape[0].length; x++) {
                 if(shape[y][x]!=0){
@@ -201,30 +201,7 @@ public abstract class Piece {
                 }
             }
         }
-
-     /*   for (int y = 0; y < shape.length; y+=shape.length-1) {
-            for (int x = 0; x < shape[0].length; x++){
-                if(corners[0]==null){
-                    if(shape[y][x]!=0) corners[0]=new Vector2d(x,y);
-                }else if(corners[1]==null){
-                    if (shape[y][x]!=0 && x+1<shape[0].length && shape[y][x+1]==0) corners[1]=new Vector2d(x,y);
-                }else if(corners[2]==null){
-                    if(y==shape.length-1 && shape[y][x]!=0) corners[3] = new Vector2d(x,y);
-                }else if(corners[3]==null){
-                    if (shape[y][x]!=0 && x+1<shape[0].length && shape[y][x+1]==0) corners[3]=new Vector2d(x,y);
-                }
-            }
-        }
-
-        result.add(new Vector2d(corners[0].get_x()-1,corners[0].get_y()-1));
-        result.add(corners[0]);
-        result.add(new Vector2d(corners[1].get_x()+1,corners[1].get_y()-1));
-        result.add(corners[1]);
-        result.add(new Vector2d(corners[2].get_x()-1,corners[2].get_y()+1));
-        result.add(corners[2]);
-        result.add(new Vector2d(corners[3].get_x()+1,corners[3].get_y()+1));
-        result.add(corners[3]);
-      */  return result;
+        return result;
     }
 
     public String toString(){

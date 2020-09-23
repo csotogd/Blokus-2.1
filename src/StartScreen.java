@@ -64,7 +64,7 @@ public class StartScreen extends Application {
         Scene scene = new Scene(root, 800, 800);
         addContent();
         scene.setFill(Color.BLACK);
-        primaryStage.setTitle("Blockus Start Screen");
+        primaryStage.setTitle("Blokus Start Screen");
         primaryStage.setScene(scene);
         primaryStage.show();
         stage = primaryStage;
@@ -72,8 +72,8 @@ public class StartScreen extends Application {
 
     private void addContent() {
         addTitle();
-        double lineX = WIDTH / 2 - 100;
-        double lineY = HEIGHT / 3 + 50;
+        double lineX = WIDTH / 2. - 100;
+        double lineY = HEIGHT / 3. + 50;
         addMenu(lineX + 5, lineY + 5);
 
         startAnimation();
@@ -89,9 +89,9 @@ public class StartScreen extends Application {
     }
 
     private void addTitle() {
-        MenuTitle title = new MenuTitle("BLOCKUS");
-        title.setTranslateX(WIDTH / 2 - title.getTitleWidth() / 2);
-        title.setTranslateY(HEIGHT / 3);
+        MenuTitle title = new MenuTitle("BLOKUS");
+        title.setTranslateX(WIDTH / 2. - title.getTitleWidth() / 2);
+        title.setTranslateY(HEIGHT / 3.);
         root.getChildren().add(title);
     }
 

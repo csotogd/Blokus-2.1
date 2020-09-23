@@ -11,7 +11,6 @@ public class PieceFactory {
 
     private PieceFactory(){
         prototype =new ArrayList<>();
-        prototype.add(new FPiece());
         prototype.add(new I1Piece());
         prototype.add(new I2Piece());
         prototype.add(new I3Piece());
@@ -21,6 +20,7 @@ public class PieceFactory {
         prototype.add(new L5Piece());
         prototype.add(new NPiece());
         prototype.add(new O4Piece());
+        prototype.add(new FPiece());
         prototype.add(new PPiece());
         prototype.add(new T4Piece());
         prototype.add(new T5Piece());

@@ -11,7 +11,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import DataBase.*;
-import com.sun.glass.ui.Screen;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Rectangle;
 import GameBoard.BoardUI;
@@ -67,7 +66,6 @@ public class Game extends Application {
         for(int i=1; i<= numberOfPlayers; i++){
             players[i-1]=new HumanPlayer(i);
             players[i-1].setColor(colors[i-1]);
-            players[i-1].setName("Martin");
         }
         initializePlayerPieces(numberOfPlayers);
         players[0].setStartingCorner(new Vector2d(0,0));
@@ -81,6 +79,16 @@ public class Game extends Application {
 
     }
 
+
+    private void initPlayersStartCorner(int numberOfPlayers){
+        Vector2d boardDimension= board.getDIMENSION();
+        players[0].setStartingCorner(new Vector2d(0,0));
+        players[1].setStartingCorner(new Vector2d(boardDimension.get_x()-1, boardDimension.get_y()-1));
+        if(numberOfPlayers>2)
+            players[2].setStartingCorner(new Vector2d(boardDimension.get_x()-1, 0));
+        if(numberOfPlayers>3)
+            players[3].setStartingCorner(new Vector2d(0,boardDimension.get_y()-1));
+    }
 
     private void initializePlayerPieces(int numberOfPlayers){
 
