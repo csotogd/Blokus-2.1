@@ -220,8 +220,8 @@ public class BoardUI{
 
         piece.setOnMouseReleased(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                Vector2d MousePos = new Vector2d((int)event.getX(),(int)event.getY());
-                Vector2d gameBoardPos = new Vector2d((int)gameBoard.getTranslateX(),(int)gameBoard.getTranslateY());
+                double MousePosX = event.getX();double MousePosY=event.getY();
+                double gameBoardPosX = gameBoard.getTranslateX();double gameBoardPosY = gameBoard.getTranslateY();
                 Move move = new Move(actualPlayer,pieceRoot,new Vector2d(0,0));
                 if(move.makeMove(board)){
                     System.out.println("piece removed");
