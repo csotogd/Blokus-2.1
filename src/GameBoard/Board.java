@@ -19,14 +19,12 @@ public class Board extends Pane {
     private final int CELL_SIZE = 25;
     public int[][] board;
     private final Vector2d DIMENSION = new Vector2d(20, 20);
-    private GridPane gameBoardRep;
+    public GridPane gameBoardRep;
     Player[] players;
-    public Pane allPieces;
 
-    public Board(Player[] players,FlowPane allPieces) {
+    public Board(Player[] players) {
         this.board = new int[DIMENSION.get_x()][DIMENSION.get_y()];
         this.players = players;
-        this.allPieces = allPieces;
         createBoard();
     }
 

@@ -22,7 +22,6 @@ import java.util.Vector;
 
 //TEST
 public class BoardUI{
-    private final int BOARD_SIZE = 20;
     public Board board;
     public Parent gameBoard;
     public Player[] players;
@@ -30,15 +29,14 @@ public class BoardUI{
     private final Vector2d RECTANGLE_SIZE = new Vector2d(100,280);
     private final int CELL_SIZE = 25;
     private Player actualPlayer;
-
-    FlowPane allPieces;
+    private int playerCounter;
 
     public BoardUI(Player[] players){
-        this.actualPlayer = players[0];
         this.players = players;
-        //TODO fix issue with allPieces variables
-        this.board = new Board(players,allPieces);
+        this.playerCounter = 0;
+        this.actualPlayer = this.players[playerCounter++];
         this.background = createBackGround();
+        this.board = new Board(players);
         this.gameBoard = createBoard();
 
     }
@@ -79,10 +77,14 @@ public class BoardUI{
             bottom.getChildren().add(pieceOfPlayer(2));
             principal.setBottom(bottom);
         }
-
-
-
+        //setResizable(principal,false);setResizable(center,false);setResizable(bottom,false);setResizable(top,false);setResizable(right,false);setResizable(left,false);
         return principal;
+    }
+
+    public void setResizable(Pane pane,boolean resizable){
+        if(!resizable){
+            pane.setPrefSize(pane.getWidth(),pane.getHeight());
+        }
     }
 
     public Pane playersTurn(){
@@ -166,7 +168,7 @@ public class BoardUI{
     }
 
     public FlowPane pieceOfPlayer(int playerNbr){
-        allPieces = new FlowPane();
+        FlowPane allPieces = new FlowPane();
         Text text = new Text("Player " + players[playerNbr].getNumber() + " pieces left:  ");
         text.setFont(Font.font("Verdana", 20));
         text.setFill(Color.WHITE);
@@ -175,7 +177,7 @@ public class BoardUI{
         for (Piece pieceLeft:players[playerNbr].getPiecesList()) {
             if(!pieceLeft.isUsed()){
                 allPieces.getChildren().add(new Text(Integer.toString(++pieceCounter)));
-                Node piece = drawPiece(pieceLeft.getShape(), players[playerNbr].getColor(),pieceLeft);
+                Node piece = drawPiece(pieceLeft.getShape(), players[playerNbr].getColor(),pieceLeft,allPieces);
                 pieceLeft.setPosInBoardX(piece.getTranslateX());
                 pieceLeft.setPosInBoardY(piece.getTranslateX());
                 allPieces.getChildren().add(piece);
@@ -185,7 +187,7 @@ public class BoardUI{
         return allPieces;
     }
 
-    public Parent drawPiece(int [][] pieceTable, Color playerColor,Piece pieceRoot){
+    public Parent drawPiece(int [][] pieceTable, Color playerColor,Piece pieceRoot,Pane allPieces){
         GridPane piece = new GridPane();
         for (int i = 0; i < pieceTable.length; i++) {
             for (int j = 0; j < pieceTable[i].length; j++) {
@@ -220,12 +222,15 @@ public class BoardUI{
 
         piece.setOnMouseReleased(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                double MousePosX = event.getX();double MousePosY=event.getY();
-                double gameBoardPosX = gameBoard.getTranslateX();double gameBoardPosY = gameBoard.getTranslateY();
-                Move move = new Move(actualPlayer,pieceRoot,new Vector2d(0,0));
+                double MousePosX = event.getScreenX();double MousePosY=event.getScreenY();
+                double gameBoardPosX = 500;double gameBoardPosY = 150;
+
+                Vector2d position = new Vector2d((int)((MousePosX-gameBoardPosX)/25),(int)((MousePosY-gameBoardPosY)/25));
+                Move move = new Move(actualPlayer,pieceRoot,position);
                 if(move.makeMove(board)){
                     System.out.println("piece removed");
                     allPieces.getChildren().remove(piece);
+                    actualPlayer = players[playerCounter++];
                 }else{
                     piece.setScaleX(1);piece.setScaleY(1);
                     piece.setTranslateX(pieceRoot.getPosInBoardX());
