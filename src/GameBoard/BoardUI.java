@@ -5,6 +5,8 @@ import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
@@ -30,6 +32,7 @@ public class BoardUI{
     private final int CELL_SIZE = 25;
     private Player actualPlayer;
     private int playerCounter;
+    Pane center;
 
     public BoardUI(Player[] players){
         this.players = players;
@@ -52,7 +55,7 @@ public class BoardUI{
         StackPane bottom = new StackPane();
         bottom.setTranslateX(280);
         bottom.setTranslateY(-30);
-        StackPane center = new StackPane();
+        center = new StackPane();
         center.setTranslateX(100);
         center.setTranslateY(80);
 
@@ -223,9 +226,13 @@ public class BoardUI{
         piece.setOnMouseReleased(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 double MousePosX = event.getScreenX();double MousePosY=event.getScreenY();
-                double gameBoardPosX = 500;double gameBoardPosY = 150;
 
-                Vector2d position = new Vector2d((int)((MousePosX-gameBoardPosX)/25),(int)((MousePosY-gameBoardPosY)/25));
+                Bounds bounds = board.gameBoardRep.getLayoutBounds();
+                Point2D coordinates = board.gameBoardRep.localToScene(bounds.getMinX(), bounds.getMinY());
+
+                System.out.println(coordinates.getX()+ " "+coordinates.getY());
+                Vector2d position = new Vector2d((int)((MousePosX-coordinates.getX())/25),(int)((MousePosY-coordinates.getY())/25));
+                System.out.println(position.get_x() + "  " + position.get_y());
                 Move move = new Move(actualPlayer,pieceRoot,position);
                 if(move.makeMove(board)){
                     System.out.println("piece removed");
