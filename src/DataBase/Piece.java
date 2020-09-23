@@ -132,7 +132,7 @@ public abstract class Piece {
     }
     public abstract Piece getPiece();
 
-    /**
+    /** //TODO: should we move this method to move class?
      * Methods that finds coordinates of the corners of the piece and the coordinates of the corner of the piece on the board
      * @return the positions of the hypothetical corners w.r.t. coordinates of the board !!
      */
