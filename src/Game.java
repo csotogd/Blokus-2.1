@@ -70,6 +70,15 @@ public class Game extends Application {
             players[i-1].setName("Martin");
         }
         initializePlayerPieces(numberOfPlayers);
+        players[0].setStartingCorner(new Vector2d(0,0));
+        if(players.length==4){
+            players[1].setStartingCorner(new Vector2d(0,19));
+            players[2].setStartingCorner(new Vector2d(19,19));
+            players[3].setStartingCorner(new Vector2d(19,0));
+        }else{
+            players[1].setStartingCorner(new Vector2d(19,19));
+        }
+
     }
 
 

@@ -77,9 +77,6 @@ public class BoardUI{
             principal.setBottom(bottom);
         }
 
-        center.getChildren().add(board);
-        principal.setCenter(center);
-
 
 
         return principal;

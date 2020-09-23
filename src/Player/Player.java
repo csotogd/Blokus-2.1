@@ -23,6 +23,8 @@ public abstract class Player {
 
     //TODO: implement logic of finding the appropriate corner, and find the location in the code to do it
 
+
+
     public int getPlayerNumber(){
         return this.number;
     }
@@ -75,10 +77,13 @@ public abstract class Player {
         this.points = points;
     }
 
-    public Vector2d getStartingCorner() { return startingCorner; }
+    public void setStartingCorner(Vector2d startingCorner) { this.startingCorner = startingCorner; }
+
+    public Vector2d getStartingCorner() {
+        if(startingCorner==null) System.out.println("Please set the starting corner at the appropriate corner !!");
+        return startingCorner; }
 
     public void setName(String name) {
         this.name = name;
     }
 }
-

@@ -76,6 +76,9 @@ public class Board extends Pane {
     }
 
     public void updatePieces(){
+        if(allPieces==null){
+            allPieces = new FlowPane();
+        }
         allPieces.getChildren().clear();
 
         for (Player player:players) {
