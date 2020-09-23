@@ -18,6 +18,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+import java.util.Vector;
+
 //TEST
 public class BoardUI{
     private final int BOARD_SIZE = 20;
@@ -59,6 +61,7 @@ public class BoardUI{
         principal.setBackground(background);
         center.getChildren().add(board);
         principal.setCenter(center);
+
         top.getChildren().add(pieceOfPlayer(0));
         principal.setTop(top);
         if(players.length==2){
@@ -172,7 +175,10 @@ public class BoardUI{
         for (Piece pieceLeft:players[playerNbr].getPiecesList()) {
             if(!pieceLeft.isUsed()){
                 allPieces.getChildren().add(new Text(Integer.toString(++pieceCounter)));
-                allPieces.getChildren().add(drawPiece(pieceLeft.getShape(),players[playerNbr].getColor(),pieceLeft));
+                Node piece = drawPiece(pieceLeft.getShape(), players[playerNbr].getColor(),pieceLeft);
+                pieceLeft.setPosInBoardX(piece.getTranslateX());
+                pieceLeft.setPosInBoardY(piece.getTranslateX());
+                allPieces.getChildren().add(piece);
                 allPieces.getChildren().add(new Text(" "));
             }
         }
@@ -199,14 +205,13 @@ public class BoardUI{
 
         piece.setOnMousePressed(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                piece.setScaleX(2);piece.setScaleY(2);piece.setManaged(false);
+                piece.setScaleX(2);piece.setScaleY(2);
                 event.consume();
             }
         });
 
         piece.setOnMouseDragged(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                piece.setScaleX(2);piece.setScaleY(2);piece.setManaged(false);
                 piece.setTranslateX(event.getX() + piece.getTranslateX());
                 piece.setTranslateY(event.getY() + piece.getTranslateY());
                 event.consume();
@@ -218,9 +223,14 @@ public class BoardUI{
                 Vector2d MousePos = new Vector2d((int)event.getX(),(int)event.getY());
                 Vector2d gameBoardPos = new Vector2d((int)gameBoard.getTranslateX(),(int)gameBoard.getTranslateY());
                 Move move = new Move(actualPlayer,pieceRoot,new Vector2d(0,0));
-                move.makeMove(board);
-                allPieces.getChildren().remove(piece);
-                piece.setManaged(false);
+                if(move.makeMove(board)){
+                    System.out.println("piece removed");
+                    allPieces.getChildren().remove(piece);
+                }else{
+                    piece.setScaleX(1);piece.setScaleY(1);
+                    piece.setTranslateX(pieceRoot.getPosInBoardX());
+                    piece.setTranslateY(pieceRoot.getPosInBoardY());
+                }
                 event.consume();
             }
         });

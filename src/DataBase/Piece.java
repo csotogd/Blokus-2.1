@@ -17,6 +17,8 @@ public abstract class Piece {
     protected int totalConfig;
     private String label;
     private int number;//can be either 1,2,3,4 depending on the player
+    private double posInBoardX;
+    private double posInBoardY;
 
     public Piece (String label, int[][]  array, boolean mirror, int rotation, int totalConfig) {
         this.shape = array;
@@ -116,9 +118,27 @@ public abstract class Piece {
     public int getNumber(){
         return  this.number;
     }
+
+    public void setPosInBoardX(double posInBoardX) {
+        this.posInBoardX = posInBoardX;
+    }
+
+    public void setPosInBoardY(double posInBoardY) {
+        this.posInBoardY = posInBoardY;
+    }
+
     public void setUsed(boolean used){
         this.used=used;
     }
+
+    public double getPosInBoardX() {
+        return posInBoardX;
+    }
+
+    public double getPosInBoardY() {
+        return posInBoardY;
+    }
+
     protected void calculateNumberOfBlocks() {
         int blocks=0;
 
