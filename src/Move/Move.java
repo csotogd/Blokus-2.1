@@ -311,6 +311,7 @@ public void writePieceIntoBoard(Board board) {
         player1.setStartingCorner(new Vector2d(0,0));
         player2.setStartingCorner(new Vector2d(board.getDIMENSION().get_x()-1,board.getDIMENSION().get_y()-1));
         player1.setPiecesList(PieceFactory.get().getAllPieces());
+        player2.setPiecesList(PieceFactory.get().getAllPieces());
         System.out.println(player1.getPiecesList().get(1));
         Piece fpiece=null;
         for(Piece p: player1.getPiecesList()){
