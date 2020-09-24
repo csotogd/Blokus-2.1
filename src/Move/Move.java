@@ -74,7 +74,7 @@ public class Move {
         for(int i=0; i<piece.getShape().length; i++){
             for(int j=0; j<piece.getShape()[0].length; j++){
                 if(piece.getShape()[i][j]!=0 &&
-                        board.board[i+position.get_x()][j+position.get_y()] != 0)
+                        board.board[i+position.get_y()][j+position.get_x()] != 0)
                     return false;
 
             }
@@ -363,6 +363,22 @@ public void writePieceIntoBoard(Board board) {
             movep2.makeMove(board);
         }
 
+        Piece o1 = null;
+        for(Piece p : player1.getPiecesList()) if(p.getLabel().equalsIgnoreCase("O4")) o1 = p;
+        Move om = new Move(player1,o1,new Vector2d(1,2));
+        om.makeMove(board);
+        System.out.println((!om.piece.isUsed()) +" "+ om.inBounds(board) +" "+
+                om.emptySpace(board) +" "+ om.cornerContact(board) +" "+ om.noDirectContact(board));
+
+        Piece l1 = null;
+        for(Piece p : player1.getPiecesList()) if(p.getLabel().equalsIgnoreCase("I5")) l1 = p;
+        l1.rotateRight();
+        Move lm = new Move(player1,l1,new Vector2d(10,2));
+        lm.makeMove(board);
+
+        System.out.println(l1);
+        System.out.println((!lm.piece.isUsed()) +" "+ lm.inBounds(board) +" "+
+                lm.emptySpace(board) +" "+ lm.cornerContact(board) +" "+ lm.noDirectContact(board));
         for(int[] line : board.board){
             for(int i : line){
                 System.out.print(i);
