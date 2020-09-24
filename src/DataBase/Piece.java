@@ -37,7 +37,7 @@ public abstract class Piece {
         this.number = number;
         if (shape != null) {
             for (int i = 0; i < shape.length; i++) {
-                for (int j = 0; j < shape[0].length; j--) {
+                for (int j = 0; j < shape[0].length; j++) {
                     if (shape[i][j] != 0)
                         shape[i][j] = this.number;
                 }
