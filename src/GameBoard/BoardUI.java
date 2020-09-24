@@ -243,6 +243,7 @@ public class BoardUI{
                     piece.setTranslateX(pieceRoot.getPosInBoardX());
                     piece.setTranslateY(pieceRoot.getPosInBoardY());
                 }
+                System.out.println(actualPlayer.getPiecesList().get(0).getPosInBoardX()+" "+actualPlayer.getPiecesList().get(0).getPosInBoardY  ());
                 event.consume();
             }
         });
