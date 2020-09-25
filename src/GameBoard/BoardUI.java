@@ -5,8 +5,10 @@ import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
@@ -19,6 +21,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
 
 import java.util.Vector;
 
@@ -33,9 +36,12 @@ public class BoardUI{
     private Player actualPlayer;
     private int playerCounter;
     Pane center;
+    double[] centerSize;
+    FlowPane allPieces[];
 
     public BoardUI(Player[] players){
         this.players = players;
+        allPieces = new FlowPane[players.length];
         this.playerCounter = 0;
         this.actualPlayer = this.players[playerCounter++];
         this.background = createBackGround();
@@ -62,6 +68,7 @@ public class BoardUI{
         principal.setBackground(background);
         center.getChildren().add(board);
         principal.setCenter(center);
+        centerSize = new double[]{center.getWidth(), center.getHeight()};
 
         top.getChildren().add(pieceOfPlayer(0));
         principal.setTop(top);
@@ -86,7 +93,7 @@ public class BoardUI{
 
     public void setResizable(Pane pane,boolean resizable){
         if(!resizable){
-            pane.setPrefSize(pane.getWidth(),pane.getHeight());
+            //pane.setT
         }
     }
 
@@ -125,11 +132,55 @@ public class BoardUI{
         principal.setHeight(RECTANGLE_SIZE.get_x()*2.3f);
         principal.setWidth(RECTANGLE_SIZE.get_y()*1.5f);
 
-        //TODO buttons error not understood
+        ChoiceBox choiceBox = new ChoiceBox();
+        choiceBox.setTranslateX(100);choiceBox.setTranslateY(-70);
+        for (int i = 0; i < actualPlayer.getPiecesList().size(); i++) {
+            choiceBox.getItems().add(i+1);
+        }
         Button rightRotate = new Button("Right rotation");
         rightRotate.setTranslateX(70); rightRotate.setTranslateY(-20);
+        rightRotate.setOnAction(actionEvent ->  {
+            int pieceNbr = (int) choiceBox.getSelectionModel().getSelectedItem();
+            int isPiece = 0;
+            for (Object object:allPieces[playerCounter-1].getChildren()) {
+                if(object.getClass().equals(GridPane.class)){
+                    isPiece++;
+                    if((isPiece==pieceNbr)){
+                        GridPane piece = (GridPane) object;
+                        double xCenter = piece.getTranslateX() + piece.getWidth()/2;
+                        double yCenter = piece.getTranslateY() + piece.getHeight()/2;
+                        System.out.println(xCenter + " " + yCenter);
+                        Rotate rotation = new Rotate(90);
+                        rotation.setPivotX(xCenter);rotation.setPivotY(yCenter);
+                        piece.getTransforms().add(rotation);
+                        break;
+                    }
+                }
+            }
+
+        });
         Button leftRotate = new Button("Left rotation");
         leftRotate.setTranslateX(-80); leftRotate.setTranslateY(-20);
+        leftRotate.setOnAction(actionEvent ->  {
+            int pieceNbr = (int) choiceBox.getSelectionModel().getSelectedItem();
+            int isPiece = 0;
+            for (Object object:allPieces[playerCounter-1].getChildren()) {
+                if(object.getClass().equals(GridPane.class)){
+                    isPiece++;
+                    if((isPiece==pieceNbr)){
+                        GridPane piece = (GridPane) object;
+                        double xCenter = piece.getTranslateX() + piece.getWidth()/2;
+                        double yCenter = piece.getTranslateY() + piece.getHeight()/2;
+                        System.out.println(xCenter + " " + yCenter);
+                        Rotate rotation = new Rotate(-90);
+                        rotation.setPivotX(xCenter);rotation.setPivotY(yCenter);
+                        piece.getTransforms().add(rotation);
+                        break;
+                    }
+                }
+            }
+
+        });
         Text text = new Text("Rotate piece number:");
         text.setTranslateX(-50);text.setTranslateY(-70);
         text.setFont(Font.font("Verdana", 20));
@@ -138,17 +189,13 @@ public class BoardUI{
         text1.setTranslateY(30);
         text1.setFont(Font.font("Verdana", 20));
         text1.setFill(Color.WHITE);
-        ChoiceBox choiceBox = new ChoiceBox();
-        choiceBox.setTranslateX(100);choiceBox.setTranslateY(-70);
-        for (int i = 0; i < actualPlayer.getPiecesList().size(); i++) {
-            choiceBox.getItems().add(i+1);
-        }
         Button enter = new Button("ENTER");
         enter.setTranslateY(80);
         StackPane layout = new StackPane();
         if(players.length!=2){
             Node player2 = pieceOfPlayer(1);
-            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,choiceBox,enter,player2);
+            layout.getChildren().add(player2);
+            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,choiceBox,enter);
         }else {
             layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,choiceBox,enter);
         }
@@ -171,26 +218,27 @@ public class BoardUI{
     }
 
     public FlowPane pieceOfPlayer(int playerNbr){
-        FlowPane allPieces = new FlowPane();
+        allPieces[playerNbr] = new FlowPane();
         Text text = new Text("Player " + players[playerNbr].getNumber() + " pieces left:  ");
         text.setFont(Font.font("Verdana", 20));
         text.setFill(Color.WHITE);
-        allPieces.getChildren().add(text);
+        allPieces[playerNbr].getChildren().add(text);
         int pieceCounter = 0;
         for (Piece pieceLeft:players[playerNbr].getPiecesList()) {
             if(!pieceLeft.isUsed()){
-                allPieces.getChildren().add(new Text(Integer.toString(++pieceCounter)));
-                Node piece = drawPiece(pieceLeft.getShape(), players[playerNbr].getColor(),pieceLeft,allPieces);
+                allPieces[playerNbr].getChildren().add(new Text(Integer.toString(++pieceCounter)));
+                Node piece = drawPiece(pieceLeft.getShape(), players[playerNbr].getColor(),pieceLeft,allPieces[playerNbr]);
                 pieceLeft.setPosInBoardX(piece.getTranslateX());
                 pieceLeft.setPosInBoardY(piece.getTranslateX());
-                allPieces.getChildren().add(piece);
-                allPieces.getChildren().add(new Text(" "));
+                allPieces[playerNbr].getChildren().add(piece);
+                allPieces[playerNbr].getChildren().add(new Text(" "));
             }
         }
-        return allPieces;
+        allPieces[playerNbr].setMinSize(allPieces[playerNbr].getWidth(),allPieces[playerNbr].getHeight());
+        return allPieces[playerNbr];
     }
 
-    public Parent drawPiece(int [][] pieceTable, Color playerColor,Piece pieceRoot,Pane allPieces){
+    public Node drawPiece(int [][] pieceTable, Color playerColor,Piece pieceRoot,Pane allPieces){
         GridPane piece = new GridPane();
         for (int i = 0; i < pieceTable.length; i++) {
             for (int j = 0; j < pieceTable[i].length; j++) {
@@ -237,6 +285,7 @@ public class BoardUI{
                 if(move.makeMove(board)){
                     System.out.println("piece removed");
                     allPieces.getChildren().remove(piece);
+                    center.setPrefSize(centerSize[0],centerSize[1]);
                     actualPlayer = players[playerCounter++];
                 }else{
                     piece.setScaleX(1);piece.setScaleY(1);
