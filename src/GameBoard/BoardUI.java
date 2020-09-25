@@ -139,6 +139,7 @@ public class BoardUI{
         }
         Button rightRotate = new Button("Right rotation");
         rightRotate.setTranslateX(70); rightRotate.setTranslateY(-20);
+        //TODO fix drag after rotating a piece and also rotate the array INTEGER of the piece
         rightRotate.setOnAction(actionEvent ->  {
             int pieceNbr = (int) choiceBox.getSelectionModel().getSelectedItem();
             int isPiece = 0;
@@ -161,6 +162,7 @@ public class BoardUI{
         });
         Button leftRotate = new Button("Left rotation");
         leftRotate.setTranslateX(-80); leftRotate.setTranslateY(-20);
+        //TODO fix drag after rotating a piece and also rotate the array INTEGER of the piece
         leftRotate.setOnAction(actionEvent ->  {
             int pieceNbr = (int) choiceBox.getSelectionModel().getSelectedItem();
             int isPiece = 0;
@@ -255,18 +257,23 @@ public class BoardUI{
 
             }
         }
-
+        final double[] xPos = new double[1];
+        final double[] yPos = new double[1];
         piece.setOnMousePressed(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 piece.setScaleX(2);piece.setScaleY(2);
+                xPos[0] = piece.getTranslateX();
+                yPos[0] = piece.getTranslateY();
                 event.consume();
             }
         });
 
         piece.setOnMouseDragged(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                piece.setTranslateX(event.getX() + piece.getTranslateX());
-                piece.setTranslateY(event.getY() + piece.getTranslateY());
+                double deltaX = event.getX() - xPos[0] ;
+                double deltaY = event.getY() - yPos[0] ;
+                piece.setTranslateX(piece.getTranslateX() + deltaX);
+                piece.setTranslateY(piece.getTranslateY() + deltaY);
                 event.consume();
             }
         });
