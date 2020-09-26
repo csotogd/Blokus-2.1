@@ -187,13 +187,10 @@ public class BoardUI{
                         int index = allPieces[playerCounter-1].getChildren().indexOf(object);
                         allPieces[playerCounter-1].getChildren().remove(index);
                         allPieces[playerCounter-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[playerCounter-1]));
-                        //allPieces[playerCounter-1].getChildren().remove(piecePane);
-                        //allPieces[playerCounter-1].getChildren().add(isPiece,(drawPiece(piece.getShape(),actualPlayer.getColor(),piece,allPieces[playerCounter])));
                         break;
                     }
                 }
             }
-
         });
 
         Button flip = new Button("Flip");
@@ -201,18 +198,16 @@ public class BoardUI{
         flip.setTranslateX(0); flip.setTranslateY(-20);
         flip.setOnAction(actionEvent ->  {
             int pieceNbr = (int) choiceBox.getSelectionModel().getSelectedItem();
+            Piece piece = actualPlayer.getPiecesList().get(pieceNbr-1);
+            piece.rotateUpsideDown();
             int isPiece = 0;
             for (Object object:allPieces[playerCounter-1].getChildren()) {
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
                     if((isPiece==pieceNbr)){
-                        GridPane piece = (GridPane) object;
-                        double xCenter = piece.getTranslateX() + piece.getWidth()/2;
-                        double yCenter = piece.getTranslateY() + piece.getHeight()/2;
-                        System.out.println(xCenter + " " + yCenter);
-                        Rotate rotation = new Rotate(180);
-                        rotation.setPivotX(xCenter);rotation.setPivotY(yCenter);
-                        piece.getTransforms().add(rotation);
+                        int index = allPieces[playerCounter-1].getChildren().indexOf(object);
+                        allPieces[playerCounter-1].getChildren().remove(index);
+                        allPieces[playerCounter-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[playerCounter-1]));
                         break;
                     }
                 }
@@ -224,23 +219,20 @@ public class BoardUI{
         //TODO fix drag after rotating a piece and also rotate the array INTEGER of the piece
         leftRotate.setOnAction(actionEvent ->  {
             int pieceNbr = (int) choiceBox.getSelectionModel().getSelectedItem();
+            Piece piece = actualPlayer.getPiecesList().get(pieceNbr-1);
+            piece.rotateLeft();
             int isPiece = 0;
             for (Object object:allPieces[playerCounter-1].getChildren()) {
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
                     if((isPiece==pieceNbr)){
-                        GridPane piece = (GridPane) object;
-                        double xCenter = piece.getTranslateX() + piece.getWidth()/2;
-                        double yCenter = piece.getTranslateY() + piece.getHeight()/2;
-                        System.out.println(xCenter + " " + yCenter);
-                        Rotate rotation = new Rotate(-90);
-                        rotation.setPivotX(xCenter);rotation.setPivotY(yCenter);
-                        piece.getTransforms().add(rotation);
+                        int index = allPieces[playerCounter-1].getChildren().indexOf(object);
+                        allPieces[playerCounter-1].getChildren().remove(index);
+                        allPieces[playerCounter-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[playerCounter-1]));
                         break;
                     }
                 }
             }
-
         });
         Text text = new Text("Rotate piece number:");
         text.setTranslateX(-50);text.setTranslateY(-70);
