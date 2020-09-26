@@ -14,6 +14,7 @@ import javafx.scene.Parent;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -38,6 +39,7 @@ public class BoardUI{
     Pane center;
     double[] centerSize;
     FlowPane allPieces[];
+    ChoiceBox choiceBox;
 
     public BoardUI(Player[] players){
         this.players = players;
@@ -47,6 +49,34 @@ public class BoardUI{
         this.background = createBackGround();
         this.board = new Board(players);
         this.gameBoard = createBoard();
+        makePiecesOpaque();
+
+    }
+
+    public void makePiecesOpaque(){
+
+        for (Player player : players) {
+            int isPiece = 0;
+            for (Object object:allPieces[player.getNumber()-1].getChildren()) {
+                if(object.getClass().equals(GridPane.class)){
+                    isPiece++;
+                    if (isPiece!=(int)choiceBox.getSelectionModel().getSelectedItem()&&actualPlayer==player){
+                        GridPane piece = (GridPane) object;
+                        piece.setOpacity(0.5);
+                        piece.setDisable(true);
+                    }else if(isPiece==(int)choiceBox.getSelectionModel().getSelectedItem()&&actualPlayer==player){
+                        GridPane piece = (GridPane) object;
+                        piece.setOpacity(1);
+                        piece.setDisable(false);
+                    }else if(actualPlayer!=player){
+                        GridPane piece = (GridPane) object;
+                        piece.setOpacity(0.5);
+                        piece.setDisable(true);
+                    }
+
+                }
+            }
+        }
 
     }
 
@@ -132,11 +162,15 @@ public class BoardUI{
         principal.setHeight(RECTANGLE_SIZE.get_x()*2.3f);
         principal.setWidth(RECTANGLE_SIZE.get_y()*1.5f);
 
-        ChoiceBox choiceBox = new ChoiceBox();
+        choiceBox = new ChoiceBox();
         choiceBox.setTranslateX(100);choiceBox.setTranslateY(-70);
         for (int i = 0; i < actualPlayer.getPiecesList().size(); i++) {
             choiceBox.getItems().add(i+1);
         }
+        choiceBox.getSelectionModel().select(0);
+        choiceBox.setOnAction(actionEvent ->  {
+            makePiecesOpaque();
+        });
         Button rightRotate = new Button("Right rotation");
         rightRotate.setTranslateX(70); rightRotate.setTranslateY(-20);
         //TODO fix drag after rotating a piece and also rotate the array INTEGER of the piece
@@ -294,6 +328,8 @@ public class BoardUI{
                     allPieces.getChildren().remove(piece);
                     center.setPrefSize(centerSize[0],centerSize[1]);
                     actualPlayer = players[playerCounter++];
+                    choiceBox.getSelectionModel().select(0);
+                    makePiecesOpaque();
                 }else{
                     piece.setScaleX(1);piece.setScaleY(1);
                     piece.setTranslateX(pieceRoot.getPosInBoardX());
