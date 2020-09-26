@@ -52,11 +52,11 @@ public class Move {
     private boolean inBounds(Board board){
 
 
-    if(this.position.get_x()<0||this.position.get_y()<0||
-            this.position.get_x()>=board.getDIMENSION().get_x()||this.position.get_y()>=board.getDIMENSION().get_y()) return false;
-    if(this.position.get_x()+piece.getShape()[0].length>=board.getDIMENSION().get_x()||
-            this.position.get_y()+piece.getShape().length>=board.getDIMENSION().get_y()) return false;
-    return true;
+        if(this.position.get_x()<0||this.position.get_y()<0||
+                this.position.get_x()>=board.getDIMENSION().get_x()||this.position.get_y()>=board.getDIMENSION().get_y()) return false;
+        if(this.position.get_x()+piece.getShape()[0].length>board.getDIMENSION().get_x()||
+                this.position.get_y()+piece.getShape().length>board.getDIMENSION().get_y()) return false;
+        return true;
 
     }
 
@@ -70,18 +70,18 @@ public class Move {
      */
     private boolean emptySpace(Board board){
 
-    //every block occupies an empty space?
-    for(int i=0; i<piece.getShape().length; i++){
-        for(int j=0; j<piece.getShape()[0].length; j++){
-            if(piece.getShape()[i][j]!=0 &&
-                    board.board[i+position.get_x()][j+position.get_y()] != 0)
-                return false;
+        //every block occupies an empty space?
+        for(int i=0; i<piece.getShape().length; i++){
+            for(int j=0; j<piece.getShape()[0].length; j++){
+                if(piece.getShape()[i][j]!=0 &&
+                        board.board[i+position.get_y()][j+position.get_x()] != 0)
+                    return false;
 
+            }
         }
-    }
-    return true;
+        return true;
 
-}
+    }
 
 
     /**
@@ -108,12 +108,13 @@ public class Move {
                 if(position.get_x()+x+1<board.getDIMENSION().get_x() && board.board[position.get_y()+y][position.get_x()+x+1]==player.getPlayerNumber()) return false;
                 if(position.get_x()+x-1>=0 && board.board[position.get_y()+y][position.get_x()+x-1]==player.getPlayerNumber()) return false;
 
+                }
             }
-        }
+        } return true;
     }
-    return true;
 
-    //NONE of the blocks is in contact with another piece of the same player in a none- CORNER context?
+
+        //NONE of the blocks is in contact with another piece of the same player in a none- CORNER context?
 
   /*  for(int i=0; i<piece.getShape().length; i++){
         for(int j=0; j<piece.getShape()[0].length; j++){
@@ -157,7 +158,7 @@ public class Move {
     }
     return true;        */
 
-}
+
 
     /**
      *
@@ -259,15 +260,15 @@ public class Move {
      * To be used after isALlowed
      */
 public void writePieceIntoBoard(Board board) {
-    for (int i=0; i<piece.getShape().length; i++){
-        for(int j=0; j<piece.getShape()[0].length; j++){
-            if ( board.board[position.get_y()+ i][ position.get_x()+ j] ==0 &&
-            piece.getShape()[i][j]!=0) board.board[position.get_y()+ i][ position.get_x()+ j] = player.getPlayerNumber();
+    for (int i = 0; i < piece.getShape().length; i++) {
+        for (int j = 0; j < piece.getShape()[0].length; j++) {
+            if (board.board[position.get_y() + i][position.get_x() + j] == 0 &&
+                    piece.getShape()[i][j] != 0)
+                board.board[position.get_y() + i][position.get_x() + j] = player.getPlayerNumber();
         }
     }
 
 }
-
     /**
      * 1. check is piece is allowed
      * 2. writes it into the board
@@ -277,10 +278,11 @@ public void writePieceIntoBoard(Board board) {
      */
     public boolean makeMove(Board board){
         if(this.isAllowed(board)) {
+            System.out.println("Move allowed");
             //add piece to the board
             this.writePieceIntoBoard(board);
-            piece.setUsed(true);
             player.getMoveLog().push(this);
+            board.paint();
 
             return true;
         }
@@ -302,12 +304,14 @@ public void writePieceIntoBoard(Board board) {
     }
 
     public static void main(String[] args){
-        Board board= new Board(2);
         HumanPlayer player1 = new HumanPlayer(1);
         HumanPlayer player2=new HumanPlayer(2);
+        Board board= new Board(new Player[]{player1,player2});
+
         player1.setStartingCorner(new Vector2d(0,0));
         player2.setStartingCorner(new Vector2d(board.getDIMENSION().get_x()-1,board.getDIMENSION().get_y()-1));
         player1.setPiecesList(PieceFactory.get().getAllPieces());
+        player2.setPiecesList(PieceFactory.get().getAllPieces());
         System.out.println(player1.getPiecesList().get(1));
         Piece fpiece=null;
         for(Piece p: player1.getPiecesList()){
@@ -319,7 +323,7 @@ public void writePieceIntoBoard(Board board) {
         if(firstMove.isAllowed(board)){
             System.out.println("first move");
             firstMove.makeMove(board);
-            firstMove.writePieceIntoBoard(board);
+//            firstMove.writePieceIntoBoard(board);
         }
         //move.writePieceIntoBoard(board);
         for(int[] line : board.board){
@@ -328,14 +332,61 @@ public void writePieceIntoBoard(Board board) {
             }
                 System.out.println();
         }
-        for(Corner c: fpiece.getCornersContacts(move.getPosition())){
-            System.out.print(c.getPosition().get_x()+" "+c.getPosition().get_y()+" -- ");
-            for(Vector2d complement:c.getToCornerPositions()) System.out.print(complement.get_x()+" "+complement.get_y()+"/");
-            System.out.println();
-        }
+//        for(Corner c: fpiece.getCornersContacts(move.getPosition())){
+//            System.out.print(c.getPosition().get_x()+" "+c.getPosition().get_y()+" -- ");
+//            for(Vector2d complement:c.getToCornerPositions()) System.out.print(complement.get_x()+" "+complement.get_y()+"/");
+//            System.out.println();
+//        }
         System.out.println((!move.piece.isUsed()) +" "+ move.inBounds(board) +" "+
                 move.emptySpace(board) +" "+ move.cornerContact(board) +" "+ move.noDirectContact(board));
+        if(move.isAllowed(board)){
+            System.out.println("second move");
+            move.makeMove(board);
+//            firstMove.writePieceIntoBoard(board);
+        }
 
+
+        Move move3 = new Move(player1,player1.getPiecesList().get(3),new Vector2d(6,1));
+        if(move3.isAllowed(board)){
+            move3.makeMove(board);
+        }
+
+        Piece o=null;
+        for(Piece p:player2.getPiecesList()){
+            if(p.getLabel().equalsIgnoreCase("O4")) o = p;
+        }
+        System.out.println(o);
+        Move movep2 = new Move(player2,o,new Vector2d(18,18));
+        System.out.println((!movep2.piece.isUsed()) +" "+ movep2.inBounds(board) +" "+
+                movep2.emptySpace(board) +" "+ movep2.cornerContact(board) +" "+ movep2.noDirectContact(board));
+        if(movep2.isAllowed(board)){
+            movep2.makeMove(board);
+        }
+
+        Piece o1 = null;
+        for(Piece p : player1.getPiecesList()) if(p.getLabel().equalsIgnoreCase("O4")) o1 = p;
+        Move om = new Move(player1,o1,new Vector2d(1,2));
+        om.makeMove(board);
+        System.out.println((!om.piece.isUsed()) +" "+ om.inBounds(board) +" "+
+                om.emptySpace(board) +" "+ om.cornerContact(board) +" "+ om.noDirectContact(board));
+
+        Piece l1 = null;
+        for(Piece p : player1.getPiecesList()) if(p.getLabel().equalsIgnoreCase("I5")) l1 = p;
+        l1.rotateRight();
+        Move lm = new Move(player1,l1,new Vector2d(10,2));
+        lm.makeMove(board);
+
+        System.out.println(l1);
+        System.out.println((!lm.piece.isUsed()) +" "+ lm.inBounds(board) +" "+
+                lm.emptySpace(board) +" "+ lm.cornerContact(board) +" "+ lm.noDirectContact(board));
+        for(int[] line : board.board){
+            for(int i : line){
+                System.out.print(i);
+            }
+            System.out.println();
+        }
 
     }
+
+
 }

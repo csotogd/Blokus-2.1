@@ -9,7 +9,6 @@ import Tools.Vector2d;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
 
 public class Corner {
     private Vector2d position; //coordinates on the board
@@ -174,6 +173,7 @@ public class Corner {
 
         }
     }
+    /*
     public static void main(String[] args){
         Board board = new Board(2);
         HumanPlayer jesus = new HumanPlayer(1, "Jesus");
@@ -191,4 +191,6 @@ public class Corner {
             System.out.println();
         }
     }
+
+     */
 }

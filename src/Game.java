@@ -24,18 +24,18 @@ import java.util.LinkedList;
 public class Game extends Application {
 
     private Player[] players;
-    private Board board;
     private Player currentTurn;
     private GameStatus status;
     private ArrayList<Move> movesPlayed= new ArrayList<>();
     private int numberOfPlayers = 4;
     private ArrayList<Move> movesLog=new ArrayList<>();
+    private final Vector2d DIMENSION = new Vector2d(20, 20);
 
     @Override
     public void start(Stage stage){
         initializeNewGame(numberOfPlayers,new Vector2d(50,50));
-        BoardUI gameBoard = new BoardUI(numberOfPlayers,players);
-        Parent root = gameBoard.gameBoardRep;
+        BoardUI gameBoard = new BoardUI(players);
+        Parent root = gameBoard.gameBoard;
         stage.setTitle("Blokus Game Group 15");
         Scene scene = new Scene(root, 1000, 1000);
         stage.setScene(scene);
@@ -53,7 +53,6 @@ public class Game extends Application {
 //NO BOT OPTION
     public void initializeNewGame(int numberOfPlayers, Vector2d boardDimensions){
 
-        this.board= new Board(numberOfPlayers);
         initializePlayers(numberOfPlayers);
 
         //Draw everything
@@ -68,14 +67,23 @@ public class Game extends Application {
         for(int i=1; i<= numberOfPlayers; i++){
             players[i-1]=new HumanPlayer(i);
             players[i-1].setColor(colors[i-1]);
+            players[i-1].setName("Martin");
         }
         initializePlayerPieces(numberOfPlayers);
-        initPlayersStartCorner(numberOfPlayers);
+        players[0].setStartingCorner(new Vector2d(0,0));
+        if(players.length==4){
+            players[1].setStartingCorner(new Vector2d(0,19));
+            players[2].setStartingCorner(new Vector2d(19,19));
+            players[3].setStartingCorner(new Vector2d(19,0));
+        }else{
+            players[1].setStartingCorner(new Vector2d(19,19));
+        }
+
     }
 
 
     private void initPlayersStartCorner(int numberOfPlayers){
-        Vector2d boardDimension= board.getDIMENSION();
+        Vector2d boardDimension= DIMENSION;
         players[0].setStartingCorner(new Vector2d(0,0));
         players[1].setStartingCorner(new Vector2d(boardDimension.get_x()-1, boardDimension.get_y()-1));
         if(numberOfPlayers>2)
@@ -106,7 +114,7 @@ public class Game extends Application {
         else
             currentTurn=players[0];
     }
-
+/*
     //writes the piece into the board and adds it to the log
     public boolean makeMove(Piece piece, Vector2d position){
         Move move = new Move(currentTurn, piece, position);
@@ -118,6 +126,8 @@ public class Game extends Application {
             return false;
 
         }
+
+ */
 
     //To be called after every move
     private void updateState(){
