@@ -67,6 +67,7 @@ public class Game extends Application {
         for(int i=1; i<= numberOfPlayers; i++){
             players[i-1]=new HumanPlayer(i);
             players[i-1].setColor(colors[i-1]);
+            players[i-1].setName("Martin");
         }
         initializePlayerPieces(numberOfPlayers);
         players[0].setStartingCorner(new Vector2d(0,0));
