@@ -177,22 +177,23 @@ public class BoardUI{
         //TODO fix drag after rotating a piece and also rotate the array INTEGER of the piece
         rightRotate.setOnAction(actionEvent ->  {
             int pieceNbr = (int) choiceBox.getSelectionModel().getSelectedItem();
+            Piece piece = actualPlayer.getPiecesList().get(pieceNbr-1);
+            piece.rotateRight();
             int isPiece = 0;
             for (Object object:allPieces[playerCounter-1].getChildren()) {
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
                     if((isPiece==pieceNbr)){
-                        GridPane piece = (GridPane) object;
-                        double xCenter = piece.getTranslateX() + piece.getWidth()/2;
-                        double yCenter = piece.getTranslateY() + piece.getHeight()/2;
-                        System.out.println(xCenter + " " + yCenter);
-                        Rotate rotation = new Rotate(90);
-                        rotation.setPivotX(xCenter);rotation.setPivotY(yCenter);
-                        piece.getTransforms().add(rotation);
+                        int index = allPieces[playerCounter-1].getChildren().indexOf(object);
+                        allPieces[playerCounter-1].getChildren().remove(index);
+                        allPieces[playerCounter-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[playerCounter-1]));
+                        //allPieces[playerCounter-1].getChildren().remove(piecePane);
+                        //allPieces[playerCounter-1].getChildren().add(isPiece,(drawPiece(piece.getShape(),actualPlayer.getColor(),piece,allPieces[playerCounter])));
                         break;
                     }
                 }
             }
+
         });
 
         Button flip = new Button("Flip");
@@ -287,7 +288,7 @@ public class BoardUI{
         for (Piece pieceLeft:players[playerNbr].getPiecesList()) {
             if(!pieceLeft.isUsed()){
                 allPieces[playerNbr].getChildren().add(new Text(Integer.toString(++pieceCounter)));
-                Node piece = drawPiece(pieceLeft.getShape(), players[playerNbr].getColor(),pieceLeft,allPieces[playerNbr]);
+                Node piece = drawPiece(players[playerNbr].getColor(),pieceLeft,allPieces[playerNbr]);
                 pieceLeft.setPosInBoardX(piece.getTranslateX());
                 pieceLeft.setPosInBoardY(piece.getTranslateY());
                 allPieces[playerNbr].getChildren().add(piece);
@@ -298,12 +299,12 @@ public class BoardUI{
         return allPieces[playerNbr];
     }
 
-    public Node drawPiece(int [][] pieceTable, Color playerColor,Piece pieceRoot,Pane allPieces){
+    public Pane drawPiece(Color playerColor,Piece pieceRoot,Pane allPieces){
         GridPane piece = new GridPane();
-        for (int i = 0; i < pieceTable.length; i++) {
-            for (int j = 0; j < pieceTable[i].length; j++) {
+        for (int i = 0; i < pieceRoot.getShape().length; i++) {
+            for (int j = 0; j < pieceRoot.getShape()[i].length; j++) {
                 Rectangle tile = new Rectangle(CELL_SIZE/2, CELL_SIZE/2);
-                if(pieceTable[i][j]==1){
+                if(pieceRoot.getShape()[i][j]==1){
                     tile.setFill(playerColor);
                     tile.setStrokeWidth(2.0);
                     tile.setStroke(Color.BLACK);
