@@ -40,6 +40,7 @@ public class BoardUI{
     double[] centerSize;
     FlowPane allPieces[];
     ChoiceBox choiceBox;
+    Text turnOfPlayerText;
 
     public BoardUI(Player[] players){
         this.players = players;
@@ -62,7 +63,7 @@ public class BoardUI{
                     isPiece++;
                     if (isPiece!=(int)choiceBox.getSelectionModel().getSelectedItem()&&actualPlayer==player){
                         GridPane piece = (GridPane) object;
-                        piece.setOpacity(0.5);
+                        piece.setOpacity(0.3);
                         piece.setDisable(true);
                     }else if(isPiece==(int)choiceBox.getSelectionModel().getSelectedItem()&&actualPlayer==player){
                         GridPane piece = (GridPane) object;
@@ -70,7 +71,7 @@ public class BoardUI{
                         piece.setDisable(false);
                     }else if(actualPlayer!=player){
                         GridPane piece = (GridPane) object;
-                        piece.setOpacity(0.5);
+                        piece.setOpacity(0.3);
                         piece.setDisable(true);
                     }
 
@@ -138,16 +139,16 @@ public class BoardUI{
         text.setTranslateY(-30); text.setTranslateX(-50);
         text.setFont(Font.font("Verdana", 20));
         text.setFill(Color.WHITE);
-        Text text1 = new Text(actualPlayer.getName());
-        text1.setTranslateY(15);text1.setTranslateX(-50);
-        text1.setFont(Font.font("Verdana", 30));
-        text1.setFill(actualPlayer.getColor());
+        turnOfPlayerText = new Text(actualPlayer.getName());
+        turnOfPlayerText.setTranslateY(15);turnOfPlayerText.setTranslateX(-50);
+        turnOfPlayerText.setFont(Font.font("Verdana", 30));
+        turnOfPlayerText.setFill(actualPlayer.getColor());
         StackPane layout = new StackPane();
         if(players.length!=2){
             Node player4 = pieceOfPlayer(3);
-            layout.getChildren().addAll(principal,text,text1,player4);
+            layout.getChildren().addAll(principal,text,turnOfPlayerText,player4);
         }else {
-            layout.getChildren().addAll(principal,text,text1);
+            layout.getChildren().addAll(principal,text,turnOfPlayerText);
         }
 
 
@@ -195,7 +196,27 @@ public class BoardUI{
         });
 
         Button flip = new Button("Flip");
+        //TODO finish the flip rotation
         flip.setTranslateX(0); flip.setTranslateY(-20);
+        flip.setOnAction(actionEvent ->  {
+            int pieceNbr = (int) choiceBox.getSelectionModel().getSelectedItem();
+            int isPiece = 0;
+            for (Object object:allPieces[playerCounter-1].getChildren()) {
+                if(object.getClass().equals(GridPane.class)){
+                    isPiece++;
+                    if((isPiece==pieceNbr)){
+                        GridPane piece = (GridPane) object;
+                        double xCenter = piece.getTranslateX() + piece.getWidth()/2;
+                        double yCenter = piece.getTranslateY() + piece.getHeight()/2;
+                        System.out.println(xCenter + " " + yCenter);
+                        Rotate rotation = new Rotate(180);
+                        rotation.setPivotX(xCenter);rotation.setPivotY(yCenter);
+                        piece.getTransforms().add(rotation);
+                        break;
+                    }
+                }
+            }
+        });
 
         Button leftRotate = new Button("Left rotation");
         leftRotate.setTranslateX(-110); leftRotate.setTranslateY(-20);
@@ -333,6 +354,8 @@ public class BoardUI{
                     actualPlayer = players[playerCounter++];
                     choiceBox.getSelectionModel().select(0);
                     makePiecesOpaque();
+                    turnOfPlayerText.setText(actualPlayer.getName());
+                    turnOfPlayerText.setFill(actualPlayer.getColor());
                 }else{
                     piece.setScaleX(1);piece.setScaleY(1);
                     piece.setTranslateX(pieceRoot.getPosInBoardX());
