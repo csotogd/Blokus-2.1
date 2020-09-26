@@ -11,7 +11,7 @@ import java.util.List;
 public class I5Piece extends Piece {
     private static List<int[][]> permutations=null;
     public I5Piece() {
-        super("I5", new int[][]{{1,1,1,1,1}}, false, 2, 2);
+        super("I5", new int[][]{{1},{1},{1},{1},{1}}, false, 2, 2);
     }
 
     @Override

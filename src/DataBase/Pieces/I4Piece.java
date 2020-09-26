@@ -11,7 +11,7 @@ import java.util.List;
 public class I4Piece extends Piece {
     private static List<int[][]> permutations=null;
     public I4Piece() {
-        super("I4", new int[][]{{1,1,1,1}}, false, 2, 2);
+        super("I4", new int[][]{{1},{1},{1},{1}}, false, 2, 2);
     }
 
     @Override

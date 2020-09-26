@@ -13,7 +13,7 @@ public class I2Piece extends Piece {
 
     private static List<int[][]> permutations=null;
     public I2Piece() {
-        super("I2", new int[][]{{1,1}}, false, 2, 2);
+        super("I2", new int[][]{{1},{1}}, false, 2, 2);
     }
 
     @Override

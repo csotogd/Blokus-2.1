@@ -172,7 +172,7 @@ public class BoardUI{
             makePiecesOpaque();
         });
         Button rightRotate = new Button("Right rotation");
-        rightRotate.setTranslateX(70); rightRotate.setTranslateY(-20);
+        rightRotate.setTranslateX(105); rightRotate.setTranslateY(-20);
         //TODO fix drag after rotating a piece and also rotate the array INTEGER of the piece
         rightRotate.setOnAction(actionEvent ->  {
             int pieceNbr = (int) choiceBox.getSelectionModel().getSelectedItem();
@@ -192,10 +192,13 @@ public class BoardUI{
                     }
                 }
             }
-
         });
+
+        Button flip = new Button("Flip");
+        flip.setTranslateX(0); flip.setTranslateY(-20);
+
         Button leftRotate = new Button("Left rotation");
-        leftRotate.setTranslateX(-80); leftRotate.setTranslateY(-20);
+        leftRotate.setTranslateX(-110); leftRotate.setTranslateY(-20);
         //TODO fix drag after rotating a piece and also rotate the array INTEGER of the piece
         leftRotate.setOnAction(actionEvent ->  {
             int pieceNbr = (int) choiceBox.getSelectionModel().getSelectedItem();
@@ -221,7 +224,7 @@ public class BoardUI{
         text.setTranslateX(-50);text.setTranslateY(-70);
         text.setFont(Font.font("Verdana", 20));
         text.setFill(Color.WHITE);
-        Text text1 = new Text("Move the selected piece with the arrows");
+        Text text1 = new Text("Drag the selected piece on the board");
         text1.setTranslateY(30);
         text1.setFont(Font.font("Verdana", 20));
         text1.setFill(Color.WHITE);
@@ -231,9 +234,9 @@ public class BoardUI{
         if(players.length!=2){
             Node player2 = pieceOfPlayer(1);
             layout.getChildren().add(player2);
-            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,choiceBox,enter);
+            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,flip,choiceBox,enter);
         }else {
-            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,choiceBox,enter);
+            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,flip,choiceBox,enter);
         }
 
 
@@ -265,7 +268,7 @@ public class BoardUI{
                 allPieces[playerNbr].getChildren().add(new Text(Integer.toString(++pieceCounter)));
                 Node piece = drawPiece(pieceLeft.getShape(), players[playerNbr].getColor(),pieceLeft,allPieces[playerNbr]);
                 pieceLeft.setPosInBoardX(piece.getTranslateX());
-                pieceLeft.setPosInBoardY(piece.getTranslateX());
+                pieceLeft.setPosInBoardY(piece.getTranslateY());
                 allPieces[playerNbr].getChildren().add(piece);
                 allPieces[playerNbr].getChildren().add(new Text(" "));
             }
@@ -283,10 +286,10 @@ public class BoardUI{
                     tile.setFill(playerColor);
                     tile.setStrokeWidth(2.0);
                     tile.setStroke(Color.BLACK);
-                    piece.add(new StackPane(tile),i,j);
+                    piece.add(new StackPane(tile),j,i);
                 }else{
                     tile.setFill(Color.TRANSPARENT);
-                    piece.add(new StackPane(tile),i,j);
+                    piece.add(new StackPane(tile),j,i);
                 }
 
             }
@@ -320,7 +323,7 @@ public class BoardUI{
                 Point2D coordinates = board.gameBoardRep.localToScene(bounds.getMinX(), bounds.getMinY());
 
                 System.out.println(coordinates.getX()+ " "+coordinates.getY());
-                Vector2d position = new Vector2d((int)((MousePosX-coordinates.getX())/25),(int)((MousePosY-coordinates.getY())/25));
+                Vector2d position = new Vector2d((int)((MousePosX-coordinates.getX())/27),(int)((MousePosY-coordinates.getY())/27));
                 System.out.println(position.get_x() + "  " + position.get_y());
                 Move move = new Move(actualPlayer,pieceRoot,position);
                 if(move.makeMove(board)){
