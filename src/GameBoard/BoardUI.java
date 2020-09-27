@@ -38,7 +38,6 @@ public class BoardUI{
     private Player actualPlayer;
     private int playerCounter;
     Pane center;
-    double[] centerSize;
     FlowPane allPieces[];
     ChoiceBox choiceBox;
     Text turnOfPlayerText;
@@ -100,7 +99,6 @@ public class BoardUI{
         principal.setBackground(background);
         center.getChildren().add(board);
         principal.setCenter(center);
-        centerSize = new double[]{center.getWidth(), center.getHeight()};
 
         top.getChildren().add(pieceOfPlayer(0));
         principal.setTop(top);
@@ -259,6 +257,20 @@ public class BoardUI{
         return layout;
     }
 
+    public void refreshPiece(){
+        int totalNbrOfPiece = actualPlayer.getPiecesList().size();
+        int isNumber = 0;
+        for (Object object:allPieces[playerCounter-1].getChildren()) {
+            if(object.getClass().equals(Text.class)){
+                isNumber++;
+                ((Text) object).setText(String.valueOf(isNumber));
+            }
+        }
+    }
+
+
+
+
 
     public Background createBackGround(){
         Image image = new Image("https://images.hdqwalls.com/wallpapers/simple-gray-background-4k-br.jpg",800,800,false,true);
@@ -285,7 +297,6 @@ public class BoardUI{
                 pieceLeft.setPosInBoardX(piece.getTranslateX());
                 pieceLeft.setPosInBoardY(piece.getTranslateY());
                 allPieces[playerNbr].getChildren().add(piece);
-                allPieces[playerNbr].getChildren().add(new Text(" "));
             }
         }
         allPieces[playerNbr].setMinSize(allPieces[playerNbr].getWidth(),allPieces[playerNbr].getHeight());
@@ -345,8 +356,8 @@ public class BoardUI{
                 if(move.makeMove(board)){
                     System.out.println("piece removed");
                     allPieces.getChildren().remove(piece);
-                    center.setPrefSize(centerSize[0],centerSize[1]);
                     actualPlayer.getPiecesList().remove(pieceRoot);
+                    //refreshPiece();
                     actualPlayer = players[playerCounter++];
                     if(playerCounter>=players.length) playerCounter=0;
                     choiceBox.getSelectionModel().select(0);
