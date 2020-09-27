@@ -181,13 +181,13 @@ public class BoardUI{
             Piece piece = actualPlayer.getPiecesList().get(pieceNbr-1);
             piece.rotateRight();
             int isPiece = 0;
-            for (Object object:allPieces[playerCounter-1].getChildren()) {
+            for (Object object:allPieces[actualPlayer.getNumber()-1].getChildren()) {
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
                     if((isPiece==pieceNbr)){
-                        int index = allPieces[playerCounter-1].getChildren().indexOf(object);
-                        allPieces[playerCounter-1].getChildren().remove(index);
-                        allPieces[playerCounter-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[playerCounter-1]));
+                        int index = allPieces[actualPlayer.getNumber()-1].getChildren().indexOf(object);
+                        allPieces[actualPlayer.getNumber()-1].getChildren().remove(index);
+                        allPieces[actualPlayer.getNumber()-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[actualPlayer.getNumber()-1]));
                         break;
                     }
                 }
