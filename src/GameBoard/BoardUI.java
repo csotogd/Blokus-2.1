@@ -4,6 +4,7 @@ import DataBase.Piece;
 import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.geometry.Bounds;
@@ -345,6 +346,7 @@ public class BoardUI{
                     System.out.println("piece removed");
                     allPieces.getChildren().remove(piece);
                     center.setPrefSize(centerSize[0],centerSize[1]);
+                    actualPlayer.getPiecesList().remove(pieceRoot);
                     actualPlayer = players[playerCounter++];
                     if(playerCounter>=players.length) playerCounter=0;
                     choiceBox.getSelectionModel().select(0);

@@ -72,9 +72,9 @@ public class Game extends Application {
         initializePlayerPieces(numberOfPlayers);
         players[0].setStartingCorner(new Vector2d(0,0));
         if(players.length==4){
-            players[1].setStartingCorner(new Vector2d(0,19));
+            players[1].setStartingCorner(new Vector2d(19,0));
             players[2].setStartingCorner(new Vector2d(19,19));
-            players[3].setStartingCorner(new Vector2d(19,0));
+            players[3].setStartingCorner(new Vector2d(0,19));
         }else{
             players[1].setStartingCorner(new Vector2d(19,19));
         }
@@ -87,9 +87,9 @@ public class Game extends Application {
         players[0].setStartingCorner(new Vector2d(0,0));
         players[1].setStartingCorner(new Vector2d(boardDimension.get_x()-1, boardDimension.get_y()-1));
         if(numberOfPlayers>2)
-            players[2].setStartingCorner(new Vector2d(boardDimension.get_x()-1, 0));
+            players[2].setStartingCorner(new Vector2d(0, boardDimension.get_x()-1));
         if(numberOfPlayers>3)
-            players[3].setStartingCorner(new Vector2d(0,boardDimension.get_y()-1));
+            players[3].setStartingCorner(new Vector2d(boardDimension.get_x()-1,0));
     }
 
     private void initializePlayerPieces(int numberOfPlayers){
