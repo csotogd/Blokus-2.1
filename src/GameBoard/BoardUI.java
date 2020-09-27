@@ -314,8 +314,8 @@ public class BoardUI{
         piece.setOnMousePressed(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 piece.setScaleX(2);piece.setScaleY(2);
-                xPos[0] = piece.getTranslateX();
-                yPos[0] = piece.getTranslateY();
+                xPos[0] = piece.getTranslateX()+5; //so that the mouse holds the piece in the middle of the first square
+                yPos[0] = piece.getTranslateY()+5;
                 event.consume();
             }
         });
