@@ -340,11 +340,13 @@ public class BoardUI{
                 Vector2d position = new Vector2d((int)((MousePosX-coordinates.getX())/27),(int)((MousePosY-coordinates.getY())/27));
                 System.out.println(position.get_x() + "  " + position.get_y());
                 Move move = new Move(actualPlayer,pieceRoot,position);
+                System.out.println("starting corner: "+actualPlayer.getStartingCorner().get_x()+" "+actualPlayer.getStartingCorner().get_y());
                 if(move.makeMove(board)){
                     System.out.println("piece removed");
                     allPieces.getChildren().remove(piece);
                     center.setPrefSize(centerSize[0],centerSize[1]);
                     actualPlayer = players[playerCounter++];
+                    if(playerCounter>=players.length) playerCounter=0;
                     choiceBox.getSelectionModel().select(0);
                     makePiecesOpaque();
                     turnOfPlayerText.setText(actualPlayer.getName());

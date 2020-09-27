@@ -43,9 +43,26 @@ public class Move {
          * 5. piece was not used
          */
 
+        if(piece.isUsed()){
+            System.out.println("piece used");
+            return false;
+        }else if(!inBounds(board)){
+            System.out.println("out of bound");
+            return false;
+        }else if(!emptySpace(board)){
+            System.out.println("place occupied");
+            return false;
+        }else if(!cornerContact(board)){
+            System.out.println("no corner?");
+            return false;
+        }else if(!noDirectContact(board)){
+            System.out.println("contact with piece");
+            return false;
+        }
         //TODO: add a method or just a variable to see if it's the first piece instead of verifying it in noDirectContact AND cornerContact
-        return (!piece.isUsed()) && inBounds(board) &&
-                emptySpace(board) && cornerContact(board) && noDirectContact(board) ;
+        return true ;
+        //(!piece.isUsed()) && inBounds(board) &&
+        //                emptySpace(board) && cornerContact(board) && noDirectContact(board)
     }
 
 
