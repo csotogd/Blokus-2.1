@@ -22,15 +22,13 @@ public class StartScreen extends Application {
     private static final int WIDTH = 800;
     private static final int HEIGHT = 800;
 
+
     //each button contains a function that is run everytime it is pressed
 
     private Stage stage;
 
     private List<Pair<String, Runnable>> menuData = Arrays.asList(
-            new Pair<String, Runnable>("Single Player", () -> {
-                new Game().start(stage);
-            }),
-            new Pair<String, Runnable>("Multiplayer", () -> {
+            new Pair<String, Runnable>("Play", () -> {
                 new Game().start(stage);
             }),
             new Pair<String, Runnable>("Settings", () -> {
@@ -40,6 +38,7 @@ public class StartScreen extends Application {
                     e.printStackTrace();
                 }
             }),
+            /*
             new Pair<String, Runnable>("Solvers", () -> {
                 try {
                     new SolversScreen().start(stage);
@@ -47,6 +46,8 @@ public class StartScreen extends Application {
                     e.printStackTrace();
                 }
             }),
+
+             */
             new Pair<String, Runnable>("Exit to Desktop", Platform::exit)
     );
 
