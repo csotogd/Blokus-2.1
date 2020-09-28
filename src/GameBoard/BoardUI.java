@@ -4,18 +4,14 @@ import DataBase.Piece;
 import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
-import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -23,9 +19,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Rotate;
 
-import java.util.Vector;
+import java.util.LinkedList;
 
 //TEST
 public class BoardUI{
@@ -38,6 +33,10 @@ public class BoardUI{
     private Player actualPlayer;
     private int playerCounter;
     Pane center;
+    Pane right;
+    Pane bottom;
+    Pane left;
+    Pane top;
     FlowPane allPieces[];
     ChoiceBox choiceBox;
     Text turnOfPlayerText;
@@ -78,18 +77,38 @@ public class BoardUI{
                 }
             }
         }
+    }
 
+    public void refreshPieces(){
+        top.getChildren().clear();
+        top.getChildren().add(pieceOfPlayer(0));
+        if(players.length==2){
+            right.getChildren().clear();
+            right.getChildren().add(rotationButtons());
+            bottom.getChildren().clear();
+            bottom.getChildren().add(pieceOfPlayer(1));
+            left.getChildren().clear();
+            left.getChildren().add(playersTurn());
+        }else{
+            right.getChildren().clear();
+            right.getChildren().add(rotationButtons());
+            left.getChildren().clear();
+            left.getChildren().add(playersTurn());
+            bottom.getChildren().clear();
+            bottom.getChildren().add(pieceOfPlayer(2));
+        }
+        makePiecesOpaque();
     }
 
     public Parent createBoard() {
         BorderPane principal = new BorderPane();
-        StackPane left = new StackPane();
+        left = new StackPane();
         left.setTranslateY(100);
-        StackPane right = new StackPane();
+        right = new StackPane();
         right.setTranslateY(100);
-        StackPane top = new StackPane();
+        top = new StackPane();
         top.setTranslateX(280);
-        StackPane bottom = new StackPane();
+        bottom = new StackPane();
         bottom.setTranslateX(280);
         bottom.setTranslateY(-30);
         center = new StackPane();
@@ -257,20 +276,6 @@ public class BoardUI{
         return layout;
     }
 
-    public void refreshPiece(){
-        int totalNbrOfPiece = actualPlayer.getPiecesList().size();
-        int isNumber = 0;
-        for (Object object:allPieces[playerCounter-1].getChildren()) {
-            if(object.getClass().equals(Text.class)){
-                isNumber++;
-                ((Text) object).setText(String.valueOf(isNumber));
-            }
-        }
-    }
-
-
-
-
 
     public Background createBackGround(){
         Image image = new Image("https://images.hdqwalls.com/wallpapers/simple-gray-background-4k-br.jpg",800,800,false,true);
@@ -357,13 +362,13 @@ public class BoardUI{
                     System.out.println("piece removed");
                     allPieces.getChildren().remove(piece);
                     actualPlayer.getPiecesList().remove(pieceRoot);
-                    //refreshPiece();
                     actualPlayer = players[playerCounter++];
                     if(playerCounter>=players.length) playerCounter=0;
-                    choiceBox.getSelectionModel().select(0);
+                    //choiceBox.getSelectionModel().select(0);
                     makePiecesOpaque();
                     turnOfPlayerText.setText(actualPlayer.getName());
                     turnOfPlayerText.setFill(actualPlayer.getColor());
+                    refreshPieces();
                 }else{
                     piece.setScaleX(1);piece.setScaleY(1);
                     piece.setTranslateX(pieceRoot.getPosInBoardX());
