@@ -182,7 +182,7 @@ public class BoardUI{
         principal.setWidth(RECTANGLE_SIZE.get_y()*1.5f);
 
         choiceBox = new ChoiceBox();
-        choiceBox.setTranslateX(100);choiceBox.setTranslateY(-70);
+        choiceBox.setTranslateX(140);choiceBox.setTranslateY(-75);
         for (int i = 0; i < actualPlayer.getPiecesList().size(); i++) {
             choiceBox.getItems().add(i+1);
         }
@@ -252,23 +252,25 @@ public class BoardUI{
                 }
             }
         });
-        Text text = new Text("Rotate piece number:");
-        text.setTranslateX(-50);text.setTranslateY(-70);
+        Text text = new Text("1) Select a piece and rotate it:");
+        text.setTranslateX(-50);text.setTranslateY(-75);
         text.setFont(Font.font("Verdana", 20));
         text.setFill(Color.WHITE);
-        Text text1 = new Text("Drag the selected piece on the board");
-        text1.setTranslateY(30);
+        Text text1 = new Text("2) Drag the piece on the board");
+        text1.setTranslateY(30);text1.setTranslateX(-47);
         text1.setFont(Font.font("Verdana", 20));
         text1.setFill(Color.WHITE);
-        Button enter = new Button("ENTER");
-        enter.setTranslateY(80);
+        Text text2 = new Text("3) Release mouse on the case wanted");
+        text2.setTranslateY(80);text2.setTranslateX(-12);
+        text2.setFont(Font.font("Verdana", 20));
+        text2.setFill(Color.WHITE);
         StackPane layout = new StackPane();
         if(players.length!=2){
             Node player2 = pieceOfPlayer(1);
             layout.getChildren().add(player2);
-            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,flip,choiceBox,enter);
+            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,flip,choiceBox,text2);
         }else {
-            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,flip,choiceBox,enter);
+            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,flip,choiceBox,text2);
         }
 
 
@@ -290,10 +292,13 @@ public class BoardUI{
 
     public FlowPane pieceOfPlayer(int playerNbr){
         allPieces[playerNbr] = new FlowPane();
-        Text text = new Text("Player " + players[playerNbr].getNumber() + " pieces left:  ");
+        Text text = new Text(players[playerNbr].getName());
         text.setFont(Font.font("Verdana", 20));
-        text.setFill(Color.WHITE);
-        allPieces[playerNbr].getChildren().add(text);
+        text.setFill(players[playerNbr].getColor());
+        Text text1 = new Text(" pieces left:  ");
+        text1.setFont(Font.font("Verdana", 20));
+        text1.setFill(Color.WHITE);
+        allPieces[playerNbr].getChildren().addAll(text,text1);
         int pieceCounter = 0;
         for (Piece pieceLeft:players[playerNbr].getPiecesList()) {
             if(!pieceLeft.isUsed()){
