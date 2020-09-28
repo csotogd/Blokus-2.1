@@ -91,6 +91,7 @@ public class SettingsScreen extends Application {
 
         // create a choiceBox
         ChoiceBox c1 = new ChoiceBox(FXCollections.observableArrayList(options1));
+        c1.getSelectionModel().select(1);
 
         grid.add(c1, 1, 1);
 
@@ -99,39 +100,35 @@ public class SettingsScreen extends Application {
         TextField opt3TextField = new TextField("");
         TextField opt4TextField = new TextField("");
         TextField opt5TextField = new TextField("");
+
+        Text opt2 = new Text("Player 1 name :");
+        Text opt3 = new Text("Player 2 name :");
+        Text opt4 = new Text("Player 3 name :");
+        Text opt5 = new Text("Player 4 name :");
+        grid.add(opt2, 0, 2);
+
+        grid.add(opt2TextField, 1, 2);
+
+        grid.add(opt3, 0, 3);
+
+        grid.add(opt3TextField, 1, 3);
+
+        grid.add(opt4, 0, 4);
+
+        grid.add(opt4TextField, 1, 4);
+
+        grid.add(opt5, 0, 5);
+
+        grid.add(opt5TextField, 1, 5);
+
+        opt2.setVisible(true);opt3.setVisible(true);opt2TextField.setVisible(true);opt3TextField.setVisible(true);
+        opt4.setVisible(true); opt5.setVisible(true);opt4TextField.setVisible(true);opt5TextField.setVisible(true);
+
         c1.setOnAction(event -> {
             if(c1.getSelectionModel().getSelectedItem().equals("4 Players")){
-                //this is how we manage textfield boxes
-                Text opt2 = new Text("Player 1 name :");
-                grid.add(opt2, 0, 2);
-
-                grid.add(opt2TextField, 1, 2);
-
-                Text opt3 = new Text("Player 2 name :");
-                grid.add(opt3, 0, 3);
-
-                grid.add(opt3TextField, 1, 3);
-
-                Text opt4 = new Text("Player 3 name :");
-                grid.add(opt4, 0, 4);
-
-                grid.add(opt4TextField, 1, 4);
-
-                Text opt5 = new Text("Player 4 name :");
-                grid.add(opt5, 0, 5);
-
-                grid.add(opt5TextField, 1, 5);
+                opt4.setVisible(true); opt5.setVisible(true);opt4TextField.setVisible(true);opt5TextField.setVisible(true);
             }else{
-                //this is how we manage textfield boxes
-                Text opt2 = new Text("Player 1 name :");
-                grid.add(opt2, 0, 2);
-
-                grid.add(opt2TextField, 1, 2);
-
-                Text opt3 = new Text("Player 2 name :");
-                grid.add(opt3, 0, 3);
-
-                grid.add(opt3TextField, 1, 3);
+                opt4.setVisible(false); opt5.setVisible(false);opt4TextField.setVisible(false);opt5TextField.setVisible(false);
             }
         });
 
@@ -145,14 +142,44 @@ public class SettingsScreen extends Application {
 
                     if(c1.getSelectionModel().getSelectedItem().equals("2 Players")) {
                         playersName = new String[2];
-                        playersName[0] = opt2TextField.getText();
-                        playersName[1] = opt3TextField.getText();
+
+                        if(opt2TextField.getText().equals("")){
+                            playersName[0] = "PLAYER 1";
+                        }else{
+                            playersName[0] = opt2TextField.getText();
+                        }
+
+                        if(opt3TextField.getText().equals("")){
+                            playersName[1] = "PLAYER 2";
+                        }else{
+                            playersName[1] = opt3TextField.getText();
+                        }
+
                     }else{
                         playersName = new String[4];
-                        playersName[0] = opt2TextField.getText();
-                        playersName[1] = opt3TextField.getText();
-                        playersName[2] = opt4TextField.getText();
-                        playersName[3] = opt5TextField.getText();
+                        if(opt2TextField.getText().equals("")){
+                            playersName[0] = "PLAYER 1";
+                        }else{
+                            playersName[0] = opt2TextField.getText();
+                        }
+
+                        if(opt3TextField.getText().equals("")){
+                            playersName[1] = "PLAYER 2";
+                        }else{
+                            playersName[1] = opt3TextField.getText();
+                        }
+
+                        if(opt4TextField.getText().equals("")){
+                            playersName[2] = "PLAYER 3";
+                        }else{
+                            playersName[2] = opt4TextField.getText();
+                        }
+
+                        if(opt5TextField.getText().equals("")){
+                            playersName[3] = "PLAYER 4";
+                        }else{
+                            playersName[3] = opt5TextField.getText();
+                        }
                     }
                     Data.setPlayersName(playersName);
 
@@ -162,8 +189,8 @@ public class SettingsScreen extends Application {
                 }
             }
         });
-
         grid.add(exitButton,0,6);
+        exitButton.setTranslateX(80);
 
         root.getChildren().add(grid);
     }
