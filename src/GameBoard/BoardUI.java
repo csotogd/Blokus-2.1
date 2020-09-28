@@ -241,8 +241,12 @@ public class BoardUI{
                     isPiece++;
                     if((isPiece==pieceNbr)){
                         int index = allPieces[playerCounter-1].getChildren().indexOf(object);
+                        allPieces[actualPlayer.getNumber()-1].getChildren().remove(index);
+                        allPieces[actualPlayer.getNumber()-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[actualPlayer.getNumber()-1]));
+/*
                         allPieces[playerCounter-1].getChildren().remove(index);
                         allPieces[playerCounter-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[playerCounter-1]));
+               */
                         break;
                     }
                 }
@@ -262,8 +266,13 @@ public class BoardUI{
                     isPiece++;
                     if((isPiece==pieceNbr)){
                         int index = allPieces[playerCounter-1].getChildren().indexOf(object);
+                        /*
                         allPieces[playerCounter-1].getChildren().remove(index);
                         allPieces[playerCounter-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[playerCounter-1]));
+                        */
+                        allPieces[actualPlayer.getNumber()-1].getChildren().remove(index);
+                        allPieces[actualPlayer.getNumber()-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[actualPlayer.getNumber()-1]));
+
                         break;
                     }
                 }
