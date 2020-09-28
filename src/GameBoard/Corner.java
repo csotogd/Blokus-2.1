@@ -173,7 +173,7 @@ public class Corner {
 
         }
     }
-    /*
+/*
     public static void main(String[] args){
         Board board = new Board(2);
         HumanPlayer jesus = new HumanPlayer(1, "Jesus");

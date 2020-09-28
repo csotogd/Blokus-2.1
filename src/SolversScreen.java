@@ -10,9 +10,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -32,21 +31,29 @@ public class SolversScreen extends Application {
     private StackPane root = new StackPane();
     private VBox menuBox = new VBox(-5);
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         root.setId("solver-screen-pane");
+        Background background = createBackGround();
+        root.setBackground(background);
         Scene scene = new Scene(root, 800, 800);
         addContent();
         scene.setFill(Color.BLACK);
-        scene.getStylesheets().addAll(this.getClass().getResource("style.css").toExternalForm());
         primaryStage.setTitle("Blokus Solvers Screen");
         primaryStage.setScene(scene);
         primaryStage.show();
         stage = primaryStage;
+    }
+
+    public Background createBackGround(){
+        Image image = new Image("https://images.hdqwalls.com/wallpapers/simple-gray-background-4k-br.jpg",800,800,false,true);
+
+        BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
+
+        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+
+        Background background = new Background(backgroundImage);
+        return background;
     }
 
     private void addContent() {
@@ -73,8 +80,6 @@ public class SolversScreen extends Application {
 //        grid.setPadding(new Insets(25, 25, 25, 25));
 
         Text opt1 = new Text("First");
-        Font font = Font.loadFont("file:res/fonts/PlayMeGames-Demo.otf", 20);
-        opt1.setFont(font);
         grid.add(opt1, 0, 1);
 
         //this is how we manage choice box
@@ -89,7 +94,6 @@ public class SolversScreen extends Application {
         grid.add(c1, 1, 1);
 
         Label opt2 = new Label("Second");
-        opt2.setFont(font);
         grid.add(opt2, 0, 2);
 
         // string array
@@ -101,7 +105,6 @@ public class SolversScreen extends Application {
         grid.add(c2, 1, 2);
 
         Label opt3 = new Label("Third");
-        opt3.setFont(font);
         grid.add(opt3, 0, 3);
 
         // string array
@@ -114,7 +117,6 @@ public class SolversScreen extends Application {
         grid.add(c3, 1, 3);
 
         Label opt4 = new Label("Fourth");
-        opt4.setFont(font);
         grid.add(opt4, 0, 4);
 
         // string array
@@ -127,7 +129,6 @@ public class SolversScreen extends Application {
         grid.add(c4, 1,  4);
 
         Button exitButton = new Button("Back to Menu");
-        exitButton.setFont(font);
         exitButton.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override

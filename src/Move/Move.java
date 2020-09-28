@@ -78,6 +78,10 @@ public class Move {
     }
 
 
+    public Move() {
+        super();
+    }
+
     /**
      * checks if every piece block can be place in an empty square of the board
      * throws a not caught exception if piece is out of bounds.
@@ -299,6 +303,7 @@ public void writePieceIntoBoard(Board board) {
             //add piece to the board
             this.writePieceIntoBoard(board);
             player.getMoveLog().push(this);
+            this.piece.setUsed(true);
             board.paint();
 
             return true;
