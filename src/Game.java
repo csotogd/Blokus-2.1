@@ -25,7 +25,6 @@ public class Game extends Application {
 
     private Player[] players;
     private Player currentTurn;
-    private GameStatus status;
     private ArrayList<Move> movesPlayed= new ArrayList<>();
     private int numberOfPlayers = 4;
     private ArrayList<Move> movesLog=new ArrayList<>();
@@ -43,12 +42,7 @@ public class Game extends Application {
         stage.show();
     }
 
-    public enum GameStatus {
-        INTRO,
-        MOVE,
-        END,
 
-    }
 
 //NO BOT OPTION
     public void initializeNewGame(int numberOfPlayers, Vector2d boardDimensions){
@@ -67,7 +61,7 @@ public class Game extends Application {
         for(int i=1; i<= numberOfPlayers; i++){
             players[i-1]=new HumanPlayer(i);
             players[i-1].setColor(colors[i-1]);
-            players[i-1].setName("Martin");
+            players[i-1].setName("Player "+ i);
         }
         initializePlayerPieces(numberOfPlayers);
         players[0].setStartingCorner(new Vector2d(0,0));
@@ -104,16 +98,19 @@ public class Game extends Application {
 
     }
 
-    private void nextTurn(){
-        /*If if it is player 1 turn, then next turn will correspond to player 2,
+
+/*If if it is player 1 turn, then next turn will correspond to player 2,
          after the last player, we go back to the first one
          */
+    /*
+    private void nextTurn(){
+
 
         if (currentTurn.getPlayerNumber()<numberOfPlayers)
             currentTurn=players[currentTurn.getPlayerNumber()]; //player 2 occupies index 1 in array of players
         else
             currentTurn=players[0];
-    }
+    }*/
 /*
     //writes the piece into the board and adds it to the log
     public boolean makeMove(Piece piece, Vector2d position){
@@ -127,7 +124,7 @@ public class Game extends Application {
 
         }
 
- */
+
 
     //To be called after every move
     private void updateState(){
@@ -146,17 +143,17 @@ public class Game extends Application {
                 countPoints();
                 displayWinner();
                 //should show something ,ike play again?
-                  */
+
             }
         }
 
-
+ */
 
 
     /**
      * If none of the players made its move, then the game just ended
      * @return true if none of the plaayers made its move
-     */
+     *//*
     private boolean noOneMoved(){
         for (Player player: players){
             if(!player.getSkippedLastMove())
@@ -178,7 +175,7 @@ public class Game extends Application {
      * The player with the highest score wins. A player who played all of his or her pieces is awarded a +20 point bonus
      * if the last piece played was a monomino, or a +15 point bonus for any other piece
      * @param player
-     */
+     *//*
     private void countPointsPlayer(Player player){
         int points=0;
         int piecesPlaced=0;
@@ -204,6 +201,7 @@ public class Game extends Application {
 
     }
 
+    */
 
     public void setNumberOfPlayers(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;

@@ -20,18 +20,25 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+import Player.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 //TEST
 public class BoardUI{
     public Board board;
     public Parent gameBoard;
-    public Player[] players;
+    public Player[] players; //Initialize in game object
     private Background background;
     private final Vector2d RECTANGLE_SIZE = new Vector2d(100,280);
     private final int CELL_SIZE = 25;
     private Player actualPlayer;
     private int playerCounter;
+
+    private GameState state;
+    private ArrayList<Move> movesPlayed= new ArrayList<>();
+    private ArrayList<Move> movesLog=new ArrayList<>();
+
     Pane center;
     Pane right;
     Pane bottom;
@@ -40,6 +47,15 @@ public class BoardUI{
     FlowPane allPieces[];
     ChoiceBox choiceBox;
     Text turnOfPlayerText;
+
+    public enum GameState {
+        HUMAN_MOVE,
+        AI_MOVE,
+        END
+
+    }
+
+
 
     public BoardUI(Player[] players){
         this.players = players;
@@ -361,8 +377,10 @@ public class BoardUI{
                 System.out.println(coordinates.getX()+ " "+coordinates.getY());
                 Vector2d position = new Vector2d((int)((MousePosX-coordinates.getX())/27),(int)((MousePosY-coordinates.getY())/27));
                 System.out.println(position.get_x() + "  " + position.get_y());
-                Move move = new Move(actualPlayer,pieceRoot,position);
                 System.out.println("starting corner: "+actualPlayer.getStartingCorner().get_x()+" "+actualPlayer.getStartingCorner().get_y());
+
+                Move move = new Move(actualPlayer,pieceRoot,position);
+
                 if(move.makeMove(board)){
                     System.out.println("piece removed");
                     allPieces.getChildren().remove(piece);
@@ -385,6 +403,106 @@ public class BoardUI{
         });
 
         return piece;
+    }
+
+    private void nextTurn(){
+        /*If if it is player 1 turn, then next turn will correspond to player 2,
+         after the last player, we go back to the first one
+         */
+
+        if (actualPlayer.getPlayerNumber()<players.length)
+            actualPlayer=players[actualPlayer.getPlayerNumber()]; //player 2 occupies index 1 in array of players
+        else
+            actualPlayer=players[0];
+    }
+
+    private void updateState(){
+      
+
+        if(state== GameState.HUMAN_MOVE || state==GameState.AI_MOVE) {
+            if (noOneMoved())
+                state = GameState.END;
+            else {
+                nextTurn();
+                if (actualPlayer instanceof BotPlayer)
+                state = GameState.HUMAN_MOVE;
+                else
+                state = GameState.AI_MOVE;
+            }
+        }
+
+
+        if (state==GameState.END){
+
+                countPoints();
+                //displayWinner();
+                //should show something ,like play again?
+
+        }
+    }
+
+    /**
+     * If none of the players made its move, then the game just ended
+     * @return true if none of the plaayers made its move
+     */
+    private boolean noOneMoved(){
+        for (Player player: players){
+            if(!player.getSkippedLastMove())
+                return false;
+
+
+        }
+        return true;
+    }
+
+    private void countPoints(){
+        for(Player player: players)
+            countPointsPlayer(player);
+    }
+
+
+
+    /**
+     * When a game ends, each player counts every square that he/she did NOT place on the board,
+     * each counting as a negative (-1) point (e.g. a tetromino is worth -4 points).
+     * The player with the highest score wins. A player who played all of his or her pieces is awarded a +20 point bonus
+     * if the last piece played was a monomino, or a +15 point bonus for any other piece
+     * @param player
+     */
+    private void countPointsPlayer(Player player){
+        int points=0;
+        int piecesPlaced=0;
+        int blocksNotPlaced=0;
+        for(Piece piece : player.getPiecesList()){
+            if(piece.isUsed())   //in board ui, pieces are not marked as used
+                piecesPlaced++;
+            else
+                blocksNotPlaced+=piece.getNumberOfBlocks();
+        }
+        points-=blocksNotPlaced;
+
+        if (piecesPlaced==player.getPiecesList().size()){
+            Piece lastPiece= player.getMoveLog().peek().getPiece();
+            if(lastPiece.getNumberOfBlocks()==1)
+                points+=20;
+            else
+                points+=15;
+
+        }
+
+        player.setPoints(points);
+
+    }
+
+    //writes the piece into the board and adds it to the log
+    public boolean makeMove(Move move){
+        if(move.makeMove(board)) {
+            movesLog.add(move);
+            updateState();
+            return true;
+        }
+        return false;
+
     }
 
 
