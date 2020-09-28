@@ -36,7 +36,6 @@ public class BoardUI{
     private int playerCounter;
 
     private GameState state;
-    private ArrayList<Move> movesPlayed= new ArrayList<>();
     private ArrayList<Move> movesLog=new ArrayList<>();
 
     Pane center;
@@ -66,6 +65,8 @@ public class BoardUI{
         this.board = new Board(players);
         this.gameBoard = createBoard();
         makePiecesOpaque();
+
+        state=GameState.HUMAN_MOVE; //TODO change this for second period
 
     }
 
@@ -381,12 +382,12 @@ public class BoardUI{
 
                 Move move = new Move(actualPlayer,pieceRoot,position);
 
-                if(move.makeMove(board)){
+                if(makeMove(move)){
                     System.out.println("piece removed");
-                    allPieces.getChildren().remove(piece);
+                    allPieces.getChildren().remove(piece); //every piece also has an internal used state which is updated
                     actualPlayer.getPiecesList().remove(pieceRoot);
-                    actualPlayer = players[playerCounter++];
-                    if(playerCounter>=players.length) playerCounter=0;
+                   // actualPlayer = players[playerCounter++];
+                   // if(playerCounter>=players.length) playerCounter=0;
                     //choiceBox.getSelectionModel().select(0);
                     makePiecesOpaque();
                     turnOfPlayerText.setText(actualPlayer.getName());
@@ -405,10 +406,10 @@ public class BoardUI{
         return piece;
     }
 
+    /*If if it is player 1 turn, then next turn will correspond to player 2,
+          after the last player, we go back to the first one
+          */
     private void nextTurn(){
-        /*If if it is player 1 turn, then next turn will correspond to player 2,
-         after the last player, we go back to the first one
-         */
 
         if (actualPlayer.getPlayerNumber()<players.length)
             actualPlayer=players[actualPlayer.getPlayerNumber()]; //player 2 occupies index 1 in array of players
@@ -416,13 +417,18 @@ public class BoardUI{
             actualPlayer=players[0];
     }
 
+    /**
+     * to be called in every move
+     */
     private void updateState(){
-      
 
         if(state== GameState.HUMAN_MOVE || state==GameState.AI_MOVE) {
-            if (noOneMoved())
+            if (noOneMoved()){
                 state = GameState.END;
+        System.out.println("In game status:  mo one moved");
+            }
             else {
+                System.out.println("In game status:  someone did move moved");
                 nextTurn();
                 if (actualPlayer instanceof BotPlayer)
                 state = GameState.HUMAN_MOVE;
@@ -439,6 +445,9 @@ public class BoardUI{
                 //should show something ,like play again?
 
         }
+
+
+
     }
 
     /**
