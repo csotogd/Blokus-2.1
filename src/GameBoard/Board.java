@@ -17,6 +17,8 @@ public class Board extends Pane {
 
     private final int BOARD_SIZE = 20;
     private final int CELL_SIZE = 25;
+
+
     public int[][] board;
     private final Vector2d DIMENSION = new Vector2d(20, 20);
     public GridPane gameBoardRep;
@@ -93,6 +95,16 @@ public class Board extends Pane {
         if(board[position.get_y()][position.get_x()]==player) return true;
         return false;
     }
+
+
+    public int[][] getBoard() {
+        return board;
+    }
+
+    public void setBoard(int[][] board) {
+        this.board = board;
+    }
+
     public Vector2d getBoardDimension(){
         return this.DIMENSION;
     }
