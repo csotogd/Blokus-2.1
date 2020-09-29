@@ -23,6 +23,7 @@ import javafx.scene.text.Text;
 import Player.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 //TEST
 public class BoardUI{
@@ -425,6 +426,14 @@ public class BoardUI{
             actualPlayer=players[actualPlayer.getPlayerNumber()]; //player 2 occupies index 1 in array of players
         else
             actualPlayer=players[0];
+
+        //after the new player is assigned, we should check if thath player is able to do at least one move, else we skip him
+        if( !  actualPlayer.possibleMove(board)){
+            actualPlayer.setSkippedLastMove(true);
+            System.out.println("player "+actualPlayer.getName()+" can not move, no available moves");
+            updateState();
+        }
+
     }
 
     /**
@@ -435,7 +444,7 @@ public class BoardUI{
         if(state== GameState.HUMAN_MOVE || state==GameState.AI_MOVE) {
             if (noOneMoved()){
                 state = GameState.END;
-        System.out.println("In game status:  mo one moved");
+            System.out.println("In game status:  mo one moved");
             }
             else {
                 System.out.println("In game status:  someone did move moved");
@@ -444,6 +453,8 @@ public class BoardUI{
                 state = GameState.HUMAN_MOVE;
                 else
                 state = GameState.AI_MOVE;
+
+
             }
         }
 
@@ -512,6 +523,8 @@ public class BoardUI{
         player.setPoints(points);
 
     }
+
+
 
     //writes the piece into the board and adds it to the log
     public boolean makeMove(Move move){

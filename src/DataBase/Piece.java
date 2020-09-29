@@ -107,6 +107,17 @@ public Piece clone(){
         return used;
     }
 
+    public void printShape(){
+        System.out.println();
+        for (int i=0; i<shape.length; i++) {
+            for (int j = 0; j < shape[0].length; j++) {
+                System.out.print(shape[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
     public  List<int[][]> getPermutations(){
         System.out.println("using get permutations from piece class, not allowed, ask carlos");
         return null;
