@@ -24,15 +24,13 @@ import java.util.LinkedList;
 public class Game extends Application {
 
     private Player[] players;
-    private Player currentTurn;
-    private ArrayList<Move> movesPlayed= new ArrayList<>();
-    private int numberOfPlayers = 4;
-    private ArrayList<Move> movesLog=new ArrayList<>();
     private final Vector2d DIMENSION = new Vector2d(20, 20);
+    private String[] playersName;
 
     @Override
     public void start(Stage stage){
-        initializeNewGame(numberOfPlayers,new Vector2d(50,50));
+        playersName = Data.getPlayersName();
+        initializeNewGame();
         BoardUI gameBoard = new BoardUI(players);
         Parent root = gameBoard.gameBoard;
         stage.setTitle("Blokus Game Group 15");
@@ -45,25 +43,20 @@ public class Game extends Application {
 
 
 //NO BOT OPTION
-    public void initializeNewGame(int numberOfPlayers, Vector2d boardDimensions){
+    public void initializeNewGame(){
 
-        initializePlayers(numberOfPlayers);
-
-        //Draw everything
-        currentTurn=players[0];
-
-
+        initializePlayers();
 
     }
-    private void initializePlayers(int numberOfPlayers){
+    private void initializePlayers(){
         Color[] colors = {Color.RED,Color.YELLOW,Color.GREEN,Color.BLUE};
-        players= new Player[numberOfPlayers];
-        for(int i=1; i<= numberOfPlayers; i++){
+        players= new Player[playersName.length];
+        for(int i=1; i<= playersName.length; i++){
             players[i-1]=new HumanPlayer(i);
             players[i-1].setColor(colors[i-1]);
-            players[i-1].setName("Player "+ i);
+            players[i-1].setName(playersName[i-1]);
         }
-        initializePlayerPieces(numberOfPlayers);
+        initializePlayerPieces();
         players[0].setStartingCorner(new Vector2d(0,0));
         if(players.length==4){
             players[1].setStartingCorner(new Vector2d(19,0));
@@ -86,9 +79,9 @@ public class Game extends Application {
             players[3].setStartingCorner(new Vector2d(boardDimension.get_x()-1,0));
     }
 
-    private void initializePlayerPieces(int numberOfPlayers){
+    private void initializePlayerPieces(){
 
-        for(int i=1; i<= numberOfPlayers; i++){
+        for(int i=1; i<= playersName.length; i++){
             PieceFactory pieceFactory= PieceFactory.get();
             List<Piece> pieces = pieceFactory.getAllPieces();
 
@@ -202,16 +195,4 @@ public class Game extends Application {
     }
 
     */
-
-    public void setNumberOfPlayers(int numberOfPlayers) {
-        this.numberOfPlayers = numberOfPlayers;
-    }
-
-    public Player[] getPlayers() {
-        return players;
-    }
-
-    public int getNumberOfPlayers() {
-        return numberOfPlayers;
-    }
 }

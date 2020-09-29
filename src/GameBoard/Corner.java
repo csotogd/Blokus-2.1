@@ -177,7 +177,7 @@ public class Corner {
 
         }
     }
-
+/*
     public static void main(String[] args){
         Board board = new Board(new int[][]{
                 {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
