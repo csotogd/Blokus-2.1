@@ -236,11 +236,11 @@ public class BoardUI{
             Piece piece = actualPlayer.getPiecesList().get(pieceNbr-1);
             piece.rotateUpsideDown();
             int isPiece = 0;
-            for (Object object:allPieces[playerCounter-1].getChildren()) {
+            for (Object object:allPieces[actualPlayer.getNumber()-1].getChildren()) {
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
                     if((isPiece==pieceNbr)){
-                        int index = allPieces[playerCounter-1].getChildren().indexOf(object);
+                        int index = allPieces[actualPlayer.getNumber()-1].getChildren().indexOf(object);
                         allPieces[actualPlayer.getNumber()-1].getChildren().remove(index);
                         allPieces[actualPlayer.getNumber()-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[actualPlayer.getNumber()-1]));
 /*
@@ -261,11 +261,11 @@ public class BoardUI{
             Piece piece = actualPlayer.getPiecesList().get(pieceNbr-1);
             piece.rotateLeft();
             int isPiece = 0;
-            for (Object object:allPieces[playerCounter-1].getChildren()) {
+            for(Object object:allPieces[actualPlayer.getNumber()-1].getChildren()) {
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
                     if((isPiece==pieceNbr)){
-                        int index = allPieces[playerCounter-1].getChildren().indexOf(object);
+                        int index = allPieces[actualPlayer.getNumber()-1].getChildren().indexOf(object);
                         /*
                         allPieces[playerCounter-1].getChildren().remove(index);
                         allPieces[playerCounter-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[playerCounter-1]));
@@ -395,6 +395,7 @@ public class BoardUI{
                     System.out.println("piece removed");
                     allPieces.getChildren().remove(piece); //every piece also has an internal used state which is updated
                     actualPlayer.getPiecesList().remove(pieceRoot);
+                    updateState();
                    // actualPlayer = players[playerCounter++];
                    // if(playerCounter>=players.length) playerCounter=0;
                     //choiceBox.getSelectionModel().select(0);
@@ -516,7 +517,7 @@ public class BoardUI{
     public boolean makeMove(Move move){
         if(move.makeMove(board)) {
             movesLog.add(move);
-            updateState();
+            //updateState();
             return true;
         }
         return false;
