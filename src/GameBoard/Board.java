@@ -28,6 +28,10 @@ public class Board extends Pane {
         createBoard();
     }
 
+    public Board(int[][] board){
+        this.board=board;
+    }
+
     public void createBoard() {
         for (int i = 0; i < DIMENSION.get_x(); i++) {
             for (int j = 0; j < DIMENSION.get_y(); j++) {
