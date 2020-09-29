@@ -209,5 +209,5 @@ ArrayList <Corner> corners= Corner.getCorner(board, new Vector2d(0,0));
     System.out.println("expected positions:");
     for(Vector2d otherCorner:corner.getToCornerPositions()) System.out.println(otherCorner.get_x()+" "+otherCorner.get_y());}
     }
-
+*/
 }
