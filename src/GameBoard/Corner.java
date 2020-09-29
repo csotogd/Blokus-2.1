@@ -64,7 +64,7 @@ public class Corner {
      * @param startingPosition starting position of the player
      * @return
      */
-    public static List<Corner> getCorner(Board board, Vector2d startingPosition){
+    public static ArrayList<Corner> getCorner(Board board, Vector2d startingPosition){
         ArrayList<Corner> corners = new ArrayList<>();
         if(board.board[startingPosition.get_y()][startingPosition.get_x()]==0){
             Vector2d adjacent=startingPosition.add(new Vector2d(1,1));
@@ -116,7 +116,7 @@ public class Corner {
                     down=false;
                     findCorners(board, checked, position.add(new Vector2d(0,1)), corners, player);
                 }
-                if(board.inBoard(position.add(new Vector2d(-0,1))) && board.board[position.get_y()][position.get_x()-1]==player){
+                if(board.inBoard(position.add(new Vector2d(-1,0))) && board.board[position.get_y()][position.get_x()-1]==player){
                     left=false;
                     findCorners(board, checked, position.add(new Vector2d(-1,0)), corners, player);
                 }
@@ -128,11 +128,13 @@ public class Corner {
                 Corner current=null;//current corner being evaluated
 
                 if(top && left
+                        && board.inBoard(new Vector2d(position.get_x()-1, position.get_y()-1))
                         && board.board[position.get_y()-1][position.get_x()-1]==0){
                     current = new  Corner(position,position.add(new Vector2d(-1,-1)));
                     corners.add(current);
                 }
                 if(top && right
+                        && board.inBoard(new Vector2d(position.get_x()+1, position.get_y()-1))
                         && board.board[position.get_y()-1][position.get_x()+1]==0){
                     if(current==null) {
                         current = new Corner(position,position.add(new Vector2d(1,-1)));
@@ -143,6 +145,7 @@ public class Corner {
                     }
                 }
                 if(down && left
+                        && board.inBoard(new Vector2d(position.get_x()-1, position.get_y()+1))
                         && board.board[position.get_y()+1][position.get_x()-1]==0){
                     if(current==null) {
                         current = new Corner(position,position.add(new Vector2d(-1,1)));
@@ -153,6 +156,7 @@ public class Corner {
                     }
                 }
                 if(down && right
+                        && board.inBoard(new Vector2d(position.get_x()+1, position.get_y()+1))
                         && board.board[position.get_y()+1][position.get_x()+1]==0){
                     if(current==null) {
                         current = new Corner(position,position.add(new Vector2d(1,1)));
@@ -173,24 +177,37 @@ public class Corner {
 
         }
     }
-/*
-    public static void main(String[] args){
-        Board board = new Board(2);
-        HumanPlayer jesus = new HumanPlayer(1, "Jesus");
-        jesus.setPiecesList(PieceFactory.get().getAllPieces());
-        Piece fpiece=null;
-        for(Piece p: jesus.getPiecesList()){
-            if(p.getLabel().equals("F")) fpiece = p;
-        }
 
-        Move move = new Move(jesus,fpiece,new Vector2d(0,0));
-        System.out.println(fpiece);
-        for(Corner c: fpiece.getCornersContacts(move.getPosition())){
-            System.out.print(c.getPosition().get_x()+" "+c.getPosition().get_y()+" -- ");
-            for(Vector2d complement:c.getToCornerPositions()) System.out.print(complement.get_x()+" "+complement.get_y()+"/");
-            System.out.println();
-        }
+    public static void main(String[] args){
+        Board board = new Board(new int[][]{
+                {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}});
+
+
+
+ArrayList <Corner> corners= Corner.getCorner(board, new Vector2d(0,0));
+    for(Corner corner : corners){
+    corner.getPosition().printVector();
+    System.out.println("expected positions:");
+    for(Vector2d otherCorner:corner.getToCornerPositions()) System.out.println(otherCorner.get_x()+" "+otherCorner.get_y());}
     }
 
-     */
 }
