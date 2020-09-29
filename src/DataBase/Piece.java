@@ -8,7 +8,7 @@ import Tools.Vector2d;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Piece {
+public class Piece {
     private int[][] shape;
     private boolean used;
     protected boolean mirror;
@@ -28,6 +28,19 @@ public abstract class Piece {
         this.label=label;
         this.used = false;
     }
+public Piece clone(){
+        int [][]shape= new int[getShape().length][getShape()[0].length];
+        for(int i=0; i<this.shape.length; i++)
+        for(int j=0; j<this.shape[i].length; j++)
+            shape[i][j]=this.shape[i][j];
+        String label= this.label;
+        boolean mirror= this.mirror;
+        int rotation = this.nbRotation;
+        totalConfig=this.totalConfig;
+
+        return new Piece(label, shape, mirror, rotation, totalConfig);
+}
+
 
     /**
      * MAkes sure every piece has its own number
@@ -94,7 +107,10 @@ public abstract class Piece {
         return used;
     }
 
-    public abstract List<int[][]> getPermutations();
+    public  List<int[][]> getPermutations(){
+        System.out.println("using get permutations from piece class, not allowed, ask carlos");
+        return null;
+    }
 
     public int getNumberOfBlocks(){
         return this.numberOfBlocks;
@@ -151,7 +167,10 @@ public abstract class Piece {
         }
         numberOfBlocks=blocks;
     }
-    public abstract Piece getPiece();
+    public  Piece getPiece(){
+        System.out.println("calling get piece in piece class, only makes sense in subclasses");
+        return null;
+    }
 
     /** //TODO: should we move this method to move class?
      * Methods that finds coordinates of the corners of the piece and the coordinates of the corner of the piece on the board
