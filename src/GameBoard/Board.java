@@ -56,7 +56,40 @@ public class Board extends Pane {
                 tile.setStrokeWidth(2.0);
                 tile.setStroke(Color.BLACK);
 
-                gameBoardRep.add(new StackPane(tile), j, i);
+                Text text = new Text();
+                text.setScaleX(0.8);
+                text.setScaleY(0.8);
+
+                GridPane.setRowIndex(tile, i);
+                GridPane.setColumnIndex(tile, j);
+                GridPane.setRowIndex(text, i);
+                GridPane.setColumnIndex(text, j);
+
+                if (players.length==2){
+                    if(i==0&&j==0){
+                        text.setText("HERE");
+                        text.setFill(Color.RED);
+                    }else if(i==BOARD_SIZE-1&&j==BOARD_SIZE-1){
+                        text.setText("HERE");
+                        text.setFill(Color.YELLOW);
+                    }
+                }else if(players.length==4){
+                    if(i==0&&j==0){
+                        text.setText("HERE");
+                        text.setFill(Color.RED);
+                    }else if(i==BOARD_SIZE-1&&j==BOARD_SIZE-1){
+                        text.setText("HERE");
+                        text.setFill(Color.GREEN);
+                    }else if(i==BOARD_SIZE-1&&j==0){
+                        text.setText("HERE");
+                        text.setFill(Color.BLUE);
+                    }else if(i==0&&j==BOARD_SIZE-1){
+                        text.setText("HERE");
+                        text.setFill(Color.YELLOW);
+                    }
+                }
+
+                gameBoardRep.getChildren().addAll(tile,text);
             }
         }
 
