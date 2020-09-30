@@ -17,8 +17,8 @@ import java.util.ArrayList;
 //TEST
 public class Board extends Pane {
 
-    private final int BOARD_SIZE = 20;
-    private final int CELL_SIZE = 25;
+    private final int BOARD_SIZE = 20;//20
+    private final int CELL_SIZE = 25;//25
 
 
     public int[][] board;
@@ -97,7 +97,7 @@ public class Board extends Pane {
 
         getChildren().add(gameBoardRep);
 
-        System.out.println("updated");
+       // System.out.println("updated");
     }
 
     public  Color paintColor(int col, int row){

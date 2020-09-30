@@ -385,15 +385,15 @@ public class BoardUI{
                 Bounds bounds = board.gameBoardRep.getLayoutBounds();
                 Point2D coordinates = board.gameBoardRep.localToScene(bounds.getMinX(), bounds.getMinY());
 
-                System.out.println(coordinates.getX()+ " "+coordinates.getY());
+                //System.out.println(coordinates.getX()+ " "+coordinates.getY());
                 Vector2d position = new Vector2d((int)((MousePosX-coordinates.getX())/27),(int)((MousePosY-coordinates.getY())/27));
-                System.out.println(position.get_x() + "  " + position.get_y());
-                System.out.println("starting corner: "+actualPlayer.getStartingCorner().get_x()+" "+actualPlayer.getStartingCorner().get_y());
+                //System.out.println(position.get_x() + "  " + position.get_y());
+                //System.out.println("starting corner: "+actualPlayer.getStartingCorner().get_x()+" "+actualPlayer.getStartingCorner().get_y());
 
                 Move move = new Move(actualPlayer,pieceRoot,position);
 
                 if(makeMove(move)){
-                    System.out.println("piece removed");
+                    //System.out.println("piece removed");
                     allPieces.getChildren().remove(piece); //every piece also has an internal used state which is updated
                     actualPlayer.getPiecesList().remove(pieceRoot);
                     updateState();
@@ -409,7 +409,7 @@ public class BoardUI{
                     piece.setTranslateX(pieceRoot.getPosInBoardX());
                     piece.setTranslateY(pieceRoot.getPosInBoardY());
                 }
-                System.out.println(actualPlayer.getPiecesList().get(0).getPosInBoardX()+" "+actualPlayer.getPiecesList().get(0).getPosInBoardY  ());
+                //System.out.println(actualPlayer.getPiecesList().get(0).getPosInBoardX()+" "+actualPlayer.getPiecesList().get(0).getPosInBoardY  ());
                 event.consume();
             }
         });
@@ -433,6 +433,8 @@ public class BoardUI{
             System.out.println("player "+actualPlayer.getName()+" can not move, no available moves");
             updateState();
         }
+        else
+            actualPlayer.setSkippedLastMove(false);
 
     }
 
@@ -447,7 +449,8 @@ public class BoardUI{
             System.out.println("In game status:  mo one moved");
             }
             else {
-                System.out.println("In game status:  someone did move moved");
+                System.out.println(actualPlayer.getName()+ " skipped last move?: "+actualPlayer.getSkippedLastMove());
+                //System.out.println("In game status:  someone did move moved");
                 nextTurn();
                 if (actualPlayer instanceof BotPlayer)
                 state = GameState.HUMAN_MOVE;
@@ -462,6 +465,7 @@ public class BoardUI{
         if (state==GameState.END){
 
                 countPoints();
+                System.out.println("THE GAME HAS ENDED");
                 //displayWinner();
                 //should show something ,like play again?
 

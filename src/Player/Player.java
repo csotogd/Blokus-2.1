@@ -95,42 +95,47 @@ public abstract class Player {
      */
     public boolean possibleMove(Board board){
     //TODO for phase 2 we will probably make this move an arraylist with the moves or something similar instead of a boolean
-        ArrayList<Corner> possibleCorners = board.getCorner(this.getStartingCorner());
+        ArrayList<Corner> cornersOnBOard = board.getCorner(this.getStartingCorner());
 
-        /*************DEBUGGING*********/
+        /*************DEBUGGING*********
         System.out.println("possible empty spaces touching corner for "+ name+" :   ");
 
-        for (Corner corner : possibleCorners)
+        for (Corner corner : cornersOnBOard)
             for (Vector2d empty: corner.getToCornerPositions())
             empty.printVector();
-        /*******************/
+        *******************/
 
 
 
 
         for (Piece piecetoClone: this.getPiecesList()){
             if (!piecetoClone.isUsed()) {
-                Piece piece=piecetoClone.clone(); // we clone it cause we rotate it and we do not want that to affect the real piece displayed
-                for (int i = 0; i < 4; i++){ //TODO calculate only for permutations of a piece, for instance 1 instead of 4
+                Piece piece = piecetoClone.clone(); // we clone it cause we rotate it and we do not want that to affect the real piece displayed
+                for (int i = 0; i < 4; i++) { //TODO calculate only for permutations of a piece, for instance 1 instead of 4
                     piece.rotateLeft(); //try all possible rotations
-                    piece.printShape();
-                    Move firstMove = new Move(this, piece, startingCorner);
+                    //get all the corners for that piece.
+                    for (Corner pieceCorner : piece.getCornersContacts(new Vector2d(0, 0))) {
+                        //piece.printShape();
+                        Move firstMove = new Move(this, piece, startingCorner);
+                        if (firstMove.isAllowed(board))
+                            return true;
 
-                    if (firstMove.isAllowed(board))
-                        return true;
-                     for (Corner corner: possibleCorners){
-                        for(Vector2d emptyCorner : corner.getToCornerPositions()){ //for all the possible empty squares that would become corner contact
-                            //System.out.println("in for: ");emptyCorner.printVector();
-                            for(Vector2d pieceCorner: piece.getCornersContacts())
+                        for (Corner corner : cornersOnBOard) {
+                            for (Vector2d emptyCorner : corner.getToCornerPositions()) { //for all the possible empty squares that would become corner contact
+                                //System.out.println("in for: ");emptyCorner.printVector();
+                                //move the piece so that it is contact with the corner with the part of it we want
+                                Vector2d positionOfPiece= emptyCorner.subtract(pieceCorner.getPosition());
 
-                            Move move = new Move(this, piece, emptyCorner);
-                            move.print();
-                            board.print();
-                            System.out.println();
-                            if (move.isAllowed(board) )
-                                return true; //if at least one move is allowed
+
+                                Move move = new Move(this, piece, positionOfPiece);
+                                //move.print();
+                                //board.print();
+                                //System.out.println();
+                                if (move.isAllowed(board))
+                                    return true; //if at least one move is allowed
+                            }
+
                         }
-
                     }
                 }
             }
