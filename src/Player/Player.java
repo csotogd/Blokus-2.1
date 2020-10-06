@@ -14,6 +14,7 @@ import java.util.Stack;
 public abstract class Player {
     protected int number;
     protected List<Piece> piecesList = new ArrayList<Piece>();
+    protected List<Piece> piecesUsed = new ArrayList<Piece>();
     protected String name;
     protected boolean humanPlayer;
     protected Color color;
@@ -144,6 +145,8 @@ public abstract class Player {
     return false; // if no piece can be placed in any of the corners
 
     }
-
+public List<Piece> getPiecesUsed(){
+        return this.piecesUsed;
+}
 
 }

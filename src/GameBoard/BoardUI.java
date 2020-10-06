@@ -43,6 +43,7 @@ public class BoardUI{
     private final int CELL_SIZE = 25;
     private Player actualPlayer;
     private int playerCounter;
+    private final int NUMBER_OF_PIECES_PER_PLAYER=20;
 
     public GameState state;
     private ArrayList<Move> movesLog=new ArrayList<>();
@@ -469,6 +470,7 @@ public class BoardUI{
 
 
             }
+            debuggingPiecesUsed();
         }
 
 
@@ -513,8 +515,12 @@ public class BoardUI{
     }
 
     private void countPoints(){
-        for(Player player: players)
+        System.out.println("In countPoints(): ");
+        for(Player player: players) {
             countPointsPlayer(player);
+
+            System.out.println(player.getName()+"has "+player.getPoints()+" points");
+        }
     }
 
 
@@ -526,16 +532,22 @@ public class BoardUI{
      * if the last piece played was a monomino, or a +15 point bonus for any other piece
      * @param player
      */
-    private void countPointsPlayer(Player player){
+    private void countPointsPlayer(Player player){/*
         int points=0;
         int piecesPlaced=0;
         int blocksNotPlaced=0;
         for(Piece piece : player.getPiecesList()){
-            if(piece.isUsed())   //in board ui, pieces are not marked as used
+            if(piece.isUsed()) {   //in board ui, pieces are not marked as used
                 piecesPlaced++;
-            else
-                blocksNotPlaced+=piece.getNumberOfBlocks();
+                System.out.println("piece used");
+            }
+            else {
+                blocksNotPlaced += piece.getNumberOfBlocks();
+                System.out.println("number of blocks: "+piece.getNumberOfBlocks());
+            }
         }
+        System.out.println(player.getName()+" pieces placed: "+piecesPlaced);
+        System.out.println(player.getName()+" BLocks not placed: "+blocksNotPlaced);
         points-=blocksNotPlaced;
 
         if (piecesPlaced==player.getPiecesList().size()){
@@ -546,8 +558,39 @@ public class BoardUI{
                 points+=15;
 
         }
+        System.out.println(player.getName()+" Points: "+ points);
 
         player.setPoints(points);
+*/
+        int points=0;
+        int piecesPlaced=0;
+        int blocksNotPlaced=0;
+        for(Piece piece : player.getPiecesUsed()){
+                //in board ui, pieces are not marked as used
+                piecesPlaced++;
+                System.out.println("piece used");
+            }
+            for(Piece piece : player.getPiecesList()) {
+                blocksNotPlaced += piece.getNumberOfBlocks();
+               // System.out.println("number of blocks: "+piece.getNumberOfBlocks());
+            }
+
+
+        points-=blocksNotPlaced;
+
+        if (piecesPlaced==NUMBER_OF_PIECES_PER_PLAYER){//if I check if number of unused pieeces is 0, the size might be 1 when it should be 0 cause the deletion is done in the ui logic after the make move...but just maybe, I have not checked
+            Piece lastPiece= player.getMoveLog().peek().getPiece();
+            System.out.println("last piece placed"+ lastPiece.getLabel());
+            if(lastPiece.getNumberOfBlocks()==1)
+                points+=20;
+            else
+                points+=15;
+
+        }
+        System.out.println(player.getName()+" Points: "+ points);
+
+        player.setPoints(points);
+
 
     }
 
@@ -564,5 +607,11 @@ public class BoardUI{
 
     }
 
+    public void debuggingPiecesUsed() {
+        for (Piece piece : actualPlayer.getPiecesList()) {
+            if (piece.isUsed())
+                System.out.println("piece " + piece.getLabel() + "is used");
 
+        }
+    }
 }

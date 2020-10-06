@@ -303,7 +303,10 @@ public void writePieceIntoBoard(Board board) {
             //add piece to the board
             this.writePieceIntoBoard(board);
             player.getMoveLog().push(this);
-            this.piece.setUsed(true);
+            this.piece.setUsed(true);//TODO erase this none sense line of code, completely useless
+            this.player.getPiecesUsed().add(this.piece);
+            //System.out.println("number of blocks from make move: "+piece.getNumberOfBlocks());
+
             board.paint();
 
             return true;
