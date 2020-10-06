@@ -27,6 +27,10 @@ public class Piece {
         this.totalConfig=totalConfig;
         this.label=label;
         this.used = false;
+        this.numberOfBlocks=0;
+        for(int[] line : shape)
+            for(int i: line)
+                if(i!=0) this.numberOfBlocks++;
     }
 public Piece clone(){
         int [][]shape= new int[getShape().length][getShape()[0].length];
