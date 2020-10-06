@@ -7,8 +7,11 @@ import Tools.Vector2d;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import DataBase.*;
 import javafx.scene.shape.Rectangle;
@@ -24,14 +27,14 @@ import java.util.LinkedList;
 public class Game extends Application {
 
     private Player[] players;
-    private final Vector2d DIMENSION = new Vector2d(20, 20);
+    private final Vector2d DIMENSION = Data.getDIMENSION();
     private String[] playersName;
 
     @Override
     public void start(Stage stage){
         playersName = Data.getPlayersName();
         initializeNewGame();
-        BoardUI gameBoard = new BoardUI(players);
+        BoardUI gameBoard = new BoardUI(players,stage);
         Parent root = gameBoard.gameBoard;
         stage.setTitle("Blokus Game Group 15");
         Scene scene = new Scene(root, 1000, 1000);
@@ -59,11 +62,11 @@ public class Game extends Application {
         initializePlayerPieces();
         players[0].setStartingCorner(new Vector2d(0,0));
         if(players.length==4){
-            players[1].setStartingCorner(new Vector2d(19,0));
-            players[2].setStartingCorner(new Vector2d(19,19));
-            players[3].setStartingCorner(new Vector2d(0,19));
+            players[1].setStartingCorner(new Vector2d(DIMENSION.get_x()-1,0));
+            players[2].setStartingCorner(new Vector2d(DIMENSION.get_x()-1,DIMENSION.get_y()-1));
+            players[3].setStartingCorner(new Vector2d(0,DIMENSION.get_y()-1));
         }else{
-            players[1].setStartingCorner(new Vector2d(19,19));
+            players[1].setStartingCorner(new Vector2d(DIMENSION.get_x()-1,DIMENSION.get_y()-1));
         }
 
     }

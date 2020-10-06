@@ -4,12 +4,15 @@ import DataBase.Piece;
 import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.image.Image;
@@ -21,9 +24,14 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 import Player.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.Window;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
 //TEST
 public class BoardUI{
@@ -36,7 +44,7 @@ public class BoardUI{
     private Player actualPlayer;
     private int playerCounter;
 
-    private GameState state;
+    public GameState state;
     private ArrayList<Move> movesLog=new ArrayList<>();
 
     Pane center;
@@ -48,6 +56,8 @@ public class BoardUI{
     ChoiceBox choiceBox;
     Text turnOfPlayerText;
 
+    Stage stage;
+
     public enum GameState {
         HUMAN_MOVE,
         AI_MOVE,
@@ -57,7 +67,8 @@ public class BoardUI{
 
 
 
-    public BoardUI(Player[] players){
+    public BoardUI(Player[] players, Stage stage){
+        this.stage = stage;
         this.players = players;
         allPieces = new FlowPane[players.length];
         this.playerCounter = 0;
@@ -68,7 +79,6 @@ public class BoardUI{
         makePiecesOpaque();
 
         state=GameState.HUMAN_MOVE; //TODO change this for second period
-
     }
 
     public void makePiecesOpaque(){
@@ -466,8 +476,15 @@ public class BoardUI{
 
                 countPoints();
                 System.out.println("THE GAME HAS ENDED");
-                //displayWinner();
-                //should show something ,like play again?
+                stage.close();
+            final Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.initOwner(stage);
+            VBox dialogVbox = new VBox(20);
+            dialogVbox.getChildren().add(new Text("GAME END + Score ..."));
+            Scene dialogScene = new Scene(dialogVbox, 300, 200);
+            dialog.setScene(dialogScene);
+            dialog.show();
 
         }
 

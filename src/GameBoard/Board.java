@@ -1,5 +1,6 @@
 package GameBoard;
 
+import DataBase.Data;
 import DataBase.Piece;
 import Player.Player;
 import Tools.Vector2d;
@@ -17,12 +18,11 @@ import java.util.ArrayList;
 //TEST
 public class Board extends Pane {
 
-    private final int BOARD_SIZE = 20;//20
     private final int CELL_SIZE = 25;//25
 
 
     public int[][] board;
-    private final Vector2d DIMENSION = new Vector2d(20, 20);
+    private final Vector2d DIMENSION = Data.getDIMENSION();
     public GridPane gameBoardRep;
     Player[] players;
 
@@ -50,8 +50,8 @@ public class Board extends Pane {
         getChildren().clear();
         gameBoardRep = new GridPane();
 
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
+        for (int i = 0; i < DIMENSION.get_x(); i++) {
+            for (int j = 0; j < DIMENSION.get_y(); j++) {
 
                 Rectangle tile = new Rectangle(CELL_SIZE, CELL_SIZE);
                 tile.setFill(paintColor(i,j));
@@ -71,7 +71,7 @@ public class Board extends Pane {
                     if(i==0&&j==0){
                         text.setText("HERE");
                         text.setFill(Color.RED);
-                    }else if(i==BOARD_SIZE-1&&j==BOARD_SIZE-1){
+                    }else if(i==DIMENSION.get_x()-1&&j==DIMENSION.get_y()-1){
                         text.setText("HERE");
                         text.setFill(Color.YELLOW);
                     }
@@ -79,13 +79,13 @@ public class Board extends Pane {
                     if(i==0&&j==0){
                         text.setText("HERE");
                         text.setFill(Color.RED);
-                    }else if(i==BOARD_SIZE-1&&j==BOARD_SIZE-1){
+                    }else if(i==DIMENSION.get_x()-1&&j==DIMENSION.get_y()-1){
                         text.setText("HERE");
                         text.setFill(Color.GREEN);
-                    }else if(i==BOARD_SIZE-1&&j==0){
+                    }else if(i==DIMENSION.get_x()-1&&j==0){
                         text.setText("HERE");
                         text.setFill(Color.BLUE);
-                    }else if(i==0&&j==BOARD_SIZE-1){
+                    }else if(i==0&&j==DIMENSION.get_y()-1){
                         text.setText("HERE");
                         text.setFill(Color.YELLOW);
                     }
