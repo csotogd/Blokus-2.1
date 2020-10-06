@@ -481,8 +481,14 @@ public class BoardUI{
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.initOwner(stage);
             VBox dialogVbox = new VBox(20);
-            dialogVbox.getChildren().add(new Text("GAME END + Score ..."));
-            Scene dialogScene = new Scene(dialogVbox, 300, 200);
+            dialogVbox.getChildren().add(new Text("GAME END"));
+            for (Player player:players) {
+                dialogVbox.getChildren().add(new Text(player.getName() + " score: " + player.getPoints()));
+            }
+            Pane pane = new FlowPane();
+            pane.setBackground(background);
+            pane.getChildren().add(dialogVbox);
+            Scene dialogScene = new Scene(pane, 300, 200);
             dialog.setScene(dialogScene);
             dialog.show();
 

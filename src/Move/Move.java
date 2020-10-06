@@ -70,9 +70,9 @@ public class Move {
 
 
         if(this.position.get_x()<0||this.position.get_y()<0||
-                this.position.get_x()>=board.getDIMENSION().get_x()||this.position.get_y()>=board.getDIMENSION().get_y()) return false;
-        if(this.position.get_x()+piece.getShape()[0].length>board.getDIMENSION().get_x()||
-                this.position.get_y()+piece.getShape().length>board.getDIMENSION().get_y()) return false;
+                this.position.get_x()>=board.getDIMENSION()||this.position.get_y()>=board.getDIMENSION()) return false;
+        if(this.position.get_x()+piece.getShape()[0].length>board.getDIMENSION()||
+                this.position.get_y()+piece.getShape().length>board.getDIMENSION()) return false;
         return true;
 
     }
@@ -124,9 +124,9 @@ public class Move {
     for(int x=0;x<piece.getShape()[0].length;x++) {
         for (int y = 0; y < piece.getShape().length; y++) {
             if(piece.getShape()[y][x]!=0){
-                if(position.get_y()+y+1<board.getDIMENSION().get_y() && board.board[position.get_y()+y+1][position.get_x()+x]==player.getPlayerNumber()) return false;
+                if(position.get_y()+y+1<board.getDIMENSION() && board.board[position.get_y()+y+1][position.get_x()+x]==player.getPlayerNumber()) return false;
                 if(position.get_y()+y-1>=0 && board.board[position.get_y()+y-1][position.get_x()+x]==player.getPlayerNumber()) return false;
-                if(position.get_x()+x+1<board.getDIMENSION().get_x() && board.board[position.get_y()+y][position.get_x()+x+1]==player.getPlayerNumber()) return false;
+                if(position.get_x()+x+1<board.getDIMENSION() && board.board[position.get_y()+y][position.get_x()+x+1]==player.getPlayerNumber()) return false;
                 if(position.get_x()+x-1>=0 && board.board[position.get_y()+y][position.get_x()+x-1]==player.getPlayerNumber()) return false;
 
                 }
@@ -331,7 +331,7 @@ public void writePieceIntoBoard(Board board) {
         Board board= new Board(new Player[]{player1,player2});
 
         player1.setStartingCorner(new Vector2d(0,0));
-        player2.setStartingCorner(new Vector2d(board.getDIMENSION().get_x()-1,board.getDIMENSION().get_y()-1));
+        player2.setStartingCorner(new Vector2d(board.getDIMENSION()-1,board.getDIMENSION()-1));
         player1.setPiecesList(PieceFactory.get().getAllPieces());
         player2.setPiecesList(PieceFactory.get().getAllPieces());
         System.out.println(player1.getPiecesList().get(1));

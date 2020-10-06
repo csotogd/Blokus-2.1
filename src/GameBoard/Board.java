@@ -22,12 +22,12 @@ public class Board extends Pane {
 
 
     public int[][] board;
-    private final Vector2d DIMENSION = Data.getDIMENSION();
+    private final int DIMENSION = Data.getDIMENSION();
     public GridPane gameBoardRep;
     Player[] players;
 
     public Board(Player[] players) {
-        this.board = new int[DIMENSION.get_x()][DIMENSION.get_y()];
+        this.board = new int[DIMENSION][DIMENSION];
         this.players = players;
         createBoard();
     }
@@ -37,8 +37,8 @@ public class Board extends Pane {
     }
 
     public void createBoard() {
-        for (int i = 0; i < DIMENSION.get_x(); i++) {
-            for (int j = 0; j < DIMENSION.get_y(); j++) {
+        for (int i = 0; i < DIMENSION; i++) {
+            for (int j = 0; j < DIMENSION; j++) {
                 board[i][j] = 0;
             }
         }
@@ -50,8 +50,8 @@ public class Board extends Pane {
         getChildren().clear();
         gameBoardRep = new GridPane();
 
-        for (int i = 0; i < DIMENSION.get_x(); i++) {
-            for (int j = 0; j < DIMENSION.get_y(); j++) {
+        for (int i = 0; i < DIMENSION; i++) {
+            for (int j = 0; j < DIMENSION; j++) {
 
                 Rectangle tile = new Rectangle(CELL_SIZE, CELL_SIZE);
                 tile.setFill(paintColor(i,j));
@@ -71,7 +71,7 @@ public class Board extends Pane {
                     if(i==0&&j==0){
                         text.setText("HERE");
                         text.setFill(Color.RED);
-                    }else if(i==DIMENSION.get_x()-1&&j==DIMENSION.get_y()-1){
+                    }else if(i==DIMENSION-1&&j==DIMENSION-1){
                         text.setText("HERE");
                         text.setFill(Color.YELLOW);
                     }
@@ -79,13 +79,13 @@ public class Board extends Pane {
                     if(i==0&&j==0){
                         text.setText("HERE");
                         text.setFill(Color.RED);
-                    }else if(i==DIMENSION.get_x()-1&&j==DIMENSION.get_y()-1){
+                    }else if(i==DIMENSION-1&&j==DIMENSION-1){
                         text.setText("HERE");
                         text.setFill(Color.GREEN);
-                    }else if(i==DIMENSION.get_x()-1&&j==0){
+                    }else if(i==DIMENSION-1&&j==0){
                         text.setText("HERE");
                         text.setFill(Color.BLUE);
-                    }else if(i==0&&j==DIMENSION.get_y()-1){
+                    }else if(i==0&&j==DIMENSION-1){
                         text.setText("HERE");
                         text.setFill(Color.YELLOW);
                     }
@@ -116,21 +116,21 @@ public class Board extends Pane {
     }
 
 
-    public Vector2d getDIMENSION() {
+    public int getDIMENSION() {
         return DIMENSION;
     }
 
     public boolean inBoard(Vector2d position){
         if(position.get_y()<0||position.get_x()<0||
-        position.get_x()>=DIMENSION.get_x()||
-        position.get_y()>=DIMENSION.get_y()) return false;
+        position.get_x()>=DIMENSION||
+        position.get_y()>=DIMENSION) return false;
         return true;
     }
 
     public boolean isOccupiedBy(Vector2d position, int player){
         if(position.get_y()<0||position.get_x()<0||
-                position.get_x()>=DIMENSION.get_x()||
-                position.get_y()>=DIMENSION.get_y()) return false;
+                position.get_x()>=DIMENSION||
+                position.get_y()>=DIMENSION) return false;
         if(board[position.get_y()][position.get_x()]==player) return true;
         return false;
     }
@@ -167,7 +167,7 @@ public class Board extends Pane {
                 return corners;
             }
         }
-        boolean[][] checked = new boolean[board.getDIMENSION().get_y()][board.getDIMENSION().get_x()];
+        boolean[][] checked = new boolean[board.getDIMENSION()][board.getDIMENSION()];
         findCorners( checked,startingPosition,corners,board.board[startingPosition.get_y()][startingPosition.get_x()]);
 
         return corners;
@@ -278,7 +278,7 @@ public class Board extends Pane {
         }
         System.out.println();
     }
-    public Vector2d getBoardDimension(){
+    public int getBoardDimension(){
         return this.DIMENSION;
     }
 }

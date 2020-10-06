@@ -133,11 +133,9 @@ public class SettingsScreen extends Application {
         });
 
         Text opt6 = new Text("Board dimension :");
-        grid.add(opt6, 0, 6);
-        TextField opt6X = new TextField("X cases number :");
-        TextField opt6Y = new TextField("Y cases number :");
-        grid.add(opt6X, 0, 7);
-        grid.add(opt6Y, 1, 7);
+        grid.add(opt6, 0, 7);
+        TextField opt6X = new TextField("");
+        grid.add(opt6X, 1, 7);
 
         Button exitButton = new Button("Back to Menu");
         exitButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -146,15 +144,10 @@ public class SettingsScreen extends Application {
             public void handle(ActionEvent event) {
                 try {
 
-                    if(opt6X.getText().equals("X cases number :")||opt6X.getText().equals("")){
-                        Data.getDIMENSION().set_x(20);
+                    if(opt6X.getText().equals("")){
+                        Data.setDIMENSION(20);
                     }else{
-                        Data.getDIMENSION().set_x(Integer.parseInt(opt6X.getText()));
-                    }
-                    if(opt6Y.getText().equals("Y cases number :")||opt6Y.getText().equals("")){
-                        Data.getDIMENSION().set_y(20);
-                    }else{
-                        Data.getDIMENSION().set_y(Integer.parseInt(opt6X.getText()));
+                        Data.setDIMENSION(Integer.parseInt(opt6X.getText()));
                     }
 
                     if(c1.getSelectionModel().getSelectedItem().equals("2 Players")) {
@@ -206,7 +199,7 @@ public class SettingsScreen extends Application {
                 }
             }
         });
-        grid.add(exitButton,0,8);
+        grid.add(exitButton,0,9);
         exitButton.setTranslateX(80);
 
         root.getChildren().add(grid);

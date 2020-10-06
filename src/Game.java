@@ -27,7 +27,7 @@ import java.util.LinkedList;
 public class Game extends Application {
 
     private Player[] players;
-    private final Vector2d DIMENSION = Data.getDIMENSION();
+    private final int DIMENSION = Data.getDIMENSION();
     private String[] playersName;
 
     @Override
@@ -62,24 +62,13 @@ public class Game extends Application {
         initializePlayerPieces();
         players[0].setStartingCorner(new Vector2d(0,0));
         if(players.length==4){
-            players[1].setStartingCorner(new Vector2d(DIMENSION.get_x()-1,0));
-            players[2].setStartingCorner(new Vector2d(DIMENSION.get_x()-1,DIMENSION.get_y()-1));
-            players[3].setStartingCorner(new Vector2d(0,DIMENSION.get_y()-1));
+            players[1].setStartingCorner(new Vector2d(DIMENSION-1,0));
+            players[2].setStartingCorner(new Vector2d(DIMENSION-1,DIMENSION-1));
+            players[3].setStartingCorner(new Vector2d(0,DIMENSION-1));
         }else{
-            players[1].setStartingCorner(new Vector2d(DIMENSION.get_x()-1,DIMENSION.get_y()-1));
+            players[1].setStartingCorner(new Vector2d(DIMENSION-1,DIMENSION-1));
         }
 
-    }
-
-
-    private void initPlayersStartCorner(int numberOfPlayers){
-        Vector2d boardDimension= DIMENSION;
-        players[0].setStartingCorner(new Vector2d(0,0));
-        players[1].setStartingCorner(new Vector2d(boardDimension.get_x()-1, boardDimension.get_y()-1));
-        if(numberOfPlayers>2)
-            players[2].setStartingCorner(new Vector2d(0, boardDimension.get_x()-1));
-        if(numberOfPlayers>3)
-            players[3].setStartingCorner(new Vector2d(boardDimension.get_x()-1,0));
     }
 
     private void initializePlayerPieces(){
