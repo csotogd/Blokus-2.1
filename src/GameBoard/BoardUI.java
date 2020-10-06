@@ -485,7 +485,10 @@ public class BoardUI{
             VBox dialogVbox = new VBox(20);
             dialogVbox.getChildren().add(new Text("GAME END"));
             for (Player player:players) {
-                dialogVbox.getChildren().add(new Text(player.getName() + " score: " + player.getPoints()));
+                Text score = new Text();
+                score.setFill(player.getColor());
+                score.setText(player.getName() + " score: " + player.getPoints());
+                dialogVbox.getChildren().add(score);
             }
             Pane pane = new FlowPane();
             pane.setBackground(background);
