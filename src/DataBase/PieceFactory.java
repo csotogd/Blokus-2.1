@@ -43,6 +43,10 @@ public class PieceFactory {
         return singleton;
     }
 
+    /**
+     * The only interesting method for this class
+     * @return a new list containing all the existing pieces (new objects as well)
+     */
     public ArrayList<Piece> getAllPieces(){
         ArrayList<Piece> result = new ArrayList<>();
         for(Piece p : prototype) result.add(p.getPiece());
