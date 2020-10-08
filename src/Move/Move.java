@@ -65,16 +65,17 @@ public class Move {
         //                emptySpace(board) && cornerContact(board) && noDirectContact(board)
     }
 
-
+    /**
+     * Checks if the current piece with current coordinates are in bound
+     * @param board board on which the move is played
+     * @return True if in boun,false if out of bound
+     */
     private boolean inBounds(Board board){
-
-
         if(this.position.get_x()<0||this.position.get_y()<0||
                 this.position.get_x()>=board.getDIMENSION()||this.position.get_y()>=board.getDIMENSION()) return false;
         if(this.position.get_x()+piece.getShape()[0].length>board.getDIMENSION()||
                 this.position.get_y()+piece.getShape().length>board.getDIMENSION()) return false;
         return true;
-
     }
 
 
@@ -280,16 +281,16 @@ public class Move {
      * If the move is not possible it will aim to do it anyway.
      * To be used after isALlowed
      */
-public void writePieceIntoBoard(Board board) {
-    for (int i = 0; i < piece.getShape().length; i++) {
-        for (int j = 0; j < piece.getShape()[0].length; j++) {
-            if (board.board[position.get_y() + i][position.get_x() + j] == 0 &&
-                    piece.getShape()[i][j] != 0)
-                board.board[position.get_y() + i][position.get_x() + j] = player.getPlayerNumber();
+    public void writePieceIntoBoard(Board board) {
+        for (int i = 0; i < piece.getShape().length; i++) {
+            for (int j = 0; j < piece.getShape()[0].length; j++) {
+                if (board.board[position.get_y() + i][position.get_x() + j] == 0 &&
+                        piece.getShape()[i][j] != 0)
+                    board.board[position.get_y() + i][position.get_x() + j] = player.getPlayerNumber();
+            }
         }
     }
 
-}
     /**
      * 1. check is piece is allowed
      * 2. writes it into the board

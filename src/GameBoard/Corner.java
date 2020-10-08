@@ -18,7 +18,11 @@ public class Corner {
         this.position=position;
     }
 
-
+    /**
+     * CONSTRUCTOR
+     * @param position position of the corner
+     * @param other position of a corresponding corner
+     */
     public Corner(Vector2d position, Vector2d other){
         this.position=position;
         this.toCornerPositions= new ArrayList<Vector2d>();
@@ -26,7 +30,7 @@ public class Corner {
     }
 
     /**
-     * add another expected position for an appropriate corner
+     * Add another expected position for an appropriate corner
      * @param adjacent position of expected corner
      */
     public void addAdjacent(Vector2d adjacent){
@@ -49,10 +53,18 @@ public class Corner {
         return false;
     }
 
+    /**
+     * Getter
+     * @return position of the corner
+     */
     public Vector2d getPosition() {
         return position;
     }
 
+    /**
+     * Getter
+     * @return list of position of valid corresponding corner positions
+     */
     public List<Vector2d> getToCornerPositions() {
         return toCornerPositions;
     }
