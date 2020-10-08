@@ -115,7 +115,7 @@ public abstract class Player {
                 for (int i = 0; i < piece.getTotalConfig(); i++) { //TODO calculate only for permutations of a piece, for instance 1 instead of 4
                     piece.rotateLeft(); //try all possible rotations
                     //get all the corners for that piece.
-                    if(i>=piece.getNbRotation()) piece.rotateUpsideDown(); //TODO is done, but have to be tested
+                    if(i==piece.getNbRotation()) piece.rotateUpsideDown(); //TODO is done, but have to be tested
                     for (Corner pieceCorner : piece.getCornersContacts(new Vector2d(0, 0))) {
                         //piece.printShape();
                         Move firstMove = new Move(this, piece, startingCorner);

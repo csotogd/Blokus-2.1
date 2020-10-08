@@ -54,7 +54,7 @@ public class BoardUI{
     Pane left;
     Pane top;
     FlowPane allPieces[];
-    ChoiceBox choiceBox;
+    int actualSelectedPieceNbr;
     Text turnOfPlayerText;
 
     Stage stage;
@@ -89,11 +89,11 @@ public class BoardUI{
             for (Object object:allPieces[player.getNumber()-1].getChildren()) {
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
-                    if (isPiece!=(int)choiceBox.getSelectionModel().getSelectedItem()&&actualPlayer==player){
+                    if (isPiece!=actualSelectedPieceNbr&&actualPlayer==player){
                         GridPane piece = (GridPane) object;
                         piece.setOpacity(0.3);
                         //piece.setDisable(true);
-                    }else if(isPiece==(int)choiceBox.getSelectionModel().getSelectedItem()&&actualPlayer==player){
+                    }else if(isPiece==actualSelectedPieceNbr&&actualPlayer==player){
                         GridPane piece = (GridPane) object;
                         piece.setOpacity(1);
                         //piece.setDisable(false);
@@ -169,12 +169,6 @@ public class BoardUI{
         return principal;
     }
 
-    public void setResizable(Pane pane,boolean resizable){
-        if(!resizable){
-            //pane.setT
-        }
-    }
-
     public Pane playersTurn(){
         Rectangle principal = new Rectangle();
         principal.setFill(Color.TRANSPARENT);
@@ -210,20 +204,12 @@ public class BoardUI{
         principal.setHeight(RECTANGLE_SIZE.get_x()*2.3f);
         principal.setWidth(RECTANGLE_SIZE.get_y()*1.5f);
 
-        choiceBox = new ChoiceBox();
-        choiceBox.setTranslateX(140);choiceBox.setTranslateY(-75);
-        for (int i = 0; i < actualPlayer.getPiecesList().size(); i++) {
-            choiceBox.getItems().add(i+1);
-        }
-        choiceBox.getSelectionModel().select(0);
-        choiceBox.setOnAction(actionEvent ->  {
-            makePiecesOpaque();
-        });
+        actualSelectedPieceNbr = 1;
         Button rightRotate = new Button("Right rotation");
         rightRotate.setTranslateX(105); rightRotate.setTranslateY(-20);
         //TODO fix drag after rotating a piece and also rotate the array INTEGER of the piece
         rightRotate.setOnAction(actionEvent ->  {
-            int pieceNbr = (int) choiceBox.getSelectionModel().getSelectedItem();
+            int pieceNbr = actualSelectedPieceNbr;
             Piece piece = actualPlayer.getPiecesList().get(pieceNbr-1);
             piece.rotateRight();
             int isPiece = 0;
@@ -244,7 +230,7 @@ public class BoardUI{
         //TODO finish the flip rotation
         flip.setTranslateX(0); flip.setTranslateY(-20);
         flip.setOnAction(actionEvent ->  {
-            int pieceNbr = (int) choiceBox.getSelectionModel().getSelectedItem();
+            int pieceNbr = actualSelectedPieceNbr;
             Piece piece = actualPlayer.getPiecesList().get(pieceNbr-1);
             piece.rotateUpsideDown();
             int isPiece = 0;
@@ -269,7 +255,7 @@ public class BoardUI{
         leftRotate.setTranslateX(-110); leftRotate.setTranslateY(-20);
         //TODO fix drag after rotating a piece and also rotate the array INTEGER of the piece
         leftRotate.setOnAction(actionEvent ->  {
-            int pieceNbr = (int) choiceBox.getSelectionModel().getSelectedItem();
+            int pieceNbr = actualSelectedPieceNbr;
             Piece piece = actualPlayer.getPiecesList().get(pieceNbr-1);
             piece.rotateLeft();
             int isPiece = 0;
@@ -306,9 +292,9 @@ public class BoardUI{
         if(players.length!=2){
             Node player2 = pieceOfPlayer(1);
             layout.getChildren().add(player2);
-            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,flip,choiceBox,text2);
+            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,flip,text2);
         }else {
-            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,flip,choiceBox,text2);
+            layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,flip,text2);
         }
 
 
@@ -376,12 +362,15 @@ public class BoardUI{
                 xPos[0] = piece.getTranslateX()+5; //so that the mouse holds the piece in the middle of the first square
                 yPos[0] = piece.getTranslateY()+5;
 
+                int isPiece = 0;
                 for (Object object : allPieces.getChildren()) {
                     if(object.getClass().equals(GridPane.class)){
+                        isPiece++;
                         if (!object.equals(piece)){
                             GridPane piece = (GridPane) object;
                             piece.setOpacity(0.3);
                         }else if(object.equals(piece)){
+                            actualSelectedPieceNbr = isPiece;
                             GridPane piece = (GridPane) object;
                             piece.setOpacity(1);
                         }
