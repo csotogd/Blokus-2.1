@@ -92,11 +92,11 @@ public class BoardUI{
                     if (isPiece!=(int)choiceBox.getSelectionModel().getSelectedItem()&&actualPlayer==player){
                         GridPane piece = (GridPane) object;
                         piece.setOpacity(0.3);
-                        piece.setDisable(true);
+                        //piece.setDisable(true);
                     }else if(isPiece==(int)choiceBox.getSelectionModel().getSelectedItem()&&actualPlayer==player){
                         GridPane piece = (GridPane) object;
                         piece.setOpacity(1);
-                        piece.setDisable(false);
+                        //piece.setDisable(false);
                     }else if(actualPlayer!=player){
                         GridPane piece = (GridPane) object;
                         piece.setOpacity(0.3);
@@ -375,6 +375,21 @@ public class BoardUI{
                 piece.setScaleX(2);piece.setScaleY(2);
                 xPos[0] = piece.getTranslateX()+5; //so that the mouse holds the piece in the middle of the first square
                 yPos[0] = piece.getTranslateY()+5;
+
+                for (Object object : allPieces.getChildren()) {
+                    if(object.getClass().equals(GridPane.class)){
+                        if (!object.equals(piece)){
+                            GridPane piece = (GridPane) object;
+                            piece.setOpacity(0.3);
+                        }else if(object.equals(piece)){
+                            GridPane piece = (GridPane) object;
+                            piece.setOpacity(1);
+                        }
+
+                    }
+                }
+
+
                 event.consume();
             }
         });
