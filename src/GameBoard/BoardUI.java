@@ -1,11 +1,10 @@
 package GameBoard;
 
+import DataBase.Data;
 import DataBase.Piece;
 import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
-import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -14,7 +13,6 @@ import javafx.scene.Parent;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -26,12 +24,8 @@ import javafx.scene.text.Text;
 import Player.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Stream;
 
 //TEST
 public class BoardUI{
@@ -59,6 +53,9 @@ public class BoardUI{
 
     Stage stage;
 
+    /**
+     * the game can have those 3 states
+     */
     public enum GameState {
         HUMAN_MOVE,
         AI_MOVE,
@@ -67,14 +64,18 @@ public class BoardUI{
     }
 
 
-
+    /**
+     *
+     * @param players string array of the name of the players giving the information of the number of players
+     * @param stage stage of the scene to be able to close the window when the game is ended
+     */
     public BoardUI(Player[] players, Stage stage){
         this.stage = stage;
         this.players = players;
         allPieces = new FlowPane[players.length];
         this.playerCounter = 0;
         this.actualPlayer = this.players[playerCounter++];
-        this.background = createBackGround();
+        this.background = Data.createBackGround();
         this.board = new Board(players);
         this.gameBoard = createBoard();
         makePiecesOpaque();
@@ -82,6 +83,9 @@ public class BoardUI{
         state=GameState.HUMAN_MOVE; //TODO change this for second period
     }
 
+    /**
+     * method that makes each pieces opaque except the actual chosen piece
+     */
     public void makePiecesOpaque(){
 
         for (Player player : players) {
@@ -108,6 +112,9 @@ public class BoardUI{
         }
     }
 
+    /**
+     * method used to update the pieces of each player
+     */
     public void refreshPieces(){
         top.getChildren().clear();
         top.getChildren().add(pieceOfPlayer(0));
@@ -129,6 +136,11 @@ public class BoardUI{
         makePiecesOpaque();
     }
 
+    /**
+     * method used to create and refresh the entire board included the central game board, each left piece of each player, the info
+     * of actual player turn and the info to rotate and flip the chosen piece
+     * @return the node of the board
+     */
     public Parent createBoard() {
         BorderPane principal = new BorderPane();
         left = new StackPane();
@@ -169,6 +181,10 @@ public class BoardUI{
         return principal;
     }
 
+    /**
+     * method used to create and refresh the actual player turn after each move
+     * @return the node of the info of the player turn
+     */
     public Pane playersTurn(){
         Rectangle principal = new Rectangle();
         principal.setFill(Color.TRANSPARENT);
@@ -197,6 +213,11 @@ public class BoardUI{
         return layout;
     }
 
+    /**
+     * method used to create and refresh the rotation and flip button of the chosen piece and also contains the
+     * action listener of the flip and left, right rotation
+     * @return node of the rotation and flip button of the chosen piece
+     */
     public Pane rotationButtons(){
         Rectangle principal = new Rectangle();
         principal.setFill(Color.TRANSPARENT);
@@ -302,18 +323,11 @@ public class BoardUI{
         return layout;
     }
 
-
-    public Background createBackGround(){
-        Image image = new Image("https://images.hdqwalls.com/wallpapers/simple-gray-background-4k-br.jpg",800,800,false,true);
-
-        BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
-
-        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
-
-        Background background = new Background(backgroundImage);
-        return background;
-    }
-
+    /**
+     * method used to create and refresh each left piece of each player
+     * @param playerNbr give the info on the number of player
+     * @return the node of each left piece of each player
+     */
     public FlowPane pieceOfPlayer(int playerNbr){
         allPieces[playerNbr] = new FlowPane();
         Text text = new Text(players[playerNbr].getName());
@@ -337,6 +351,13 @@ public class BoardUI{
         return allPieces[playerNbr];
     }
 
+    /**
+     * method used to draw a specific piece and also contains the action listener of the drag and drop
+     * @param playerColor gives info on the actual player color
+     * @param pieceRoot
+     * @param allPieces
+     * @return the node of that specific piece
+     */
     public Pane drawPiece(Color playerColor,Piece pieceRoot,Pane allPieces){
         GridPane piece = new GridPane();
         for (int i = 0; i < pieceRoot.getShape().length; i++) {
