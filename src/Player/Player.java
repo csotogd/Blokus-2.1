@@ -24,9 +24,6 @@ public abstract class Player {
 
     protected Stack <Move> moveLog = new Stack<>();
 
-    //TODO: implement logic of finding the appropriate corner, and find the location in the code to do it
-
-
 
     public int getPlayerNumber(){
         return this.number;

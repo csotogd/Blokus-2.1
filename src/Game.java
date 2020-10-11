@@ -30,10 +30,14 @@ public class Game extends Application {
     private final int DIMENSION = Data.getDIMENSION();
     private String[] playersName;
 
+    /**
+     * method overiden from the application
+     * @param stage
+     */
     @Override
     public void start(Stage stage){
         playersName = Data.getPlayersName();
-        initializeNewGame();
+        initializePlayers();
         BoardUI gameBoard = new BoardUI(players,stage);
         Parent root = gameBoard.gameBoard;
         stage.setTitle("Blokus Game Group 15");
@@ -43,14 +47,9 @@ public class Game extends Application {
         stage.show();
     }
 
-
-
-//NO BOT OPTION
-    public void initializeNewGame(){
-
-        initializePlayers();
-
-    }
+    /**
+     * method used to initialize every player
+     */
     private void initializePlayers(){
         Color[] colors = {Color.RED,Color.YELLOW,Color.GREEN,Color.BLUE};
         players= new Player[playersName.length];
@@ -71,6 +70,9 @@ public class Game extends Application {
 
     }
 
+    /**
+     * method to initialize each player pieces
+     */
     private void initializePlayerPieces(){
 
         for(int i=1; i<= playersName.length; i++){
