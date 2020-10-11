@@ -1,11 +1,10 @@
 package GameBoard;
 
+import DataBase.Data;
 import DataBase.Piece;
 import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
-import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -14,7 +13,6 @@ import javafx.scene.Parent;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -26,12 +24,8 @@ import javafx.scene.text.Text;
 import Player.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Stream;
 
 //TEST
 public class BoardUI{
@@ -81,7 +75,7 @@ public class BoardUI{
         allPieces = new FlowPane[players.length];
         this.playerCounter = 0;
         this.actualPlayer = this.players[playerCounter++];
-        this.background = createBackGround();
+        this.background = Data.createBackGround();
         this.board = new Board(players);
         this.gameBoard = createBoard();
         makePiecesOpaque();
@@ -327,21 +321,6 @@ public class BoardUI{
 
 
         return layout;
-    }
-
-    /**
-     * method used to create the background
-     * @return the background from a image
-     */
-    public Background createBackGround(){
-        Image image = new Image("https://images.hdqwalls.com/wallpapers/simple-gray-background-4k-br.jpg",800,800,false,true);
-
-        BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
-
-        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
-
-        Background background = new Background(backgroundImage);
-        return background;
     }
 
     /**

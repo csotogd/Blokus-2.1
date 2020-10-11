@@ -1,3 +1,4 @@
+import DataBase.Data;
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -34,7 +35,7 @@ public class SolversScreen extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         root.setId("solver-screen-pane");
-        Background background = createBackGround();
+        Background background = Data.createBackGround();
         root.setBackground(background);
         Scene scene = new Scene(root, 800, 800);
         addContent();
@@ -43,17 +44,6 @@ public class SolversScreen extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         stage = primaryStage;
-    }
-
-    public Background createBackGround(){
-        Image image = new Image("https://images.hdqwalls.com/wallpapers/simple-gray-background-4k-br.jpg",800,800,false,true);
-
-        BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
-
-        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
-
-        Background background = new Background(backgroundImage);
-        return background;
     }
 
     private void addContent() {
