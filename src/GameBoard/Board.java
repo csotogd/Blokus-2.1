@@ -16,7 +16,7 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 
 //TEST
-public class Board extends Pane {
+public class Board{
 
     private final int CELL_SIZE = 25;//25
 
@@ -25,15 +25,13 @@ public class Board extends Pane {
     private final int DIMENSION = Data.getDIMENSION();
     public GridPane gameBoardRep;
     Player[] players;
+    public Pane principal;
 
     public Board(Player[] players) {
         this.board = new int[DIMENSION][DIMENSION];
         this.players = players;
+        this.principal = new Pane();
         createBoard();
-    }
-
-    public Board(int[][] board){
-        this.board=board;
     }
 
     public void createBoard() {
@@ -47,7 +45,7 @@ public class Board extends Pane {
 
     public void paint() {
         //Clear previous cells
-        getChildren().clear();
+        principal.getChildren().clear();
         gameBoardRep = new GridPane();
 
         for (int i = 0; i < DIMENSION; i++) {
@@ -95,9 +93,8 @@ public class Board extends Pane {
             }
         }
 
-        getChildren().add(gameBoardRep);
+        principal.getChildren().add(gameBoardRep);
 
-       // System.out.println("updated");
     }
 
     public  Color paintColor(int col, int row){
