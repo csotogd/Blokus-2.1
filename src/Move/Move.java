@@ -52,17 +52,28 @@ public class Move {
         }else if(!emptySpace(board)){
             //System.out.println("place occupied");
             return false;
-        }else if(!cornerContact(board)){
+        }else if(!cornerContact(board)&&!firstLegalMove(board)){
             //System.out.println("no corner?");
             return false;
         }else if(!noDirectContact(board)){
            // System.out.println("contact with piece");
             return false;
         }
-        //TODO: add a method or just a variable to see if it's the first piece instead of verifying it in noDirectContact AND cornerContact
         return true ;
         //(!piece.isUsed()) && inBounds(board) &&
         //                emptySpace(board) && cornerContact(board) && noDirectContact(board)
+    }
+
+    private boolean firstLegalMove(Board board) {
+        if(!player.isFirstMove()) return false;
+        for (int i = 0; i < piece.getShape().length; i++) {
+            for (int j = 0; j < piece.getShape()[0].length; j++) {
+                if(piece.getShape()[i][j]!=0 &&
+                        position.get_y()+i==player.getStartingCorner().get_y() &&
+                        position.get_x()+j==player.getStartingCorner().get_x())
+                    return true;
+            }
+        }return false;
     }
 
     /**
@@ -112,16 +123,7 @@ public class Move {
      * @return true if no direct contact exists
      */
     private boolean noDirectContact(Board board){
-        //TODO: this bit here can go in a method
-    boolean corner = false;
-    for(int x=0;x<piece.getShape()[0].length;x++)
-        for (int y = 0; y < piece.getShape().length; y++)
-            if(position.get_x()+x==player.getStartingCorner().get_x()&&
-            position.get_y()+y==player.getStartingCorner().get_y()&&
-            piece.getShape()[y][x]!=0) corner=true;
-    if(corner)
-        return true; //!! it doesn't check if there is already a piece that occupies this position because
-    // it assumes it was already checked
+
     for(int x=0;x<piece.getShape()[0].length;x++) {
         for (int y = 0; y < piece.getShape().length; y++) {
             if(piece.getShape()[y][x]!=0){
@@ -195,15 +197,7 @@ public class Move {
          * it then checks for expected position on the board if it's occupied by a block of the player
          * finally calls isCorner that checks if there is only one block on the board
          */
-        //TODO: this bit here as well
-        boolean corner = false;
-        for(int x=0;x<piece.getShape()[0].length;x++)
-            for (int y = 0; y < piece.getShape().length; y++)
-                if(position.get_x()+x==player.getStartingCorner().get_x()&&
-                        position.get_y()+y==player.getStartingCorner().get_y()&&
-                        piece.getShape()[y][x]!=0) corner=true;
-        if(corner)
-            return true;
+
 
         for(Corner pieceCorner: piece.getCornersContacts(position)){
             for(Vector2d board_cor:pieceCorner.getToCornerPositions()) {
@@ -307,7 +301,7 @@ public class Move {
             this.piece.setUsed(true);//TODO erase this none sense line of code, completely useless
             this.player.getPiecesUsed().add(this.piece);
             //System.out.println("number of blocks from make move: "+piece.getNumberOfBlocks());
-
+            if(player.isFirstMove()) player.setFirstMove(false);
             board.paint();
 
             return true;

@@ -21,9 +21,16 @@ public abstract class Player {
     protected Vector2d startingCorner;
     protected boolean skippedLastMove=false; //If the LAST move was not made due to no possible moves
     protected int points=0;
-
+    protected boolean firstMove; // first time the player plays, he can place a piece in his starting corner
     protected Stack <Move> moveLog = new Stack<>();
 
+    public boolean isFirstMove() {
+        return firstMove;
+    }
+
+    public void setFirstMove(boolean firstMove) {
+        this.firstMove = firstMove;
+    }
 
     public int getPlayerNumber(){
         return this.number;
