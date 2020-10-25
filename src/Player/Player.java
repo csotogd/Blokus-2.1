@@ -1,6 +1,7 @@
 package Player;
 
 import DataBase.Piece;
+import DataBase.PieceFactory;
 import GameBoard.Board;
 import GameBoard.Corner;
 import Move.Move;
@@ -119,7 +120,7 @@ public abstract class Player {
                 for (int i = 0; i < piece.getTotalConfig(); i++) { //TODO calculate only for permutations of a piece, for instance 1 instead of 4
                     piece.rotateLeft(); //try all possible rotations
                     //get all the corners for that piece.
-                    if(i==piece.getNbRotation()) piece.rotateUpsideDown(); //TODO is done, but have to be tested
+                    if(i==piece.getNbRotation()-1) piece.rotateUpsideDown(); //TODO is done, but have to be tested
                     for (Corner pieceCorner : piece.getCornersContacts(new Vector2d(0, 0))) {
                         //piece.printShape();
                         Move firstMove = new Move(this, piece, startingCorner);
@@ -150,8 +151,68 @@ public abstract class Player {
     return false; // if no piece can be placed in any of the corners
 
     }
+
+    /**
+     * For every possible corner, checks if any of the piece unused pieces of a player can be placed.
+     * @return ArrayList of current possible moves
+     */
+    public ArrayList<Move> possibleMoveSet(Board board){
+        ArrayList<Corner> cornersOnBOard = board.getCorner(this.getStartingCorner());
+        ArrayList<Move> moveSet=new ArrayList<>();
+
+        for (Piece piecetoClone: this.getPiecesList()){
+            if (!piecetoClone.isUsed()) {
+                Piece piece = piecetoClone.clone(); // we clone it cause we rotate it and we do not want that to affect the real piece displayed
+                for (int i = 0; i < piece.getTotalConfig(); i++) {
+                    //get all the corners for that piece.
+                    if(this.isFirstMove()) {
+                        Move firstMove = new Move(this, piece.clone(), startingCorner);
+                        if (firstMove.isAllowed(board)) moveSet.add(firstMove);
+                    }
+                    for (Corner pieceCorner : piece.getCornersContacts(new Vector2d(0, 0))) {
+
+
+                        for (Corner corner : cornersOnBOard) {
+                            for (Vector2d emptyCorner : corner.getToCornerPositions()) { //for all the possible empty squares that would become corner contact
+                                //System.out.println("in for: ");emptyCorner.printVector();
+                                //move the piece so that it is contact with the corner with the part of it we want
+                                Vector2d positionOfPiece= emptyCorner.subtract(pieceCorner.getPosition());
+
+
+                                Move move = new Move(this, piece.clone(), positionOfPiece);
+                                //move.print();
+                                //board.print();
+                                //System.out.println();
+                                if (move.isAllowed(board))
+                                    moveSet.add(move); //if at least one move is allowed
+                            }
+
+                        }
+                    }
+                    piece.rotateRight();
+                    if(i==piece.getNbRotation()-1) piece.rotateUpsideDown();
+                }
+            }
+        }
+        System.out.println("Method possibleMove() piece can not be placed");
+        return moveSet; // if no piece can be placed in any of the corners
+
+    }
+
 public List<Piece> getPiecesUsed(){
         return this.piecesUsed;
 }
+    public static void main(String[] args){
+        HumanPlayer p1 = new HumanPlayer(1,"jo");
+        HumanPlayer p2 = new HumanPlayer(2,"dos");
+        p1.setStartingCorner(new Vector2d(0,0));
+        p2.setStartingCorner(new Vector2d(19,19));
+        p1.setPiecesList(PieceFactory.get().getAllPieces());
+        p2.setPiecesList(PieceFactory.get().getAllPieces());
+        Board board = new Board(new Player[]{p1,p2});
 
+
+        ArrayList<Move> moveset = p1.possibleMoveSet(board);
+        for(Move m : moveset) System.out.println(m.getPiece()+" "+m.getPosition().get_x()+" "+m.getPosition().get_y());
+    }
 }
