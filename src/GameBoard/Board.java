@@ -134,10 +134,11 @@ public class Board{
 
 
     /**
-     * used to be STATIC METHOD dedined in Corner, where the board was passed as a parameter,
+     * (used to be STATIC METHOD defined in Corner, where the board was passed as a parameter)
      * Get all corners on the board of the player with starting position startingPosition
+     * So it basically helps us know what are the possible moves for a given player in a certain state of the board
      * @param startingPosition starting position of the player
-     * @return
+     * @return list of all possible corners for a player
      */
     public  ArrayList<Corner> getCorner( Vector2d startingPosition){
     Board board=this;
@@ -172,7 +173,7 @@ public class Board{
 
 
 
-
+//Dont spend too much time trying to understand it, just know what it is used for
     /**
      * helper method to find corners and add them to the arraylist
      * @param checked position on the board that is already checked
@@ -257,14 +258,25 @@ public class Board{
         }
     }
 
+    /**
+     *
+     * @return the board object, NOT a copy
+     */
     public int[][] getBoard() {
         return board;
     }
 
+    /**
+     * setter for board
+     * @param board
+     */
     public void setBoard(int[][] board) {
         this.board = board;
     }
 
+    /**
+     * prints the current situation of the board, used for debugging purposes
+     */
     public void print(){
         System.out.println();
         for (int i=0; i<board.length; i++) {

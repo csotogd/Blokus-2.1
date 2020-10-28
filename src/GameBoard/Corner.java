@@ -13,6 +13,18 @@ import java.util.List;
 public class Corner {
     private Vector2d position; //coordinates on the board
     private List<Vector2d> toCornerPositions; // list of positions of connected corners
+    /*
+    * 1 0 0 0 0
+    * 1 1 0 0 0
+    * 1 0 0 0 0
+    * 0 0 0 0 0
+    *
+    * here one of the 2 corners would be in coordinate (1,1)
+    * and the list of toCorner positions would be: [(0,2),(2,2)], as they are the diagonal contacts with
+    * the corner itself, also known as the places where the corner of another piece of the same colour should be
+    * placed
+    *
+    * */
 
     public Corner(Vector2d position){
         this.position=position;
