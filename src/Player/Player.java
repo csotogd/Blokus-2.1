@@ -14,12 +14,12 @@ import java.util.Stack;
 
 public abstract class Player {
     protected int number;
-    protected List<Piece> piecesList = new ArrayList<Piece>();
-    protected List<Piece> piecesUsed = new ArrayList<Piece>();
+    protected List<Piece> piecesList = new ArrayList<Piece>();//list of pieces
+    protected List<Piece> piecesUsed = new ArrayList<Piece>(); //list of pieces used
     protected String name;
     protected boolean humanPlayer;
     protected Color color;
-    protected Vector2d startingCorner;
+    protected Vector2d startingCorner;//corner where the player starts the game (0,0) for player 1
     protected boolean skippedLastMove=false; //If the LAST move was not made due to no possible moves
     protected int points=0;
     protected boolean firstMove; // first time the player plays, he can place a piece in his starting corner
@@ -153,8 +153,8 @@ public abstract class Player {
     }
 
     /**
-     * For every possible corner, checks if any of the piece unused pieces of a player can be placed.
-     * @return ArrayList of current possible moves
+     *
+     * @return ArrayList of current possible moves a player can make.
      */
     public ArrayList<Move> possibleMoveSet(Board board){
         ArrayList<Corner> cornersOnBOard = board.getCorner(this.getStartingCorner());
