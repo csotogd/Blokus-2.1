@@ -14,7 +14,7 @@ public class Piece {
     protected boolean mirror; //possible to mirror
     protected int nbRotation; //1 to 4
     private int numberOfBlocks;
-    protected int totalConfig; //total number of configuration
+    protected int totalConfig; //total number of configuration max 8 min 1
     private String label; //name of the piece
     private int number;//can be either 1,2,3,4 depending on the player
     private double posInBoardX; //UI related
