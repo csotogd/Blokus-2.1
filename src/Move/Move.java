@@ -9,6 +9,12 @@ import GameBoard.Board;
 
 import java.util.ArrayList;
 
+/*
+* Wheneverr we are going to define a move, make it, see if it is a possible move, etc....we use this class
+* Contains method to check if a move is valid.
+* Every time we make a move, a lot of operations are triggered. Every player stores a log of moves, the ui
+* is updated, the piece is set as used......
+* */
 public class Move {
     private Player player;
     private Piece piece;//needs to be rotated, mirror as the players wants
@@ -286,9 +292,10 @@ public class Move {
     }
 
     /**
-     * 1. check is piece is allowed
+     * 1. check is piece is allowed, if it is:
      * 2. writes it into the board
      * 3. marks it as used
+     * 4. stores the move in the player log
      * @param board
      * @return true if it was possible, false if the move was not executed
      */
@@ -323,6 +330,7 @@ public class Move {
         return position;
     }
 
+    //dont mind this, it´s just testing stuff
     public static void main(String[] args){
         HumanPlayer player1 = new HumanPlayer(1);
         HumanPlayer player2=new HumanPlayer(2);

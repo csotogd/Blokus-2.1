@@ -26,6 +26,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+/*
+* It´s a ui class but many logic operations happen here too, take a look
+*
+* */
 
 //TEST
 public class BoardUI{
@@ -182,7 +186,7 @@ public class BoardUI{
     }
 
     /**
-     * method used to create and refresh the actual player turn after each move
+     * method used to create and refresh the actual player turn after each move IN THE UI!!!!!
      * @return the node of the info of the player turn
      */
     public Pane playersTurn(){
@@ -453,9 +457,12 @@ public class BoardUI{
         return piece;
     }
 
-    /*If if it is player 1 turn, then next turn will correspond to player 2,
+    /**
+     * Handles turns flow
+     *
+     * If if it is player 1 turn, then next turn will correspond to player 2,
           after the last player, we go back to the first one
-          */
+    */
     private void nextTurn(){
 
         if (actualPlayer.getPlayerNumber()<players.length)
@@ -465,7 +472,7 @@ public class BoardUI{
 
         //after the new player is assigned, we should check if thath player is able to do at least one move, else we skip him
         if( !  actualPlayer.possibleMove(board)){
-            actualPlayer.setSkippedLastMove(true);
+            actualPlayer.setSkippedLastMove(true);//no move made, player out of the game.
             System.out.println("player "+actualPlayer.getName()+" can not move, no available moves");
             updateState();
         }
