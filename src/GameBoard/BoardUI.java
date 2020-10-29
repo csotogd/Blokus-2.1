@@ -34,6 +34,10 @@ import java.util.List;
 
 //TEST
 public class BoardUI{
+    public Pane principal;
+    public GridPane gameBoardRep;
+    private final int DIMENSION = Data.getDIMENSION();
+
     public Board board;
     public Parent gameBoard;
     public Player[] players; //Initialize in game object
@@ -82,11 +86,14 @@ public class BoardUI{
         this.actualPlayer = this.players[playerCounter++];
         this.background = Data.createBackGround();
         this.board = new Board(players);
+        this.principal = new Pane();
+        paint();
         this.gameBoard = createBoard();
         makePiecesOpaque();
 
         state=GameState.HUMAN_MOVE; //TODO change this for second period
 
+        /*
         if(!Data.isNormalGame()){
             System.out.println("algo game");
             while(!noOneMoved()){
@@ -99,9 +106,81 @@ public class BoardUI{
                 }
             }
         }
+
+         */
+    }
+
+    public void paint() {
+        //Clear previous cells
+        principal.getChildren().clear();
+        gameBoardRep = new GridPane();
+
+        for (int i = 0; i < DIMENSION; i++) {
+            for (int j = 0; j < DIMENSION; j++) {
+
+                Rectangle tile = new Rectangle(CELL_SIZE, CELL_SIZE);
+                tile.setFill(paintColor(i,j));
+                tile.setStrokeWidth(2.0);
+                tile.setStroke(Color.BLACK);
+
+                Text text = new Text();
+                text.setScaleX(0.8);
+                text.setScaleY(0.8);
+
+                GridPane.setRowIndex(tile, i);
+                GridPane.setColumnIndex(tile, j);
+                GridPane.setRowIndex(text, i);
+                GridPane.setColumnIndex(text, j);
+
+                if (players.length==2){
+                    if(i==0&&j==0){
+                        text.setText("HERE");
+                        text.setFill(Color.RED);
+                    }else if(i==DIMENSION-1&&j==DIMENSION-1){
+                        text.setText("HERE");
+                        text.setFill(Color.YELLOW);
+                    }
+                }else if(players.length==4){
+                    if(i==0&&j==0){
+                        text.setText("HERE");
+                        text.setFill(Color.RED);
+                    }else if(i==DIMENSION-1&&j==DIMENSION-1){
+                        text.setText("HERE");
+                        text.setFill(Color.GREEN);
+                    }else if(i==DIMENSION-1&&j==0){
+                        text.setText("HERE");
+                        text.setFill(Color.BLUE);
+                    }else if(i==0&&j==DIMENSION-1){
+                        text.setText("HERE");
+                        text.setFill(Color.YELLOW);
+                    }
+                }
+
+                gameBoardRep.getChildren().addAll(tile,text);
+            }
+        }
+
+        principal.getChildren().add(gameBoardRep);
+
+    }
+
+    public  Color paintColor(int col, int row){
+        if(board.board[col][row]==0){
+            return Color.WHITE;
+        }else if(board.board[col][row]==1){
+            return Color.RED;
+        }else if(board.board[col][row]==2){
+            return Color.YELLOW;
+        }else if(board.board[col][row]==3){
+            return Color.GREEN;
+        }else if(board.board[col][row]==4){
+            return Color.BLUE;
+        }
+        return null;
     }
 
     public void moveAllowed(Pane piece, Piece pieceRoot,Pane allPieces){
+        paint();
         //System.out.println("piece removed");
         allPieces.getChildren().remove(piece); //every piece also has an internal used state which is updated
         actualPlayer.getPiecesList().remove(pieceRoot);
@@ -189,7 +268,7 @@ public class BoardUI{
         center.setTranslateY(80);
 
         principal.setBackground(background);
-        center.getChildren().add(board.principal);
+        center.getChildren().add(this.principal);
         principal.setCenter(center);
 
         top.getChildren().add(pieceOfPlayer(0));
@@ -450,8 +529,8 @@ public class BoardUI{
             public void handle(MouseEvent event) {
                 double MousePosX = event.getScreenX();double MousePosY=event.getScreenY();
 
-                Bounds bounds = board.gameBoardRep.getLayoutBounds();
-                Point2D coordinates = board.gameBoardRep.localToScene(bounds.getMinX(), bounds.getMinY());
+                Bounds bounds = gameBoardRep.getLayoutBounds();
+                Point2D coordinates = gameBoardRep.localToScene(bounds.getMinX(), bounds.getMinY());
 
                 //System.out.println(coordinates.getX()+ " "+coordinates.getY());
                 Vector2d position = new Vector2d((int)((MousePosX-coordinates.getX())/27),(int)((MousePosY-coordinates.getY())/27));

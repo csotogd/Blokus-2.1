@@ -309,7 +309,6 @@ public class Move {
             this.player.getPiecesUsed().add(this.piece);
             //System.out.println("number of blocks from make move: "+piece.getNumberOfBlocks());
             if(player.isFirstMove()) player.setFirstMove(false);
-            board.paint();
 
             return true;
         }

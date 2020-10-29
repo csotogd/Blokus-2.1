@@ -18,19 +18,13 @@ import java.util.ArrayList;
 //TEST
 public class Board{
 
-    private final int CELL_SIZE = 25;//25
-
-
     public int[][] board;
     private final int DIMENSION = Data.getDIMENSION();
-    public GridPane gameBoardRep;
     Player[] players;
-    public Pane principal;
 
     public Board(Player[] players) {
         this.board = new int[DIMENSION][DIMENSION];
         this.players = players;
-        this.principal = new Pane();
         createBoard();
     }
 
@@ -40,76 +34,6 @@ public class Board{
                 board[i][j] = 0;
             }
         }
-        paint();
-    }
-
-    public void paint() {
-        //Clear previous cells
-        principal.getChildren().clear();
-        gameBoardRep = new GridPane();
-
-        for (int i = 0; i < DIMENSION; i++) {
-            for (int j = 0; j < DIMENSION; j++) {
-
-                Rectangle tile = new Rectangle(CELL_SIZE, CELL_SIZE);
-                tile.setFill(paintColor(i,j));
-                tile.setStrokeWidth(2.0);
-                tile.setStroke(Color.BLACK);
-
-                Text text = new Text();
-                text.setScaleX(0.8);
-                text.setScaleY(0.8);
-
-                GridPane.setRowIndex(tile, i);
-                GridPane.setColumnIndex(tile, j);
-                GridPane.setRowIndex(text, i);
-                GridPane.setColumnIndex(text, j);
-
-                if (players.length==2){
-                    if(i==0&&j==0){
-                        text.setText("HERE");
-                        text.setFill(Color.RED);
-                    }else if(i==DIMENSION-1&&j==DIMENSION-1){
-                        text.setText("HERE");
-                        text.setFill(Color.YELLOW);
-                    }
-                }else if(players.length==4){
-                    if(i==0&&j==0){
-                        text.setText("HERE");
-                        text.setFill(Color.RED);
-                    }else if(i==DIMENSION-1&&j==DIMENSION-1){
-                        text.setText("HERE");
-                        text.setFill(Color.GREEN);
-                    }else if(i==DIMENSION-1&&j==0){
-                        text.setText("HERE");
-                        text.setFill(Color.BLUE);
-                    }else if(i==0&&j==DIMENSION-1){
-                        text.setText("HERE");
-                        text.setFill(Color.YELLOW);
-                    }
-                }
-
-                gameBoardRep.getChildren().addAll(tile,text);
-            }
-        }
-
-        principal.getChildren().add(gameBoardRep);
-
-    }
-
-    public  Color paintColor(int col, int row){
-        if(board[col][row]==0){
-            return Color.WHITE;
-        }else if(board[col][row]==1){
-            return Color.RED;
-        }else if(board[col][row]==2){
-            return Color.YELLOW;
-        }else if(board[col][row]==3){
-            return Color.GREEN;
-        }else if(board[col][row]==4){
-            return Color.BLUE;
-        }
-        return null;
     }
 
 
