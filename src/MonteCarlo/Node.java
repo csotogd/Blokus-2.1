@@ -89,12 +89,14 @@ public class Node {
             }
             playerturn = (playerturn+1)%players.length;
         }
+
         int[] playerScores=new int[players.length];
         for(Player p: players) for(Piece piece: p.getPiecesList()) playerScores[p.getPlayerNumber()-1]+=piece.getNumberOfBlocks();
-        boolean win = true;
-        for(int score:playerScores) if(playerScores[playerOfInterest]>score) win =false;
-        if(win) return 1;
-        return 0;
+
+        //System.out.println(move.getPiece().getLabel()+" "+playerScores[0]+" "+playerScores[1]+" "+playerScores[2]+" "+playerScores[3]);
+        for(int score:playerScores) if(playerScores[playerOfInterest]>score) return 0;
+        return 1;
+
     }
 
     public double getUCB1(){

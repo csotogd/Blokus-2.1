@@ -25,25 +25,27 @@ public class MonteCarlo {
         long start = System.currentTimeMillis();
         root.expand(this.players[player]);
 
+        System.out.println("p"+player+" "+root.getChildren().size());
         for(Node children : root.getChildren()){
-            int score = children.simulation((player+1)%players.length, player);
+            if(children.simulation((player+1)%players.length, player)>0) children.addScore();
             children.addVisitiedNum();
-            if(score >0) children.addScore();
+
         }
+        System.out.println((System.currentTimeMillis()-start)+"ms");
         while(System.currentTimeMillis()-start<timeLimit){
             //chose one of the possible move
             Node choosen = root.getChildren().get(0);
             for(Node children : root.getChildren()) {
                 if(children.getUCB1()>choosen.getUCB1()) choosen=children;
             }
+            //System.out.println("ucbscore: "+choosen.getUCB1()+" / " +choosen.getMove().getPiece().getLabel());
             //simulate turn by turn until the end -> back propagate score
             choosen.addVisitiedNum();
-            int score = choosen.simulation((player+1)%players.length,player);
-            if(score>0) choosen.addScore();
+            if(choosen.simulation((player+1)%players.length,player)>0) choosen.addScore();
 
         }
         Node res = root.getChildren().get(0);
-        for(Node children : root.getChildren()) System.out.println(children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitiedNum());
+        //for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitiedNum());
         for(Node children : root.getChildren()) if(children.getVisitiedNum()>res.getVisitiedNum()) res=children;
         return res.getMove();
     }
@@ -62,27 +64,30 @@ public class MonteCarlo {
         p3.setPiecesList(PieceFactory.get().getAllPieces());
         p4.setPiecesList(PieceFactory.get().getAllPieces());
         Board b = new Board(new Player[]{p1,p2,p3,p4});
-        MonteCarlo mc ;
+        MonteCarlo mc = new MonteCarlo(new Player[]{p1,p2,p3,p4},b);
 
         int i= 0;
         while(i<15){
-            mc = new MonteCarlo(new Player[]{p1,p2,p3,p4},b);
-            Move move1 = mc.simulation(0,3000);
+            mc = new MonteCarlo(mc.players,b);
+            Move move1 = mc.simulation(0,15000);
             move1.writePieceIntoBoard(b);
             p1.removePiece(move1.getPiece().getLabel());
-            mc = new MonteCarlo(new Player[]{p1,p2,p3,p4},b);
-            Move move2 = mc.simulation(1,3000);
+
+            mc = new MonteCarlo(mc.players,b);
+            Move move2 = mc.simulation(1,15000);
             move2.writePieceIntoBoard(b);
             p2.removePiece(move2.getPiece().getLabel());
 
-            mc = new MonteCarlo(new Player[]{p1,p2,p3,p4},b);
-            Move move3 = mc.simulation(2,3000);
+            mc = new MonteCarlo(mc.players,b);
+            Move move3 = mc.simulation(2,15000);
             move3.writePieceIntoBoard(b);
             p3.removePiece(move3.getPiece().getLabel());
-            mc = new MonteCarlo(new Player[]{p1,p2,p3,p4},b);
-            Move move4 = mc.simulation(3,3000);
+
+            mc = new MonteCarlo(mc.players,b);
+            Move move4 = mc.simulation(3,15000);
             move4.writePieceIntoBoard(b);
             p4.removePiece(move4.getPiece().getLabel());
+
             b.print();
             i++;
         }

@@ -26,6 +26,7 @@ public class BotPlayer extends Player{
         Player p = new BotPlayer(this.number);
         p.setStartingCorner(this.startingCorner);
         for(Piece piece : this.piecesList) p.getPiecesList().add(piece.getPiece());
+        p.setFirstMove(this.firstMove);
         return p;
     }
 
