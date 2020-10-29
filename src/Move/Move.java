@@ -207,11 +207,11 @@ public class Move {
 
         for(Corner pieceCorner: piece.getCornersContacts(position)){
             for(Vector2d board_cor:pieceCorner.getToCornerPositions()) {
-                if(pieceCorner.getPosition().get_y()==1&&pieceCorner.getPosition().get_x()==3) {
+             /*   if(pieceCorner.getPosition().get_y()==1&&pieceCorner.getPosition().get_x()==3) {
                     System.out.print(board.board[board_cor.get_y()][board_cor.get_x()] == player.getPlayerNumber());
                     System.out.print(isCorner(pieceCorner.getPosition(), board_cor, board));
                 }
-                System.out.println();
+                System.out.println();*/
 
                 if (board.inBoard(board_cor) &&
                         board.board[board_cor.get_y()][board_cor.get_x()] == player.getPlayerNumber() &&
@@ -301,7 +301,7 @@ public class Move {
      */
     public boolean makeMove(Board board){
         if(this.isAllowed(board)) {
-            System.out.println("Move allowed");
+    //        System.out.println("Move allowed");
             //add piece to the board
             this.writePieceIntoBoard(board);
             player.getMoveLog().push(this);
@@ -313,7 +313,7 @@ public class Move {
             return true;
         }
         else
-            System.out.println("Move not allowed");
+ //           System.out.println("Move not allowed");
         return false;
         }
 

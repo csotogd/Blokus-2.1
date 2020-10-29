@@ -1,5 +1,6 @@
 package MonteCarlo;
 
+import DataBase.Piece;
 import GameBoard.Board;
 import Move.Move;
 import Player.Player;
@@ -13,20 +14,29 @@ public class Node {
     private List<Node> children;
     private int visitiedNum;
     private int score;
-    private static double c=2;
+    private static double c=8;
+    private Player[] players;
 
     /**
      * CONSTRUCTOR for the root (parent point to itself)
      * @param state current state of the game
      */
-    public Node(Board state){
+    public Node(Board state, Player[] ps){
         this.state=state;
         parent = this;
         move = null;
         children = new ArrayList<>();
         visitiedNum=0;
         score = 0;
+        players = new Player[ps.length];
+        int count =0;
+        for(Player p : ps) players[count++]=p.clone();
     }
+
+    public Player[] getPlayers() {
+        return players;
+    }
+
 
     /**
      * Regular constructor
@@ -37,6 +47,13 @@ public class Node {
         this.parent=parent;
         this.move = move;
         state = parent.getState().clone();
+        players = new Player[parent.getPlayers().length];
+        int count =0;
+        for(Player p : parent.getPlayers()) { //copy the players but take care to remove the piece played
+            players[count++]=p.clone();
+            if(players[count-1].getPlayerNumber()==move.getPlayer().getPlayerNumber())
+                players[count-1].removePiece(move.getPiece().getLabel());
+        }
         move.writePieceIntoBoard(state);
         children = new ArrayList<>();
         visitiedNum=0;
@@ -55,15 +72,37 @@ public class Node {
 
     /** TODO: complete this method
      * MARTIN here we do the random moves until end game and return the score
-     * @param p
+     *
      * @return
      */
-    public int simulation(Player p){
+    public int simulation(int playerturn, int playerOfInterest){
+        int countPass=0;
+        Board board = state.clone();
+        while(countPass<players.length){
+            if(playerturn==0) countPass=0;
+            Move move = players[playerturn].randomPossibleMove(board);
+            if(move!=null) {
+                move.writePieceIntoBoard(board);
+                players[playerturn].removePiece(move.getPiece().getLabel());
+            }else{
+                countPass++;
+            }
+            playerturn = (playerturn+1)%players.length;
+        }
+        int[] playerScores=new int[players.length];
+        for(Player p: players) for(Piece piece: p.getPiecesList()) playerScores[p.getPlayerNumber()-1]+=piece.getNumberOfBlocks();
+        boolean win = true;
+        for(int score:playerScores) if(playerScores[playerOfInterest]>score) win =false;
+        if(win) return 1;
         return 0;
     }
 
     public double getUCB1(){
         return (double)score/(double)visitiedNum + Node.c*Math.sqrt(Math.log(parent.getVisitiedNum())/(double)visitiedNum);
+    }
+
+    public List<Node> getChildren(){
+        return this.children;
     }
 
     public Node getParent() {

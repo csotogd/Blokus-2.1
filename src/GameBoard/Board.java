@@ -43,7 +43,7 @@ public class Board{
     public Board clone(){
         Board result = new Board(players);
         for (int i = 0; i < board.length; i++) {
-            System.arraycopy(board, 0,result.board,0,board[0].length);
+            System.arraycopy(board[i], 0,result.board[i],0,board[0].length);
         }
         return result;
     }

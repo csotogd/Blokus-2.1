@@ -1,5 +1,7 @@
 package Player;
 
+import DataBase.Piece;
+
 public class BotPlayer extends Player{
 
     public BotPlayer(int number)
@@ -20,5 +22,11 @@ public class BotPlayer extends Player{
 
         }
 
+    public Player clone(){
+        Player p = new BotPlayer(this.number);
+        p.setStartingCorner(this.startingCorner);
+        for(Piece piece : this.piecesList) p.getPiecesList().add(piece.getPiece());
+        return p;
+    }
 
 }

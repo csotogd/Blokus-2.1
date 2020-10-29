@@ -19,6 +19,7 @@ public class Piece {
     private int number;//can be either 1,2,3,4 depending on the player
     private double posInBoardX; //UI related
     private double posInBoardY;
+    private Piece origin;
 
     /**
      * CONSTRUCTOR
@@ -36,6 +37,30 @@ public class Piece {
         this.label=label;
         this.used = false;
         this.numberOfBlocks=0;
+        origin=this;
+        for(int[] line : shape)
+            for(int i: line)
+                if(i!=0) this.numberOfBlocks++;
+    }
+
+    /**
+     * CONSTRUCTOR 2
+     * @param label name of the piece
+     * @param array shape-> state of the piece
+     * @param mirror possible to flip the piece
+     * @param rotation number of rotation without flipping
+     * @param totalConfig total number of configuration
+     * @param origin the original piece
+     */
+    public Piece (String label, int[][]  array, boolean mirror, int rotation, int totalConfig, Piece origin) {
+        this.shape = array;
+        this.mirror = mirror;
+        this.nbRotation = rotation;
+        this.totalConfig=totalConfig;
+        this.label=label;
+        this.used = false;
+        this.numberOfBlocks=0;
+        this.origin=origin;
         for(int[] line : shape)
             for(int i: line)
                 if(i!=0) this.numberOfBlocks++;
@@ -54,7 +79,7 @@ public class Piece {
         boolean mirror= this.mirror; //this is probably not necessary
         int rotation = this.nbRotation; //this is probably not necessary
 
-        return new Piece(label, shape, mirror, rotation, totalConfig);
+        return new Piece(label, shape, mirror, rotation, totalConfig, this.origin);
 }
 
 
@@ -214,7 +239,11 @@ public class Piece {
         return null;
     }
 
-    /** //TODO: should we move this method to move class?
+    public Piece getOrigin() {
+        return origin;
+    }
+
+    /**
      * Methods that finds coordinates of the corners of the piece and the coordinates of the corner of the piece on the board
      * @return the positions of the hypothetical corners w.r.t. coordinates of the board !!
      */
@@ -314,6 +343,7 @@ public class Piece {
             System.out.println();
         }
     }
+
 }
 
 
