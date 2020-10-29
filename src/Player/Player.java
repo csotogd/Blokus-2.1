@@ -200,7 +200,8 @@ public abstract class Player {
 
     }
 
-    public Move randomPossibleMove(Board board){
+    public List randomPossibleMove(Board board){
+        ArrayList list = new ArrayList();
         ArrayList<Corner> cornersOnBOard = board.getCorner(this.getStartingCorner());
 
         Random r = new Random();
@@ -213,7 +214,11 @@ public abstract class Player {
                     //get all the corners for that piece.
                     if(this.isFirstMove()) {
                         Move firstMove = new Move(this, piece.clone(), startingCorner);
-                        if (firstMove.isAllowed(board)) return new Move(this,piece,this.getStartingCorner());
+                        if (firstMove.isAllowed(board)){
+                            list.add(piece);
+                            list.add(new Move(this,piece,this.getStartingCorner()));
+                            return list;
+                        }
                     }
                     int randomCorner = r.nextInt(piece.getCornersContacts(new Vector2d(0, 0)).size());
                     for (int k = 0; k<piece.getCornersContacts(new Vector2d(0, 0)).size();k++) {
@@ -228,8 +233,12 @@ public abstract class Player {
                                 //move.print();
                                 //board.print();
                                 //System.out.println();
-                                if (move.isAllowed(board))
-                                    return new Move(this,piece,positionOfPiece); //if at least one move is allowed
+                                if (move.isAllowed(board)){
+                                    list.add(piece);
+                                    list.add(new Move(this,piece,positionOfPiece));
+                                    return list; //if at least one move is allowed
+                                }
+
                             }
 
                         }
@@ -263,7 +272,7 @@ public List<Piece> getPiecesUsed(){
         //ArrayList<Move> moveset = p1.possibleMoveSet(board);
         int i = 15;
         while(i>0){
-            m = p1.randomPossibleMove(board);
+            m = (Move)p1.randomPossibleMove(board).get(1);
             System.out.println(m.getPiece()+" "+m.getPosition().get_x()+" "+m.getPosition().get_y());
             m.writePieceIntoBoard(board);
             i--;

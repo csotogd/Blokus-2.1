@@ -1,4 +1,5 @@
 import DataBase.Data;
+import GameBoard.BoardUI;
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -24,6 +25,7 @@ public class SolversScreen extends Application {
 
     private static final int WIDTH = 800;
     private static final int HEIGHT = 800;
+    private String[] playersName;
 
     //each button contains a function that is run everytime it is pressed
 
@@ -44,6 +46,7 @@ public class SolversScreen extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         stage = primaryStage;
+        Data.setNormalGame(false);
     }
 
     private void addContent() {
@@ -58,7 +61,7 @@ public class SolversScreen extends Application {
     private void addTitle() {
         MenuTitle title = new MenuTitle("BLOKUS:Solvers");
         title.setTranslateX(WIDTH / 2 - title.getTitleWidth() / 2);
-        title.setTranslateY(HEIGHT / 3);
+        title.setTranslateY((HEIGHT / 3)-20);
         root.getChildren().add(title);
     }
 
@@ -67,56 +70,145 @@ public class SolversScreen extends Application {
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(10);
-//        grid.setPadding(new Insets(25, 25, 25, 25));
+        Text opt = new Text("Algorithm you want to use :");
+        grid.add(opt, 0, 1);
 
-        Text opt1 = new Text("First");
-        grid.add(opt1, 0, 1);
+        // string array
+        String options[] = {"Monte Carlo", "Genetic algorithm","Mini max","Monte Carlo Tree Search" };
+
+        // create a choiceBox
+        ChoiceBox c = new ChoiceBox(FXCollections.observableArrayList(options));
+        c.getSelectionModel().select(1);
+
+        grid.add(c, 1, 1);
+
+
+        Text opt1 = new Text("How many players :");
+        grid.add(opt1, 0, 2);
 
         //this is how we manage choice box
 
         // string array
-        String options1[] = { "OPT1", "OPT2", "OPT3", "OPT4" };
+        String options1[] = {"2 Players", "4 Players" };
 
         // create a choiceBox
         ChoiceBox c1 = new ChoiceBox(FXCollections.observableArrayList(options1));
+        c1.getSelectionModel().select(1);
+
+        grid.add(c1, 1, 2);
 
 
-        grid.add(c1, 1, 1);
+        TextField opt2TextField = new TextField("");
+        TextField opt3TextField = new TextField("");
+        TextField opt4TextField = new TextField("");
+        TextField opt5TextField = new TextField("");
 
-        Label opt2 = new Label("Second");
-        grid.add(opt2, 0, 2);
+        Text opt2 = new Text("Player 1 name :");
+        Text opt3 = new Text("Player 2 name :");
+        Text opt4 = new Text("Player 3 name :");
+        Text opt5 = new Text("Player 4 name :");
+        grid.add(opt2, 0, 3);
 
-        // string array
-        String options2[] = { "OPT1", "OPT2", "OPT3", "OPT4" };
+        grid.add(opt2TextField, 1, 3);
 
-        // create a choiceBox
-        ChoiceBox c2 = new ChoiceBox(FXCollections.observableArrayList(options2));
+        grid.add(opt3, 0, 4);
 
-        grid.add(c2, 1, 2);
+        grid.add(opt3TextField, 1, 4);
 
-        Label opt3 = new Label("Third");
-        grid.add(opt3, 0, 3);
+        grid.add(opt4, 0, 5);
 
-        // string array
-        String options3[] = { "OPT1", "OPT2", "OPT3", "OPT4" };
+        grid.add(opt4TextField, 1, 5);
 
-        // create a choiceBox
-        ChoiceBox c3 = new ChoiceBox(FXCollections.observableArrayList(options3));
+        grid.add(opt5, 0, 6);
 
+        grid.add(opt5TextField, 1, 6);
 
-        grid.add(c3, 1, 3);
+        opt2.setVisible(true);opt3.setVisible(true);opt2TextField.setVisible(true);opt3TextField.setVisible(true);
+        opt4.setVisible(true); opt5.setVisible(true);opt4TextField.setVisible(true);opt5TextField.setVisible(true);
 
-        Label opt4 = new Label("Fourth");
-        grid.add(opt4, 0, 4);
+        c1.setOnAction(event -> {
+            if(c1.getSelectionModel().getSelectedItem().equals("4 Players")){
+                opt4.setVisible(true); opt5.setVisible(true);opt4TextField.setVisible(true);opt5TextField.setVisible(true);
+            }else{
+                opt4.setVisible(false); opt5.setVisible(false);opt4TextField.setVisible(false);opt5TextField.setVisible(false);
+            }
+        });
 
-        // string array
-        String options4[] = { "OPT1", "OPT2", "OPT3", "OPT4" };
+        Text opt6 = new Text("Board dimension :");
+        grid.add(opt6, 0, 8);
+        TextField opt6X = new TextField("");
+        grid.add(opt6X, 1, 8);
 
-        // create a choiceBox
-        ChoiceBox c4 = new ChoiceBox(FXCollections.observableArrayList(options4));
+        Button startButton = new Button("Play");
+        startButton.setOnAction(new EventHandler<ActionEvent>() {
 
+            @Override
+            public void handle(ActionEvent event) {
+                try {
 
-        grid.add(c4, 1,  4);
+                    if(opt6X.getText().equals("")){
+                        Data.setDIMENSION(20);
+                    }else{
+                        Data.setDIMENSION(Integer.parseInt(opt6X.getText()));
+                    }
+
+                    if(c1.getSelectionModel().getSelectedItem().equals("2 Players")) {
+                        playersName = new String[2];
+
+                        if(opt2TextField.getText().equals("")){
+                            playersName[0] = "PLAYER 1";
+                        }else{
+                            playersName[0] = opt2TextField.getText();
+                        }
+
+                        if(opt3TextField.getText().equals("")){
+                            playersName[1] = "PLAYER 2";
+                        }else{
+                            playersName[1] = opt3TextField.getText();
+                        }
+
+                    }else{
+                        playersName = new String[4];
+                        if(opt2TextField.getText().equals("")){
+                            playersName[0] = "PLAYER 1";
+                        }else{
+                            playersName[0] = opt2TextField.getText();
+                        }
+
+                        if(opt3TextField.getText().equals("")){
+                            playersName[1] = "PLAYER 2";
+                        }else{
+                            playersName[1] = opt3TextField.getText();
+                        }
+
+                        if(opt4TextField.getText().equals("")){
+                            playersName[2] = "PLAYER 3";
+                        }else{
+                            playersName[2] = opt4TextField.getText();
+                        }
+
+                        if(opt5TextField.getText().equals("")){
+                            playersName[3] = "PLAYER 4";
+                        }else{
+                            playersName[3] = opt5TextField.getText();
+                        }
+                    }
+                    if(!c.getSelectionModel().getSelectedItem().equals("")){
+                        Data.setAlgo((String) c.getSelectionModel().getSelectedItem());
+                    }else{
+
+                    }
+
+                    Data.setPlayersName(playersName);
+
+                    new Game().start(stage);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        grid.add(startButton,0,10);
+        startButton.setTranslateX(150);
 
         Button exitButton = new Button("Back to Menu");
         exitButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -124,14 +216,14 @@ public class SolversScreen extends Application {
             @Override
             public void handle(ActionEvent event) {
                 try {
+                    Data.setNormalGame(true);
                     new StartScreen().start(stage);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
-
-        grid.add(exitButton,0,5);
+        grid.add(exitButton,0,10);
 
         root.getChildren().add(grid);
     }

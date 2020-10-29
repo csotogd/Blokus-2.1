@@ -6,6 +6,10 @@ import javafx.scene.layout.*;
 public class Data {
     private static String[] playersName = {"PLAYER 1","PLAYER 2","PLAYER 3","PLAYER 4"};
 
+    private static boolean normalGame = true;
+
+    private static String algo = "";
+
     private static int DIMENSION = 20;
 
     public static Background createBackGround(){
@@ -19,6 +23,22 @@ public class Data {
 
         Background background = new Background(backgroundImage);
         return background;
+    }
+
+    public static boolean isNormalGame() {
+        return normalGame;
+    }
+
+    public static void setNormalGame(boolean normalGame) {
+        Data.normalGame = normalGame;
+    }
+
+    public static String getAlgo() {
+        return algo;
+    }
+
+    public static void setAlgo(String algo) {
+        Data.algo = algo;
     }
 
     public static String[] getPlayersName() {

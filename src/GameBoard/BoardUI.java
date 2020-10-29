@@ -26,6 +26,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.List;
 /*
 * It´s a ui class but many logic operations happen here too, take a look
 *
@@ -85,6 +86,33 @@ public class BoardUI{
         makePiecesOpaque();
 
         state=GameState.HUMAN_MOVE; //TODO change this for second period
+
+        if(!Data.isNormalGame()){
+            System.out.println("algo game");
+            while(!noOneMoved()){
+                for (int i = 0; i < players.length; i++) {
+                    List move = players[i].randomPossibleMove(board);
+                    if(move!=null&&makeMove((Move)move.get(1))){
+                        Pane piece = null;
+                        moveAllowed(piece,(Piece)move.get(0),allPieces[players[i].getNumber()-1]);
+                    }
+                }
+            }
+        }
+    }
+
+    public void moveAllowed(Pane piece, Piece pieceRoot,Pane allPieces){
+        //System.out.println("piece removed");
+        allPieces.getChildren().remove(piece); //every piece also has an internal used state which is updated
+        actualPlayer.getPiecesList().remove(pieceRoot);
+        updateState();
+        // actualPlayer = players[playerCounter++];
+        // if(playerCounter>=players.length) playerCounter=0;
+        //choiceBox.getSelectionModel().select(0);
+        makePiecesOpaque();
+        turnOfPlayerText.setText(actualPlayer.getName());
+        turnOfPlayerText.setFill(actualPlayer.getColor());
+        refreshPieces();
     }
 
     /**
@@ -433,17 +461,7 @@ public class BoardUI{
                 Move move = new Move(actualPlayer,pieceRoot,position);
 
                 if(makeMove(move)){
-                    //System.out.println("piece removed");
-                    allPieces.getChildren().remove(piece); //every piece also has an internal used state which is updated
-                    actualPlayer.getPiecesList().remove(pieceRoot);
-                    updateState();
-                   // actualPlayer = players[playerCounter++];
-                   // if(playerCounter>=players.length) playerCounter=0;
-                    //choiceBox.getSelectionModel().select(0);
-                    makePiecesOpaque();
-                    turnOfPlayerText.setText(actualPlayer.getName());
-                    turnOfPlayerText.setFill(actualPlayer.getColor());
-                    refreshPieces();
+                    moveAllowed(piece,pieceRoot,allPieces);
                 }else{
                     piece.setScaleX(1);piece.setScaleY(1);
                     piece.setTranslateX(pieceRoot.getPosInBoardX());
