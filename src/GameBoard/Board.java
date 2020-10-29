@@ -36,11 +36,27 @@ public class Board{
         }
     }
 
+    /**
+     * clone method
+     * @return an exact copy of the board (the players are the SAME)
+     */
+    public Board clone(){
+        Board result = new Board(players);
+        for (int i = 0; i < board.length; i++) {
+            System.arraycopy(board, 0,result.board,0,board[0].length);
+        }
+        return result;
+    }
 
     public int getDIMENSION() {
         return DIMENSION;
     }
 
+    /**
+     * check if vector2d is in the boundary of the board
+     * @param position
+     * @return true if in, false otherwise
+     */
     public boolean inBoard(Vector2d position){
         if(position.get_y()<0||position.get_x()<0||
         position.get_x()>=DIMENSION||
@@ -48,6 +64,12 @@ public class Board{
         return true;
     }
 
+    /**
+     * checks if a certain position in the board is occupied by a certain player
+     * @param position coordinates to be checked
+     * @param player occupying the position or not
+     * @return true if a piece of the player occupies the position
+     */
     public boolean isOccupiedBy(Vector2d position, int player){
         if(position.get_y()<0||position.get_x()<0||
                 position.get_x()>=DIMENSION||
