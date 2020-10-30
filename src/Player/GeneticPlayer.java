@@ -7,8 +7,9 @@ import Tools.Vector2d;
 
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.HashMap;
 
-//TODO speci
+
 
 public class GeneticPlayer extends BotPlayer {
 
@@ -23,20 +24,27 @@ public class GeneticPlayer extends BotPlayer {
     public Move calculateMove(Board board){
        //while we code all the different strategies, make this call the one you want to try
         System.out.println("In calculate move for genetic algorithm");
+        HashMap<Move, Float> movesAndScores = new HashMap<Move, Float>();
+        for (Move move : super.possibleMoveSet(board)){
+            movesAndScores.put(move, new Float(0));
+        }
+
+
     return null;
     }
 
     //return type can be changed
-    private void addsMostCorners(float weight, Board board){;}
+    private void addsMostCorners(float weight,HashMap<Move, Float> movesAndScores, Board board){;}
 
-    private void blocksMostCorners(float weight, Board board){;}
+    private void blocksMostCorners(float weight,HashMap<Move, Float> movesAndScores ,Board board){;}
 
-    private void closestToMiddle(float weight, Board board){;}
+    private void closestToMiddle(float weight, HashMap<Move, Float> movesAndScores,Board board){;}
 
-    private void biggestPiece(float weight, Board board){;}
+    private void biggestPiece(float weight, HashMap<Move, Float> movesAndScores,Board board){;}
 
     //TODO: test it
-    private void farFromStartingCorner(float weight, Board board){
+    //Dont try to imitate what I did here, as it is wrong and not finished
+    private void farFromStartingCorner(float weight, HashMap<Move, Float> movesAndScores,Board board){
 
         ArrayList<Move> possibleMoves = super.possibleMoveSet(board);
         for (Move move: possibleMoves){
