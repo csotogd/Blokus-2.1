@@ -31,7 +31,7 @@ public class MonteCarlo {
             children.addVisitiedNum();
 
         }
-        System.out.println((System.currentTimeMillis()-start)+"ms");
+        //System.out.println((System.currentTimeMillis()-start)+"ms");
         while(System.currentTimeMillis()-start<timeLimit){
             //chose one of the possible move
             Node choosen = root.getChildren().get(0);
@@ -46,7 +46,7 @@ public class MonteCarlo {
         }
         Node res = root.getChildren().get(0);
         //for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitiedNum());
-        for(Node children : root.getChildren()) if(children.getVisitiedNum()>res.getVisitiedNum()) res=children;
+        for(Node children : root.getChildren()) if(children.getVisitiedNum()>=res.getVisitiedNum()) res=children;
         return res.getMove();
     }
 

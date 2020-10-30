@@ -34,6 +34,10 @@ public abstract class Player {
         this.firstMove = firstMove;
     }
 
+    public void setNotFirstMove() {
+        this.firstMove = false;
+    }
+
     public int getPlayerNumber(){
         return this.number;
     }
@@ -169,7 +173,7 @@ public abstract class Player {
      * @return ArrayList of current possible moves a player can make.
      */
     public ArrayList<Move> possibleMoveSet(Board board){
-        ArrayList<Corner> cornersOnBOard = board.getCorner(this.getStartingCorner());
+        ArrayList<Corner> cornersOnBoard = board.getCorner(this.getStartingCorner());
         ArrayList<Move> moveSet=new ArrayList<>();
 
         for (Piece piecetoClone: this.getPiecesList()){
@@ -185,7 +189,7 @@ public abstract class Player {
                         if (firstMove.isAllowed(board)) moveSet.add(firstMove);
                     }else
                     for (Corner pieceCorner : piece.getCornersContacts(new Vector2d(0, 0))) {
-                        for (Corner corner : cornersOnBOard) {
+                        for (Corner corner : cornersOnBoard) {
                             for (Vector2d emptyCorner : corner.getToCornerPositions()) { //for all the possible empty squares that would become corner contact
                                 //move the piece so that it is contact with the corner with the part of it we want
                                 Vector2d positionOfPiece= emptyCorner.subtract(pieceCorner.getPosition());
@@ -229,22 +233,23 @@ public abstract class Player {
                             if (firstMove.isAllowed(board)) {
                                 return firstMove;
                             }
-                        } else{
-                            int randomCorner = r.nextInt(piece.getCornersContacts(new Vector2d(0, 0)).size());
-                        for (int k = 0; k < piece.getCornersContacts(new Vector2d(0, 0)).size(); k++) {
+                        }else{
+                            //if(getPlayerNumber()!=1) System.out.println("player"+getPlayerNumber()+" "+isFirstMove());
+                            List<Corner> pieceCorner = piece.getCornersContacts(new Vector2d(0, 0));
+                            for (int k = 0; k < pieceCorner.size(); k++) {
                             int randomCornerBoard = r.nextInt(cornersOnBoard.size());
                             for (int l = 0; l < cornersOnBoard.size(); l++) {
                                 for (Vector2d emptyCorner : cornersOnBoard.get((l + randomCornerBoard) % cornersOnBoard.size()).getToCornerPositions()) { //for all the possible empty squares that would become corner contact
                                     //System.out.println("in for: ");emptyCorner.printVector();
                                     //move the piece so that it is contact with the corner with the part of it we want
-                                    Vector2d positionOfPiece = emptyCorner.subtract(piece.getCornersContacts(new Vector2d(0, 0)).get((k + randomCorner) % piece.getCornersContacts(new Vector2d(0, 0)).size()).getPosition());
+                                    Vector2d positionOfPiece = emptyCorner.subtract(pieceCorner.get(k).getPosition());
 
                                     Move move = new Move(this, piece.clone(), positionOfPiece);
                                     //move.print();
                                     //board.print();
                                     //System.out.println();
                                     if (move.isAllowed(board)) {
-                                        return new Move(this, piece, positionOfPiece);
+                                        return move;
                                     }
 
                                 }
@@ -259,7 +264,7 @@ public abstract class Player {
                 }
             }
         }
-  //      System.out.println("Method possibleMove() piece can not be placed");
+        //System.out.println("Method possibleMove() piece can not be placed for p"+getPlayerNumber());
         return null; // if no piece can be placed in any of the corners
 
     }

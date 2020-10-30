@@ -289,7 +289,7 @@ public class Move {
                     board.board[position.get_y() + i][position.get_x() + j] = player.getPlayerNumber();
             }
         }
-        if(player.isFirstMove()) player.setFirstMove(false);
+        if(player.isFirstMove()) player.setNotFirstMove();
     }
 
     /**

@@ -14,7 +14,7 @@ public class Node {
     private List<Node> children;
     private int visitiedNum;
     private int score;
-    private static double c=8;
+    private static double c=3;
     private Player[] players;
 
     /**
@@ -31,6 +31,7 @@ public class Node {
         players = new Player[ps.length];
         int count =0;
         for(Player p : ps) players[count++]=p.clone();
+
     }
 
     public Player[] getPlayers() {
@@ -51,13 +52,16 @@ public class Node {
         int count =0;
         for(Player p : parent.getPlayers()) { //copy the players but take care to remove the piece played
             players[count++]=p.clone();
-            if(players[count-1].getPlayerNumber()==move.getPlayer().getPlayerNumber())
-                players[count-1].removePiece(move.getPiece().getLabel());
+            if(players[count-1].getPlayerNumber()==move.getPlayer().getPlayerNumber()) {
+                players[count - 1].removePiece(move.getPiece().getLabel());
+                players[count - 1].setNotFirstMove();
+            }
         }
         move.writePieceIntoBoard(state);
         children = new ArrayList<>();
         visitiedNum=0;
         score = 0;
+
     }
 
     /**
@@ -78,24 +82,27 @@ public class Node {
     public int simulation(int playerturn, int playerOfInterest){
         int countPass=0;
         Board board = state.clone();
+        Player[] temp = new Player[players.length];
+        for(Player p : players) temp[p.getPlayerNumber()-1]=p.clone();
         while(countPass<players.length){
             if(playerturn==0) countPass=0;
-            Move move = players[playerturn].randomPossibleMove(board);
+            Move move = temp[playerturn].randomPossibleMove(board);
             if(move!=null) {
                 move.writePieceIntoBoard(board);
-                players[playerturn].removePiece(move.getPiece().getLabel());
+                temp[playerturn].removePiece(move.getPiece().getLabel());
+                temp[playerturn].setNotFirstMove();
             }else{
                 countPass++;
             }
             playerturn = (playerturn+1)%players.length;
         }
-
+        //board.print();
         int[] playerScores=new int[players.length];
-        for(Player p: players) for(Piece piece: p.getPiecesList()) playerScores[p.getPlayerNumber()-1]+=piece.getNumberOfBlocks();
+        for(Player p: temp) for(Piece piece: p.getPiecesList()) playerScores[p.getPlayerNumber()-1]+=piece.getNumberOfBlocks();
 
-        //System.out.println(move.getPiece().getLabel()+" "+playerScores[0]+" "+playerScores[1]+" "+playerScores[2]+" "+playerScores[3]);
-        for(int score:playerScores) if(playerScores[playerOfInterest]>score) return 0;
-        return 1;
+       // System.out.println(move.getPiece().getLabel()+" "+playerScores[0]+" "+playerScores[1]+" "+playerScores[2]+" "+playerScores[3]);
+        for(int score:playerScores) if(playerScores[playerOfInterest]>score) return 0;//loss
+        return 1;//win
 
     }
 
