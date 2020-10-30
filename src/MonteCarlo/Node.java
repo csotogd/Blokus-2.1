@@ -54,7 +54,7 @@ public class Node {
             players[count++]=p.clone();
             if(players[count-1].getPlayerNumber()==move.getPlayer().getPlayerNumber()) {
                 players[count - 1].removePiece(move.getPiece().getLabel());
-                players[count - 1].setNotFirstMove();
+                players[count - 1].setNotFirstMove(); //THIS LINE SHOULDNT BE NECESSARY YET IT IS
             }
         }
         move.writePieceIntoBoard(state);
@@ -80,17 +80,17 @@ public class Node {
      * @return
      */
     public int simulation(int playerturn, int playerOfInterest){
-        int countPass=0;
-        Board board = state.clone();
-        Player[] temp = new Player[players.length];
+        int countPass=0; //number of time a player has passed during a simulation
+        Board board = state.clone(); //clone the board
+        Player[] temp = new Player[players.length];//clone the players
         for(Player p : players) temp[p.getPlayerNumber()-1]=p.clone();
-        while(countPass<players.length){
-            if(playerturn==0) countPass=0;
-            Move move = temp[playerturn].randomPossibleMove(board);
+        while(countPass<players.length){ //while not everyone has passed in a turn
+            if(playerturn==0) countPass=0; // beginning of the turn, nobody has passed yet
+            Move move = temp[playerturn].randomPossibleMove(board); //random move
             if(move!=null) {
                 move.writePieceIntoBoard(board);
                 temp[playerturn].removePiece(move.getPiece().getLabel());
-                temp[playerturn].setNotFirstMove();
+                temp[playerturn].setNotFirstMove(); //THIS LINE SHOULD NOT BE NECESSARY YET IT IS
             }else{
                 countPass++;
             }

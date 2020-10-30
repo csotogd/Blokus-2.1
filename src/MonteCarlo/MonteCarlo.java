@@ -22,29 +22,29 @@ public class MonteCarlo {
     }
 
     public Move simulation(int player, long timeLimit){
-        long start = System.currentTimeMillis();
-        root.expand(this.players[player]);
+        long start = System.currentTimeMillis(); //start of the timer
+        root.expand(this.players[player]);// expand will append a children of every possible move to the root
 
-        System.out.println("p"+player+" "+root.getChildren().size());
-        for(Node children : root.getChildren()){
+//        System.out.println("p"+player+" "+root.getChildren().size()); // for debug purpose print the number of possible move
+        for(Node children : root.getChildren()){ //DO at least one simulation per node...
+            //MAYBE WE CAN SKIP THIS STEP and try to focus on bigger pieces instead
             if(children.simulation((player+1)%players.length, player)>0) children.addScore();
             children.addVisitiedNum();
 
         }
-        //System.out.println((System.currentTimeMillis()-start)+"ms");
-        while(System.currentTimeMillis()-start<timeLimit){
+        //System.out.println((System.currentTimeMillis()-start)+"ms"); // how long did we take to expand/visit every node?
+        while(System.currentTimeMillis()-start<timeLimit){ // while there is still time
             //chose one of the possible move
-            Node choosen = root.getChildren().get(0);
+            Node choosen = root.getChildren().get(0); //choose one node to simulate
             for(Node children : root.getChildren()) {
                 if(children.getUCB1()>choosen.getUCB1()) choosen=children;
             }
             //System.out.println("ucbscore: "+choosen.getUCB1()+" / " +choosen.getMove().getPiece().getLabel());
             //simulate turn by turn until the end -> back propagate score
-            choosen.addVisitiedNum();
-            if(choosen.simulation((player+1)%players.length,player)>0) choosen.addScore();
-
+            choosen.addVisitiedNum(); // update the count of the visited number
+            if(choosen.simulation((player+1)%players.length,player)>0) choosen.addScore();//if we get a win update the score as well
         }
-        Node res = root.getChildren().get(0);
+        Node res = root.getChildren().get(0);//choose the most visited node move
         //for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitiedNum());
         for(Node children : root.getChildren()) if(children.getVisitiedNum()>=res.getVisitiedNum()) res=children;
         return res.getMove();
