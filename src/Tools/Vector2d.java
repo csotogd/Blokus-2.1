@@ -90,6 +90,16 @@ public class Vector2d {
     }
 
     /**
+     *
+     * @param vec2
+     * @return distance between this and vec2
+     */
+    public int moduleDistance(Vector2d vec2){
+
+        return (int) Math.sqrt((x-vec2.get_x())^2 + (y-vec2.get_y())^2);
+    }
+
+    /**
      * @return Gets the normalised vector (a vector of length one with same direction)
      */
     public Vector2d normalise(){

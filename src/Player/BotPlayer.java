@@ -1,6 +1,7 @@
 package Player;
 
 import DataBase.Piece;
+import GameBoard.Board;
 import Move.Move;
 
 
@@ -24,7 +25,7 @@ public  class BotPlayer extends Player{
 
         }
 
-        public Move calculateMove(){
+        public Move calculateMove(Board board){
             System.out.println("calculate move to be called from subclasses of botplayer");
         return null;
         }
