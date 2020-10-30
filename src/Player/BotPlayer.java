@@ -1,8 +1,10 @@
 package Player;
 
 import DataBase.Piece;
+import Move.Move;
 
-public class BotPlayer extends Player{
+//this class would made more sense as an abstract class, try if it is possible later without breaking code in the initialization of the game
+public  class BotPlayer extends Player{
 
     public BotPlayer(int number)
     {
@@ -20,6 +22,11 @@ public class BotPlayer extends Player{
             this.humanPlayer=false;
             this.firstMove= true;
 
+        }
+
+        public Move calculateMove(){
+            System.out.println("calculate move to be called from subclasses of botplayer");
+        return null;
         }
 
     public Player clone(){
