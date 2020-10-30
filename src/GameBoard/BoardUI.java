@@ -592,10 +592,12 @@ public class BoardUI{
                 System.out.println(actualPlayer.getName()+ " skipped last move?: "+actualPlayer.getSkippedLastMove());
                 //System.out.println("In game status:  someone did move moved");
                 nextTurn();
-                if (actualPlayer instanceof BotPlayer)
+                if (actualPlayer instanceof HumanPlayer)
                 state = GameState.HUMAN_MOVE;
-                else
-                state = GameState.AI_MOVE;
+                else {
+                    state = GameState.AI_MOVE;
+                    handleAITurn();
+                }
 
 
             }
@@ -631,6 +633,16 @@ public class BoardUI{
 
 
     }
+
+    private void handleAITurn(){
+        //So far this will only print the current piece into the board,
+        //then the user will drag it manually into there
+        //TODO make it so that no action can be taken while ai is taking its turn
+        //TODO handle logic and animation for ai move
+        BotPlayer player = (BotPlayer)actualPlayer;
+        player.calculateMove();
+    }
+
 
     /**
      * If none of the players made its move, then the game just ended
