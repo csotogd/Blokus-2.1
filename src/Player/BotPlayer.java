@@ -3,7 +3,7 @@ package Player;
 import DataBase.Piece;
 import Move.Move;
 
-//this class would made more sense as an abstract class, try if it is possible later without breaking code in the initialization of the game
+
 public  class BotPlayer extends Player{
 
     public BotPlayer(int number)

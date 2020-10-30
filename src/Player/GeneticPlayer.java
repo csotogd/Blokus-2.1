@@ -2,6 +2,8 @@ package Player;
 
 import Move.Move;
 
+import java.sql.SQLOutput;
+
 public class GeneticPlayer extends BotPlayer {
 
     public GeneticPlayer(int number) {
@@ -14,6 +16,7 @@ public class GeneticPlayer extends BotPlayer {
      */
     public Move calculateMove(){
        //while we code all the different strategies, make this call the one you want to try
+        System.out.println("In calculate move for genetic algorithm");
     return null;
     }
 
