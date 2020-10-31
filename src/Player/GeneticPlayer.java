@@ -31,7 +31,7 @@ public class GeneticPlayer extends BotPlayer {
         for (Move move : super.possibleMoveSet(board)){
             movesAndScores.put(move, new Float(0));
         }
-        
+
         //the weights is what we will calculate in the genetic algorithm
         addsMostCorners(1,movesAndScores, board);
         blocksMostCorners(1,movesAndScores, board);
@@ -43,13 +43,54 @@ public class GeneticPlayer extends BotPlayer {
     }
 
     //return type can be changed
-    private void addsMostCorners(float weight,HashMap<Move, Float> movesAndScores, Board board){;}
+
 
     private void blocksMostCorners(float weight,HashMap<Move, Float> movesAndScores ,Board board){;}
 
     private void closestToMiddle(float weight, HashMap<Move, Float> movesAndScores,Board board){;}
 
     private void biggestPiece(float weight, HashMap<Move, Float> movesAndScores,Board board){;}
+
+    //TODO TESTING
+    private void addsMostCorners(float weight,HashMap<Move, Float> movesAndScores, Board board) {
+
+        //for every move, see how many corners would be added.
+
+        for (Map.Entry<Move, Float> entry : movesAndScores.entrySet()) {
+            Move move = entry.getKey();
+            ArrayList<Corner> cornerContacts = move.getPiece().getCornersContacts(move.getPosition());
+            //see how many of the corner of the added piece can be used to place another piece.
+            /*so for example a piece in the shape of an 'L might have 2 corners, however
+            * one is in contact with one piece of the same colour(otherwise L would no be able to be placed)
+            * The other corner might be free, or also in contact with a piece, we need to check that.
+            * If one corner was free then we would assign 1, if 2 we would assign 2 and so on.....
+            * */
+            int addedFreeCorners=0;
+            for(Corner corner: cornerContacts ){
+                //check they are 0 and not a BOARD corner.
+                for(Vector2d toCornerPosition : corner.getToCornerPositions()){
+                    try {
+                        if(board.board[toCornerPosition.get_x()][toCornerPosition.get_y()]==0)
+                            addedFreeCorners++; //if the corner is empty and free to use
+                        else if(board.board[toCornerPosition.get_x()][toCornerPosition.get_y()]==this.number)
+                            addedFreeCorners--; //you blocked a self-corner
+                    }catch (IndexOutOfBoundsException e){
+                        ;//a free corner outside of the board makes no sense
+                    }
+                }
+            }
+
+            //the score if weight was one needs to be between [-1, 1]
+            //If it is negative it means, we added no new corners and we blocked some we had
+            float normalization = 7; //the max number of added corner is 7, if we use the '+' piece and they are all free
+            float score = weight * (addedFreeCorners / normalization);
+
+            //now the  for each move is updated according to what we calculated and the weight given.
+            movesAndScores.put(move, movesAndScores.get(move) + score);
+
+
+        }
+    }
 
     //TODO: test it
 
