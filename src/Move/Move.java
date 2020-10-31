@@ -302,7 +302,7 @@ public class Move {
      */
     public boolean makeMove(Board board){
         if(this.isAllowed(board)) {
-    //        System.out.println("Move allowed");
+            System.out.println("Move allowed");
             //add piece to the board
             this.writePieceIntoBoard(board);
             player.getMoveLog().push(this);

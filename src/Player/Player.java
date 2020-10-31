@@ -27,7 +27,8 @@ public abstract class Player {
     protected Stack <Move> moveLog = new Stack<>();
 
     public boolean isFirstMove() {
-        return firstMove;
+        if(firstMove) return true;
+        return false;
     }
 
     public void setFirstMove(boolean firstMove) {

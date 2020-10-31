@@ -98,26 +98,24 @@ public class BoardUI{
 
         if(!Data.isNormalGame()){
             System.out.println("algo game");
-            //while(!noOneMoved()){
-                MonteCarlo mc = new MonteCarlo(players,board);
-                System.out.println(players[0].isFirstMove());
-                //while(!noOneMoved()){
-                    for (Player player:players) {
-                        Move move1 = mc.simulation(player.getNumber()-1,1000);
-                        //System.out.println(move1.getPiece() + " " +  move1.getPlayer().getNumber());
-                        System.out.println(move1.getPlayer().isFirstMove());
-
+            MonteCarlo mc = new MonteCarlo(players,board);
+            for (Player player:players) {
+                Move move1 = mc.simulation(player.getNumber()-1,1000);
+                if(move1.makeMove(board)){
+                            /*
                         move1.writePieceIntoBoard(board);
                         move1.getPlayer().getMoveLog().push(move1);
                         move1.getPiece().setUsed(true);//TODO erase this none sense line of code, completely useless
                         move1.getPlayer().getPiecesUsed().add(move1.getPiece());
-                        //System.out.println("number of blocks from make move: "+piece.getNumberOfBlocks());
                         if(move1.getPlayer().isFirstMove()) move1.getPlayer().setFirstMove(false);
-                        System.out.println("MAKE MOVE");
-                        moveAllowed(null,move1.getPiece(),allPieces[actualPlayer.getNumber()-1]);
-                    }
 
-                //}
+                             */
+                    moveAllowed(null,move1.getPiece(),allPieces[actualPlayer.getNumber()-1]);
+
+
+                }
+            }
+
         }
 
 
