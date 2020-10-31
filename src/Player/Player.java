@@ -271,9 +271,10 @@ public abstract class Player {
 
 
 
-public List<Piece> getPiecesUsed(){
-        return this.piecesUsed;
-}
+    public List<Piece> getPiecesUsed(){
+            return this.piecesUsed;
+    }
+
     public static void main(String[] args){
         HumanPlayer p1 = new HumanPlayer(1,"jo");
         HumanPlayer p2 = new HumanPlayer(2,"dos");
