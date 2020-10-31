@@ -60,7 +60,36 @@ public class GeneticPlayer extends BotPlayer {
 
     private void blocksMostCorners(float weight,HashMap<Move, Float> movesAndScores ,Board board){;}
 
-    private void closestToMiddle(float weight, HashMap<Move, Float> movesAndScores,Board board){;}
+    private void closestToMiddle(float weight, HashMap<Move, Float> movesAndScores,Board board){
+        //for every move, see how many corners would be added.
+
+        for (Map.Entry<Move, Float> entry : movesAndScores.entrySet()) {
+            //for every move, see which of the corners of the piece is closest to the center of the board.
+            //score will be the minimal distance between any corner of the piece and center. The closer the shorter the distance
+            Move move = entry.getKey();
+            ArrayList<Corner> cornerContacts = move.getPiece().getCornersContacts(move.getPosition());
+            int minDistance=1000;
+            Vector2d center = new Vector2d (board.getBoardDimension()/2, board.getBoardDimension()/2);
+
+            for(Corner corner: cornerContacts ){
+                Vector2d cornerPosition = corner.getPosition();
+                int distance = cornerPosition.moduleDistance(center);
+                //int distance2 = board.getBoardDimension()/2 - cornerPosition.moduleDistance(center);
+                System.out.println("corner position:" ); cornerPosition.printVector();
+                System.out.println("module distance:"+distance);
+                if(distance<minDistance){
+                    minDistance = distance;
+                }
+            }
+
+            //the score if weight was one needs to be between [0, 1]
+            //float normalization= (float) Math.sqrt(2*(board.getDIMENSION()^2));
+            float normalization=1;
+            float score = weight*(minDistance/normalization);
+
+            //now the  for each move is updated according to what we calculated and the weight given.
+            movesAndScores.put(move, movesAndScores.get(move) + score);
+    }
 
     private void biggestPiece(float weight, HashMap<Move, Float> movesAndScores,Board board){
         for (Map.Entry<Move, Float> entry : movesAndScores.entrySet()){
