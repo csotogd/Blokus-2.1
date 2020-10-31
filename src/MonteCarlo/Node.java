@@ -62,7 +62,7 @@ public class Node {
         children = new ArrayList<>();
         visitiedNum = 0;
         score = 0;
-        ucbScore = (double)move.getPiece().getNumberOfBlocks()/10.0;
+        ucbScore = (double)move.getPiece().getNumberOfBlocks();
     }
 
     /**
@@ -112,7 +112,7 @@ public class Node {
     }
 
     public double computeUCB(){
-        ucbScore= (double)score/(double)visitiedNum + Node.c*Math.sqrt(Math.log(parent.getVisitiedNum())/(double)visitiedNum)+(double)move.getPiece().getNumberOfBlocks()/10.0;
+        ucbScore= (double)score/(double)visitiedNum + Node.c*Math.sqrt(Math.log(parent.getVisitiedNum())/(double)visitiedNum);
         return ucbScore;
     }
 
