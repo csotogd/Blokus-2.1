@@ -10,6 +10,7 @@ public class MonteCarlo {
 
     Player[] players;
     Node root;
+    Board board;
 
     /**
      * COnstructor
@@ -18,11 +19,13 @@ public class MonteCarlo {
      */
     public MonteCarlo(Player[] pls, Board bo){
         players= pls;
+        board=bo;
         root = new Node(bo, pls);
     }
 
     public Move simulation(int player, long timeLimit){
         long start = System.currentTimeMillis(); //start of the timer
+        root = new Node(board, players);
         root.expand(this.players[player]);// expand will append a children of every possible move to the root
 
 //        System.out.println("p"+player+" "+root.getChildren().size()); // for debug purpose print the number of possible move
@@ -68,23 +71,23 @@ public class MonteCarlo {
 
         int i= 0;
         while(i<15){
-            mc = new MonteCarlo(mc.players,b);
-            Move move1 = mc.simulation(0,15000);
+            //mc = new MonteCarlo(mc.players,b);
+            Move move1 = mc.simulation(0,5000);
             move1.writePieceIntoBoard(b);
             p1.removePiece(move1.getPiece().getLabel());
 
-            mc = new MonteCarlo(mc.players,b);
-            Move move2 = mc.simulation(1,15000);
+            //mc = new MonteCarlo(mc.players,b);
+            Move move2 = mc.simulation(1,5000);
             move2.writePieceIntoBoard(b);
             p2.removePiece(move2.getPiece().getLabel());
 
-            mc = new MonteCarlo(mc.players,b);
-            Move move3 = mc.simulation(2,15000);
+            //mc = new MonteCarlo(mc.players,b);
+            Move move3 = mc.simulation(2,5000);
             move3.writePieceIntoBoard(b);
             p3.removePiece(move3.getPiece().getLabel());
 
-            mc = new MonteCarlo(mc.players,b);
-            Move move4 = mc.simulation(3,15000);
+            //mc = new MonteCarlo(mc.players,b);
+            Move move4 = mc.simulation(3,5000);
             move4.writePieceIntoBoard(b);
             p4.removePiece(move4.getPiece().getLabel());
 

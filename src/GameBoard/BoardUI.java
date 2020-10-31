@@ -640,7 +640,7 @@ public class BoardUI{
         //TODO make it so that no action can be taken while ai is taking its turn
         //TODO handle logic and animation for ai move
         BotPlayer player = (BotPlayer)actualPlayer;
-        player.calculateMove();
+        player.calculateMove(board);
     }
 
 
