@@ -1,5 +1,6 @@
 package Player;
 
+import DataBase.Piece;
 import GameBoard.Board;
 import GameBoard.Corner;
 import Move.Move;
@@ -29,7 +30,7 @@ public class GeneticPlayer extends BotPlayer {
         // scores will be modified throuout the algorithm.
         //see example in far from starting corner
         for (Move move : super.possibleMoveSet(board)){
-            movesAndScores.put(move, new Float(0));
+            movesAndScores.put(move, (float) 0);
         }
 
         //the weights is what we will calculate in the genetic algorithm
@@ -39,7 +40,17 @@ public class GeneticPlayer extends BotPlayer {
         biggestPiece(1,movesAndScores, board);
         farFromStartingCorner(1,movesAndScores, board);
 
-    return null;
+        float maxScore = 0;
+        Move bestMove = null;
+        for (Move move : movesAndScores.keySet()){
+            if (movesAndScores.get(move) > maxScore){
+                maxScore = movesAndScores.get(move);
+                bestMove = move;
+            }
+        }
+        bestMove.print();
+
+        return bestMove;
     }
 
     //return type can be changed
@@ -49,7 +60,18 @@ public class GeneticPlayer extends BotPlayer {
 
     private void closestToMiddle(float weight, HashMap<Move, Float> movesAndScores,Board board){;}
 
-    private void biggestPiece(float weight, HashMap<Move, Float> movesAndScores,Board board){;}
+    private void biggestPiece(float weight, HashMap<Move, Float> movesAndScores,Board board){
+        for (Map.Entry<Move, Float> entry : movesAndScores.entrySet()){
+            Move move = entry.getKey();
+            Piece piece = move.getPiece();
+            //Max number of blocks in a piece is 5
+            float normalization = 5;
+            float score = weight * (piece.getNumberOfBlocks()/normalization);
+
+            //add score to the corresponding piece
+            movesAndScores.put(move, movesAndScores.get(move) + score);
+        }
+    }
 
     //TODO TESTING
     private void addsMostCorners(float weight,HashMap<Move, Float> movesAndScores, Board board) {
