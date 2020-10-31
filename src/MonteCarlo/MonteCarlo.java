@@ -29,12 +29,12 @@ public class MonteCarlo {
         root.expand(this.players[player]);// expand will append a children of every possible move to the root
 
 //        System.out.println("p"+player+" "+root.getChildren().size()); // for debug purpose print the number of possible move
-        for(Node children : root.getChildren()){ //DO at least one simulation per node...
+    /*    for(Node children : root.getChildren()){ //DO at least one simulation per node...
             //MAYBE WE CAN SKIP THIS STEP and try to focus on bigger pieces instead
             if(children.simulation((player+1)%players.length, player)>0) children.addScore();
             children.addVisitiedNum();
 
-        }
+        }*/
         //System.out.println((System.currentTimeMillis()-start)+"ms"); // how long did we take to expand/visit every node?
         while(System.currentTimeMillis()-start<timeLimit){ // while there is still time
             //chose one of the possible move

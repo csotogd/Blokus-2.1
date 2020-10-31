@@ -16,6 +16,7 @@ public class Node {
     private int score;
     private static double c=3;
     private Player[] players;
+    private double ucbScore;
 
     /**
      * CONSTRUCTOR for the root (parent point to itself)
@@ -59,9 +60,9 @@ public class Node {
         }
         move.writePieceIntoBoard(state);
         children = new ArrayList<>();
-        visitiedNum=0;
+        visitiedNum = 0;
         score = 0;
-
+        ucbScore = (double)move.getPiece().getNumberOfBlocks()/10.0;
     }
 
     /**
@@ -107,7 +108,12 @@ public class Node {
     }
 
     public double getUCB1(){
-        return (double)score/(double)visitiedNum + Node.c*Math.sqrt(Math.log(parent.getVisitiedNum())/(double)visitiedNum);
+        return ucbScore;
+    }
+
+    public double computeUCB(){
+        ucbScore= (double)score/(double)visitiedNum + Node.c*Math.sqrt(Math.log(parent.getVisitiedNum())/(double)visitiedNum)+(double)move.getPiece().getNumberOfBlocks()/10.0;
+        return ucbScore;
     }
 
     public List<Node> getChildren(){
@@ -144,7 +150,10 @@ public class Node {
 
     public void addVisitiedNum() {
         this.visitiedNum ++;
-        if(parent!=this) parent.addVisitiedNum();
+        if(parent!=this) {
+            parent.addVisitiedNum();
+            computeUCB();
+        }
     }
 
     public int getScore() {
