@@ -2,6 +2,8 @@ package GameBoard;
 
 import DataBase.Data;
 import DataBase.Piece;
+import DataBase.PieceFactory;
+import MonteCarlo.MonteCarlo;
 import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
@@ -93,21 +95,32 @@ public class BoardUI{
 
         state=GameState.HUMAN_MOVE; //TODO change this for second period
 
-        /*
+
         if(!Data.isNormalGame()){
             System.out.println("algo game");
-            while(!noOneMoved()){
-                for (int i = 0; i < players.length; i++) {
-                    List move = players[i].randomPossibleMove(board);
-                    if(move!=null&&makeMove((Move)move.get(1))){
-                        Pane piece = null;
-                        moveAllowed(piece,(Piece)move.get(0),allPieces[players[i].getNumber()-1]);
+            //while(!noOneMoved()){
+                MonteCarlo mc = new MonteCarlo(players,board);
+                System.out.println(players[0].isFirstMove());
+                //while(!noOneMoved()){
+                    for (Player player:players) {
+                        Move move1 = mc.simulation(player.getNumber()-1,1000);
+                        //System.out.println(move1.getPiece() + " " +  move1.getPlayer().getNumber());
+                        System.out.println(move1.getPlayer().isFirstMove());
+
+                        move1.writePieceIntoBoard(board);
+                        move1.getPlayer().getMoveLog().push(move1);
+                        move1.getPiece().setUsed(true);//TODO erase this none sense line of code, completely useless
+                        move1.getPlayer().getPiecesUsed().add(move1.getPiece());
+                        //System.out.println("number of blocks from make move: "+piece.getNumberOfBlocks());
+                        if(move1.getPlayer().isFirstMove()) move1.getPlayer().setFirstMove(false);
+                        System.out.println("MAKE MOVE");
+                        moveAllowed(null,move1.getPiece(),allPieces[actualPlayer.getNumber()-1]);
                     }
-                }
-            }
+
+                //}
         }
 
-         */
+
     }
 
     public void paint() {
@@ -180,9 +193,10 @@ public class BoardUI{
     }
 
     public void moveAllowed(Pane piece, Piece pieceRoot,Pane allPieces){
-        paint();
         //System.out.println("piece removed");
-        allPieces.getChildren().remove(piece); //every piece also has an internal used state which is updated
+        if(piece!=null){
+            allPieces.getChildren().remove(piece); //every piece also has an internal used state which is updated
+        }
         actualPlayer.getPiecesList().remove(pieceRoot);
         updateState();
         // actualPlayer = players[playerCounter++];
@@ -192,6 +206,7 @@ public class BoardUI{
         turnOfPlayerText.setText(actualPlayer.getName());
         turnOfPlayerText.setFill(actualPlayer.getColor());
         refreshPieces();
+        paint();
     }
 
     /**
