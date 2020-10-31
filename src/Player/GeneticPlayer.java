@@ -102,7 +102,8 @@ public class GeneticPlayer extends BotPlayer {
                             addedFreeCorners++; //if the corner is empty and free to use
                     }
                         else if(board.board[toCornerPosition.get_y()][toCornerPosition.get_x()]==this.number){
-                            //addedFreeCorners--; //you blocked a self-corner
+                            addedFreeCorners--; //you blocked a self-corner, at least one is blocked to put the piece there
+                            //you might be adding a pioece with 6 blocking corners, then that is a negative score
                            // System.out.println("blocked self corner");
                         }
 
@@ -116,7 +117,7 @@ public class GeneticPlayer extends BotPlayer {
 
             //the score if weight was one needs to be between [-1, 1]
             //If it is negative it means, we added no new corners and we blocked some we had
-            float normalization = 7; //the max number of added corner is 7, if we use the '+' piece and they are all free
+            float normalization = 6; //the max number of added corner is 7, if we use the '+' piece and they are all free
             float score = weight * (addedFreeCorners / normalization);
 
             //now the  for each move is updated according to what we calculated and the weight given.
