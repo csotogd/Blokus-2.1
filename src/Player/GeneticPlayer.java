@@ -33,12 +33,14 @@ public class GeneticPlayer extends BotPlayer {
             movesAndScores.put(move, (float) 0);
         }
 
+        //uncomment to test a strategy
+
         //the weights is what we will calculate in the genetic algorithm
         addsMostCorners(1,movesAndScores, board);
-        blocksMostCorners(1,movesAndScores, board);
-        closestToMiddle(1,movesAndScores, board);
-        biggestPiece(1,movesAndScores, board);
-        farFromStartingCorner(1,movesAndScores, board);
+        //blocksMostCorners(1,movesAndScores, board);
+        //closestToMiddle(1,movesAndScores, board);
+        //biggestPiece(1,movesAndScores, board);
+        //farFromStartingCorner(1,movesAndScores, board);
 
         float maxScore = 0;
         Move bestMove = null;
@@ -87,20 +89,30 @@ public class GeneticPlayer extends BotPlayer {
             * The other corner might be free, or also in contact with a piece, we need to check that.
             * If one corner was free then we would assign 1, if 2 we would assign 2 and so on.....
             * */
+
+
             int addedFreeCorners=0;
             for(Corner corner: cornerContacts ){
                 //check they are 0 and not a BOARD corner.
+
                 for(Vector2d toCornerPosition : corner.getToCornerPositions()){
+
                     try {
-                        if(board.board[toCornerPosition.get_x()][toCornerPosition.get_y()]==0)
+                        if (board.board[toCornerPosition.get_y()][toCornerPosition.get_x()] == 0){
                             addedFreeCorners++; //if the corner is empty and free to use
-                        else if(board.board[toCornerPosition.get_x()][toCornerPosition.get_y()]==this.number)
-                            addedFreeCorners--; //you blocked a self-corner
+                    }
+                        else if(board.board[toCornerPosition.get_y()][toCornerPosition.get_x()]==this.number){
+                            //addedFreeCorners--; //you blocked a self-corner
+                           // System.out.println("blocked self corner");
+                        }
+
                     }catch (IndexOutOfBoundsException e){
                         ;//a free corner outside of the board makes no sense
                     }
                 }
             }
+            if (move.getPiece().getLabel().equals("X"))
+            System.out.println();
 
             //the score if weight was one needs to be between [-1, 1]
             //If it is negative it means, we added no new corners and we blocked some we had
@@ -134,6 +146,8 @@ public class GeneticPlayer extends BotPlayer {
             for(Corner corner: cornerContacts ){
                 Vector2d cornerPosition=corner.getPosition();
                 int distance= cornerPosition.moduleDistance(this.startingCorner);
+                System.out.println("corner position:" ); cornerPosition.printVector();
+                System.out.println("module distance:"+distance);
                 if(distance>maxDistance){
                     maxDistance=distance;
                 }
@@ -141,7 +155,8 @@ public class GeneticPlayer extends BotPlayer {
             }
 
             //the score if weight was one needs to be between [0, 1]
-            float normalization= (float) Math.sqrt(2*(board.getDIMENSION()^2));
+            //float normalization= (float) Math.sqrt(2*(board.getDIMENSION()^2));
+            float normalization=1;
             float score = weight*(maxDistance/normalization);
 
             //now the  for each move is updated according to what we calculated and the weight given.
@@ -183,4 +198,22 @@ public class GeneticPlayer extends BotPlayer {
     private void endGamePossibleMoves(float weight){;}
 
 
+
+    private void printBestMove(HashMap<Move, Float> movesAndScores){
+        float max=-100;
+        Move maxMove=null;
+        for (Map.Entry<Move, Float> entry : movesAndScores.entrySet()){
+            if(entry.getValue()>=max) {
+                max = entry.getValue();
+                maxMove=entry.getKey();
+            }
+        }
+        System.out.println("best move: ");
+        System.out.println("score: "+movesAndScores.get(maxMove));
+        System.out.println("piece: "+maxMove.getPiece().getLabel());
+        maxMove.getPiece().printShape();
+        System.out.println("cordinates: ");maxMove.getPosition().printVector();
+        System.out.println();
+        System.out.println();
+    }
 }
