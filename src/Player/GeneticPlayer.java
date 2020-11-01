@@ -36,9 +36,9 @@ public class GeneticPlayer extends BotPlayer {
         //uncomment to test a strategy
 
         //the weights is what we will calculate in the genetic algorithm
-        addsMostCorners(1,movesAndScores, board);
+        //addsMostCorners(1,movesAndScores, board);
         //blocksMostCorners(1,movesAndScores, board);
-        //closestToMiddle(1,movesAndScores, board);
+        closestToMiddle(1,movesAndScores, board);
         //biggestPiece(1,movesAndScores, board);
         //farFromStartingCorner(1,movesAndScores, board);
 
@@ -61,20 +61,22 @@ public class GeneticPlayer extends BotPlayer {
     private void blocksMostCorners(float weight,HashMap<Move, Float> movesAndScores ,Board board){;}
 
     private void closestToMiddle(float weight, HashMap<Move, Float> movesAndScores,Board board){
-        //for every move, see how many corners would be added.
+        //for every move, see how close the closest corner is to the middle.
 
         for (Map.Entry<Move, Float> entry : movesAndScores.entrySet()) {
-            //for every move, see which of the corners of the piece is closest to the center of the board.
-            //score will be the minimal distance between any corner of the piece and center. The closer the shorter the distance
+            //for every move, see which of the corners of the piece is closest to the middle of the board.
+            //score will be the minimal distance between any corner of the piece and middle. The closer the shorter the distance
             Move move = entry.getKey();
             ArrayList<Corner> cornerContacts = move.getPiece().getCornersContacts(move.getPosition());
+            Vector2d middle = new Vector2d (board.getBoardDimension()/2, board.getBoardDimension()/2);
             int minDistance=1000;
-            Vector2d center = new Vector2d (board.getBoardDimension()/2, board.getBoardDimension()/2);
+            //if score shall increase the closer a corner is to the middle, work with maxDistance and distance 2, then minDistance = 0
+            //int maxDistance= middle.moduleDistance(this.startingCorner);
 
             for(Corner corner: cornerContacts ){
                 Vector2d cornerPosition = corner.getPosition();
-                int distance = cornerPosition.moduleDistance(center);
-                //int distance2 = board.getBoardDimension()/2 - cornerPosition.moduleDistance(center);
+                int distance = cornerPosition.moduleDistance(middle);
+                //int distance2 = maxDistance - cornerPosition.moduleDistance(center);
                 System.out.println("corner position:" ); cornerPosition.printVector();
                 System.out.println("module distance:"+distance);
                 if(distance<minDistance){
