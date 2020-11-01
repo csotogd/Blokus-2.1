@@ -94,9 +94,9 @@ public class Vector2d {
      * @param vec2
      * @return distance between this and vec2
      */
-    public int moduleDistance(Vector2d vec2){
+    public float moduleDistance(Vector2d vec2){
 
-        return (int) Math.sqrt(Math.pow(x-vec2.get_x(), 2) + Math.pow(y-vec2.get_y(), 2));// VERY IMPORTANT ^ is not power, it is XOR for the bit forms of corresponding vars
+        return (float) Math.sqrt(Math.pow(x-vec2.get_x(), 2) + Math.pow(y-vec2.get_y(), 2));// VERY IMPORTANT ^ is not power, it is XOR for the bit forms of corresponding vars
     }
 
     /**
@@ -125,5 +125,11 @@ public class Vector2d {
      */
     public void printVector(){
         System.out.println("x = " + x + " y = " + y);
+    }
+
+    public static void main(String[] args) {
+        Vector2d vector1= new Vector2d(15,6);
+        Vector2d vector2 = new Vector2d(19, 0);
+        System.out.println();
     }
 }

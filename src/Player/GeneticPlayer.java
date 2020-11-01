@@ -39,11 +39,14 @@ public class GeneticPlayer extends BotPlayer {
         //uncomment to test a strategy
 
         //the weights is what we will calculate in the genetic algorithm
-        //addsMostCorners(1,movesAndScores, board);
+         //addsMostCorners(1,movesAndScores, board);
         //blocksMostCorners(1,movesAndScores, board);
-        closestToMiddle(1,movesAndScores, board);
+        //closestToMiddle(1,movesAndScores, board);
         //biggestPiece(1,movesAndScores, board);
-        //farFromStartingCorner(1,movesAndScores, board);
+        farFromStartingCorner(1,movesAndScores, board);
+
+        printBestMove(movesAndScores);
+
 
         float maxScore = 0;
         Move bestMove = null;
@@ -54,9 +57,9 @@ public class GeneticPlayer extends BotPlayer {
             }
         }
         if (bestMove == null){
-            System.out.println("There is no best move, or every moves' score is 0");
+          //  System.out.println("There is no best move, or every moves' score is 0");
         }
-        bestMove.print();
+        //bestMove.print();
 
         return bestMove;
     }
@@ -193,12 +196,16 @@ public class GeneticPlayer extends BotPlayer {
             //score will be the distance between it and the corner. The further away the greater the distance
             Move move=entry.getKey();
             ArrayList<Corner> cornerContacts=move.getPiece().getCornersContacts(move.getPosition());
-            int maxDistance=-1;
+            float maxDistance=-1;
             for(Corner corner: cornerContacts ){
                 Vector2d cornerPosition=corner.getPosition();
-                int distance= cornerPosition.moduleDistance(this.startingCorner);
-                System.out.println("corner position:" ); cornerPosition.printVector();
-                System.out.println("module distance:"+distance);
+                float distance= cornerPosition.moduleDistance(this.startingCorner);
+                //note that module distance will prioritize the side, as
+                // a 4 squared 'I' will return a higher score that a 4 squared 'L'
+                // take note of these for the future
+
+                //System.out.println("corner position:" ); cornerPosition.printVector();
+                //System.out.println("module distance:"+distance);
                 if(distance>maxDistance){
                     maxDistance=distance;
                 }
@@ -206,8 +213,8 @@ public class GeneticPlayer extends BotPlayer {
             }
 
             //the score if weight was one needs to be between [0, 1]
-            //float normalization= (float) Math.sqrt(2*(board.getDIMENSION()^2));
-            float normalization=1;
+            float normalization= (float) Math.sqrt(2*Math.pow(board.getDIMENSION(),2));
+            //float normalization=1;
             float score = weight*(maxDistance/normalization);
 
             //now the  for each move is updated according to what we calculated and the weight given.
