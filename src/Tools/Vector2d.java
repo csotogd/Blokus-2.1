@@ -96,7 +96,7 @@ public class Vector2d {
      */
     public int moduleDistance(Vector2d vec2){
 
-        return (int) Math.sqrt((x-vec2.get_x())^2 + (y-vec2.get_y())^2);
+        return (int) Math.sqrt(Math.pow(x-vec2.get_x(), 2) + Math.pow(y-vec2.get_y(), 2));// VERY IMPORTANT ^ is not power, it is XOR for the bit forms of corresponding vars
     }
 
     /**

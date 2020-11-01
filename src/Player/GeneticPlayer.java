@@ -50,6 +50,9 @@ public class GeneticPlayer extends BotPlayer {
                 bestMove = move;
             }
         }
+        if (bestMove == null){
+            System.out.println("There is no best move, or every moves' score is 0");
+        }
         bestMove.print();
 
         return bestMove;
@@ -60,37 +63,58 @@ public class GeneticPlayer extends BotPlayer {
 
     private void blocksMostCorners(float weight,HashMap<Move, Float> movesAndScores ,Board board){;}
 
-    private void closestToMiddle(float weight, HashMap<Move, Float> movesAndScores,Board board){
+    private void closestToMiddle(float weight, HashMap<Move, Float> movesAndScores,Board board) {
         //for every move, see how close the closest corner is to the middle.
 
+        //TODO: I'll remove some unnecessary comments, so don't worry about the mess
+        //TODO: It seems to have some trouble with the dot piece (I1). We might have to check that
         for (Map.Entry<Move, Float> entry : movesAndScores.entrySet()) {
             //for every move, see which of the corners of the piece is closest to the middle of the board.
             //score will be the minimal distance between any corner of the piece and middle. The closer the shorter the distance
-            //the score has to increase the shorter the distance is between corner and middle
-            //therefore maximum Distance - minimum Distance
             Move move = entry.getKey();
             ArrayList<Corner> cornerContacts = move.getPiece().getCornersContacts(move.getPosition());
-            Vector2d middle = new Vector2d (board.getBoardDimension()/2, board.getBoardDimension()/2);
-            int minDistance = 0;
-            int maxDistance = middle.moduleDistance(this.startingCorner);
+            //Vector2d middle = new Vector2d((board.getBoardDimension() - 1) / 2, (board.getBoardDimension() - 1) / 2);
 
-            for(Corner corner: cornerContacts ){
+            //if score shall increase the closer a corner is to the middle, work with maxDistance and distance 2, then minDistance = 0
+            //int maxDistance= middle.moduleDistance(this.startingCorner);
+
+            //I made the distance variables floats, because distance is often not an integer.
+            //The Vector2d class unfortunately only handles integers, but because the board is a square, the x middle = y middle
+            float middleXandY = (float) (board.getBoardDimension() - 1) / 2;
+            float minDistance = (float) Math.sqrt(2*(board.getDIMENSION()*board.getBoardDimension()))/2;//1000;//normalization = maxDistance
+            //We put maxDistance as initial value because it is the largest value it can be. Now it can only get smaller.
+
+            //int minDistance = 0;
+            //float maxDistance = (float) Math.sqrt(Math.pow(this.startingCorner.get_x() - middleXandY, 2) + Math.pow(this.startingCorner.get_y() - middleXandY, 2));
+
+            for (Corner corner : cornerContacts) {
                 Vector2d cornerPosition = corner.getPosition();
-                int distance = maxDistance - cornerPosition.moduleDistance(middle);
-                System.out.println("corner position:" ); cornerPosition.printVector();
-                System.out.println("module distance:"+distance);
-                if(minDistance<distance){
+                float //distance = cornerPosition.moduleDistance(middle);
+                        //The modular distance also spits out an int, so this is a manual module distance that gives a float
+                        distance = (float) Math.sqrt(Math.pow(cornerPosition.get_x() - middleXandY, 2) + Math.pow(cornerPosition.get_y() - middleXandY, 2));
+
+                //the score has to increase the shorter the distance is between corner and middle
+                //therefore maximum Distance - minimum Distance
+                //int distance2 = maxDistance - cornerPosition.moduleDistance(center);
+                //System.out.println("corner position:");
+                //cornerPosition.printVector();
+                //System.out.println("module distance:" + distance);
+                if (distance < minDistance) {
+                    //int distance = maxDistance - cornerPosition.moduleDistance(middle);
+                    //System.out.println("corner position:");
+                    //cornerPosition.printVector();
+                    //System.out.println("module distance:" + distance);
                     minDistance = distance;
                 }
+
+                //the score if weight was one needs to be between [0, 1]
+                float normalization = (float) Math.sqrt(2*board.getDIMENSION()*board.getBoardDimension())/2;// this equals maxDistance
+                float score = weight * (1 - minDistance / normalization);// 1 - because the score should be higher when minDistance is lower
+                //This calculation is the same as calculating maxDistance - minDistance at every step and then choosing the highest result
+
+                //now the  for each move is updated according to what we calculated and the weight given.
+                movesAndScores.put(move, movesAndScores.get(move) + score);
             }
-
-            //the score if weight was one needs to be between [0, 1]
-            //float normalization= (float) Math.sqrt(2*(board.getDIMENSION()^2));
-            float normalization=1;
-            float score = weight*(minDistance/normalization);
-
-            //now the  for each move is updated according to what we calculated and the weight given.
-            movesAndScores.put(move, movesAndScores.get(move) + score);
         }
     }
 

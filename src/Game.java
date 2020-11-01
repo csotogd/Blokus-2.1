@@ -65,7 +65,7 @@ public class Game extends Application {
             if(i!=2)
                 players[i-1]=new HumanPlayer(i);
             else
-                players[i-1]=new HumanPlayer(i);
+                players[i-1]=new GeneticPlayer(i);
 
 
             players[i-1].setColor(colors[i-1]);
