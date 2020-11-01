@@ -40,15 +40,6 @@ public class StartScreen extends Application {
                 }
             }),
 
-            new Pair<String, Runnable>("Solvers", () -> {
-                try {
-                    new SolversScreen().start(stage);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }),
-
-
             new Pair<String, Runnable>("Exit to Desktop", Platform::exit)
     );
 

@@ -64,6 +64,8 @@ public class BoardUI{
 
     Stage stage;
 
+    MonteCarlo mc;
+
     /**
      * the game can have those 3 states
      */
@@ -94,29 +96,37 @@ public class BoardUI{
         makePiecesOpaque();
 
         state=GameState.HUMAN_MOVE; //TODO change this for second period
+        this.mc = new MonteCarlo(players,board);
+
+        if (actualPlayer instanceof HumanPlayer)
+            state = GameState.HUMAN_MOVE;
+        else {
+            state = GameState.AI_MOVE;
+            handleAITurn();
+        }
 
 
-        if(!Data.isNormalGame()){
+/*        if(!Data.isNormalGame()){
             System.out.println("algo game");
             MonteCarlo mc = new MonteCarlo(players,board);
             for (Player player:players) {
                 Move move1 = mc.simulation(player.getNumber()-1,1000);
                 if(move1.makeMove(board)){
-                            /*
+                            *//*
                         move1.writePieceIntoBoard(board);
                         move1.getPlayer().getMoveLog().push(move1);
                         move1.getPiece().setUsed(true);//TODO erase this none sense line of code, completely useless
                         move1.getPlayer().getPiecesUsed().add(move1.getPiece());
                         if(move1.getPlayer().isFirstMove()) move1.getPlayer().setFirstMove(false);
 
-                             */
+                             *//*
                     moveAllowed(null,move1.getPiece(),allPieces[actualPlayer.getNumber()-1]);
 
 
                 }
             }
 
-        }
+        }*/
 
 
     }
@@ -195,7 +205,8 @@ public class BoardUI{
         if(piece!=null){
             allPieces.getChildren().remove(piece); //every piece also has an internal used state which is updated
         }
-        actualPlayer.getPiecesList().remove(pieceRoot);
+        actualPlayer.removePiece(pieceRoot.getLabel());
+        //actualPlayer.getPiecesList().remove(pieceRoot);
         updateState();
         // actualPlayer = players[playerCounter++];
         // if(playerCounter>=players.length) playerCounter=0;
@@ -648,12 +659,26 @@ public class BoardUI{
     }
 
     private void handleAITurn(){
+        System.out.println("handle");
         //So far this will only print the current piece into the board,
         //then the user will drag it manually into there
         //TODO make it so that no action can be taken while ai is taking its turn
         //TODO handle logic and animation for ai move
-        BotPlayer player = (BotPlayer)actualPlayer;
-        player.calculateMove(board);
+        //if(actualPlayer instanceof GeneticPlayer){
+            //TODO handle a genetic algo move
+        //}else
+            if(actualPlayer instanceof BotPlayer) {
+            Move move = mc.simulation(actualPlayer.getNumber()-1, 3000);
+            if (move.makeMove(board)) {
+                move.writePieceIntoBoard(board);
+                move.getPlayer().getMoveLog().push(move);
+                move.getPiece().setUsed(true);//TODO erase this none sense line of code, completely useless
+                move.getPlayer().getPiecesUsed().add(move.getPiece());
+                if (move.getPlayer().isFirstMove()) move.getPlayer().setFirstMove(false);
+                moveAllowed(null, move.getPiece(), allPieces[actualPlayer.getNumber() - 1]);
+            }
+        }
+
     }
 
 

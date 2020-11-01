@@ -94,30 +94,52 @@ public class SettingsScreen extends Application {
         Text opt3 = new Text("Player 2 name :");
         Text opt4 = new Text("Player 3 name :");
         Text opt5 = new Text("Player 4 name :");
+
+        String optionsP[] = {"Human Player", "Monte Carlo Player", "Genetic Player" };
+
         grid.add(opt2, 0, 2);
 
         grid.add(opt2TextField, 1, 2);
+
+        // create a choiceBox
+        ChoiceBox c1P1 = new ChoiceBox(FXCollections.observableArrayList(optionsP));
+        c1P1.getSelectionModel().select(0);
+        grid.add(c1P1, 2, 2);
 
         grid.add(opt3, 0, 3);
 
         grid.add(opt3TextField, 1, 3);
 
+        // create a choiceBox
+        ChoiceBox c1P2 = new ChoiceBox(FXCollections.observableArrayList(optionsP));
+        c1P2.getSelectionModel().select(0);
+        grid.add(c1P2, 2, 3);
+
         grid.add(opt4, 0, 4);
 
         grid.add(opt4TextField, 1, 4);
+
+        // create a choiceBox
+        ChoiceBox c1P3 = new ChoiceBox(FXCollections.observableArrayList(optionsP));
+        c1P3.getSelectionModel().select(0);
+        grid.add(c1P3, 2, 4);
 
         grid.add(opt5, 0, 5);
 
         grid.add(opt5TextField, 1, 5);
 
-        opt2.setVisible(true);opt3.setVisible(true);opt2TextField.setVisible(true);opt3TextField.setVisible(true);
-        opt4.setVisible(true); opt5.setVisible(true);opt4TextField.setVisible(true);opt5TextField.setVisible(true);
+        // create a choiceBox
+        ChoiceBox c1P4 = new ChoiceBox(FXCollections.observableArrayList(optionsP));
+        c1P4.getSelectionModel().select(0);
+        grid.add(c1P4, 2, 5);
 
         c1.setOnAction(event -> {
             if(c1.getSelectionModel().getSelectedItem().equals("4 Players")){
                 opt4.setVisible(true); opt5.setVisible(true);opt4TextField.setVisible(true);opt5TextField.setVisible(true);
+                c1P3.setVisible(true); c1P4.setVisible(true);
             }else{
                 opt4.setVisible(false); opt5.setVisible(false);opt4TextField.setVisible(false);opt5TextField.setVisible(false);
+                c1P3.setVisible(false); c1P4.setVisible(false);
             }
         });
 
@@ -181,7 +203,8 @@ public class SettingsScreen extends Application {
                         }
                     }
                     Data.setPlayersName(playersName);
-
+                    Data.setPlayerTypes(new String[]{(String) c1P1.getSelectionModel().getSelectedItem(), (String) c1P2.getSelectionModel().getSelectedItem(),
+                            (String) c1P3.getSelectionModel().getSelectedItem(), (String) c1P4.getSelectionModel().getSelectedItem()});
                     new StartScreen().start(stage);
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -6,7 +6,7 @@ import javafx.scene.layout.*;
 public class Data {
     private static String[] playersName = {"PLAYER 1","PLAYER 2","PLAYER 3","PLAYER 4"};
 
-    private static boolean normalGame = true;
+    private static String[] playerTypes = {"Human Player","Human Player","Human Player","Human Player"};
 
     private static String algo = "";
 
@@ -25,12 +25,12 @@ public class Data {
         return background;
     }
 
-    public static boolean isNormalGame() {
-        return normalGame;
+    public static String[] getPlayerTypes() {
+        return playerTypes;
     }
 
-    public static void setNormalGame(boolean normalGame) {
-        Data.normalGame = normalGame;
+    public static void setPlayerTypes(String[] playerTypes) {
+        Data.playerTypes = playerTypes;
     }
 
     public static String getAlgo() {

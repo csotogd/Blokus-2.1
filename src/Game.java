@@ -1,6 +1,7 @@
 import GameBoard.Board;
 import GameBoard.BoardUI;
 import Move.Move;
+import Player.BotPlayer;
 import Player.HumanPlayer;
 import Player.Player;
 import Tools.Vector2d;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import GameBoard.BoardUI;
 import java.util.List;
 import java.util.LinkedList;
-import Player.GeneticPlayer;
+//import Player.GeneticPlayer;
 
 import javax.sound.midi.Soundbank;
 
@@ -58,16 +59,19 @@ public class Game extends Application {
     private void initializePlayers(){
         Color[] colors = {Color.RED,Color.YELLOW,Color.GREEN,Color.BLUE};
         players= new Player[playersName.length];
-        System.out.println("Second player is a bot");//TODO add graphical option to input bots players ant types
         System.out.println("this code is in game.java line 66,67,68, jo, martin and gyu, comment where necessary it please");
 
         for(int i=1; i<= playersName.length; i++){
-            if(i!=2)
+            String playerType = Data.getPlayerTypes()[i-1];
+            if(playerType.equals("Human Player")){
                 players[i-1]=new HumanPlayer(i);
-            else
-                players[i-1]=new GeneticPlayer(i);
-
-
+            }else if(playerType.equals("Monte Carlo Player")){
+                System.out.println("Bot");
+                //TODO add the Monte Carlo Player class
+                players[i-1]=new BotPlayer(i,playersName[i-1]);
+            }else if(playerType.equals("Genetic Player")){
+                //players[i-1]=new GeneticPlayer(i);
+            }
             players[i-1].setColor(colors[i-1]);
             players[i-1].setName(playersName[i-1]);
         }
