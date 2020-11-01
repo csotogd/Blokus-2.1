@@ -27,14 +27,9 @@ public class MonteCarlo {
         long start = System.currentTimeMillis(); //start of the timer
         root = new Node(board, players);
         System.out.println(root.expand(this.players[player].clone()));// expand will append a children of every possible move to the root
-
+        //TODO : not expand every possible move ?
 //        System.out.println("p"+player+" "+root.getChildren().size()); // for debug purpose print the number of possible move
-    /*    for(Node children : root.getChildren()){ //DO at least one simulation per node...
-            //MAYBE WE CAN SKIP THIS STEP and try to focus on bigger pieces instead
-            if(children.simulation((player+1)%players.length, player)>0) children.addScore();
-            children.addVisitiedNum();
 
-        }*/
         //System.out.println((System.currentTimeMillis()-start)+"ms"); // how long did we take to expand/visit every node?
         while(System.currentTimeMillis()-start<timeLimit){ // while there is still time
             //chose one of the possible move
@@ -48,7 +43,7 @@ public class MonteCarlo {
             if(choosen.simulation((player+1)%players.length,player)>0) choosen.addScore();//if we get a win update the score as well
         }
         Node res = root.getChildren().get(0);//choose the most visited node move
-        //for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitiedNum());
+        // for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitiedNum());
         for(Node children : root.getChildren()) if(children.getVisitiedNum()>=res.getVisitiedNum()) res=children;
         for(Player p: players) if(p.getPlayerNumber()==res.getMove().getPlayer().getPlayerNumber()) return new Move(p,res.getMove().getPiece(), res.getMove().getPosition());
         return res.getMove();
@@ -74,23 +69,19 @@ public class MonteCarlo {
         while(i<15){
             //mc = new MonteCarlo(mc.players,b);
             Move move1 = mc.simulation(0,5000);
-            move1.writePieceIntoBoard(b);
-            p1.removePiece(move1.getPiece().getLabel());
+            if(move1.makeMove(b)) p1.removePiece(move1.getPiece().getLabel());
 
             //mc = new MonteCarlo(mc.players,b);
             Move move2 = mc.simulation(1,5000);
-            move2.writePieceIntoBoard(b);
-            p2.removePiece(move2.getPiece().getLabel());
+            if(move2.makeMove(b)) p2.removePiece(move2.getPiece().getLabel());
 
             //mc = new MonteCarlo(mc.players,b);
             Move move3 = mc.simulation(2,5000);
-            move3.writePieceIntoBoard(b);
-            p3.removePiece(move3.getPiece().getLabel());
+            if(move3.makeMove(b)) p3.removePiece(move3.getPiece().getLabel());
 
             //mc = new MonteCarlo(mc.players,b);
             Move move4 = mc.simulation(3,5000);
-            move4.writePieceIntoBoard(b);
-            p4.removePiece(move4.getPiece().getLabel());
+            if(move4.makeMove(b)) p4.removePiece(move4.getPiece().getLabel());
 
             b.print();
             i++;

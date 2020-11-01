@@ -4,6 +4,7 @@ import DataBase.Piece;
 import DataBase.PieceFactory;
 import Move.Move;
 import Player.HumanPlayer;
+import Player.Player;
 import Tools.Vector2d;
 
 import java.util.ArrayList;
@@ -82,10 +83,13 @@ public class Corner {
     }
 
 
-
 /*
+
     public static void main(String[] args){
-        Board board = new Board(new int[][]{
+        Player p1 = new HumanPlayer(1);
+        Player p3 = new HumanPlayer(3);
+        Board board = new Board(new Player[]{p1,p3});
+        board.board=new int[][]{
                 {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                 {1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                 {1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -99,23 +103,26 @@ public class Corner {
                 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}});
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3}
+        };
 
 
 
-ArrayList <Corner> corners= Corner.getCorner(board, new Vector2d(0,0));
+ArrayList <Corner> corners= board.getCorner(new Vector2d(19,19));
     for(Corner corner : corners){
     corner.getPosition().printVector();
     System.out.println("expected positions:");
     for(Vector2d otherCorner:corner.getToCornerPositions()) System.out.println(otherCorner.get_x()+" "+otherCorner.get_y());}
     }
 
-*/
+
+ */
+
 
 }

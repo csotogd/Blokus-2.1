@@ -75,10 +75,9 @@ public class Node {
         return false;
     }
 
-    /** TODO: complete this method
-     * MARTIN here we do the random moves until end game and return the score
-     *
-     * @return
+    /**
+     * Simulate a play until it can't find a move for any player
+     * @return the final score for the playerOfInterest (1 for a win)
      */
     public int simulation(int playerturn, int playerOfInterest){
         int countPass=0; //number of time a player has passed during a simulation
@@ -90,8 +89,8 @@ public class Node {
             Move move = temp[playerturn].randomPossibleMove(board); //random move
             if(move!=null) {
                 move.writePieceIntoBoard(board);
-                temp[playerturn].removePiece(move.getPiece().getLabel());
-                temp[playerturn].setNotFirstMove(); //THIS LINE SHOULD NOT BE NECESSARY YET IT IS
+                temp[playerturn].getPiecesList().remove(move.getPiece());
+                //temp[playerturn].setNotFirstMove(); //THIS LINE SHOULD NOT BE NECESSARY YET IT IS
             }else{
                 countPass++;
             }
@@ -104,7 +103,6 @@ public class Node {
        // System.out.println(move.getPiece().getLabel()+" "+playerScores[0]+" "+playerScores[1]+" "+playerScores[2]+" "+playerScores[3]);
         for(int score:playerScores) if(playerScores[playerOfInterest]>score) return 0;//loss
         return 1;//win
-
     }
 
     public double getUCB1(){
