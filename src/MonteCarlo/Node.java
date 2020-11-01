@@ -12,7 +12,7 @@ public class Node {
     private Board state;
     private Move move;
     private List<Node> children;
-    private int visitiedNum;
+    private int visitedNum;
     private int score;
     private static double c=3;
     private Player[] players;
@@ -27,7 +27,7 @@ public class Node {
         parent = this;
         move = null;
         children = new ArrayList<>();
-        visitiedNum=0;
+        visitedNum =0;
         score = 0;
         players = new Player[ps.length];
         int count =0;
@@ -48,19 +48,9 @@ public class Node {
     public Node(Node parent, Move move){
         this.parent=parent;
         this.move = move;
-        state = parent.getState().clone();
-        players = new Player[parent.getPlayers().length];
-        int count =0;
-        for(Player p : parent.getPlayers()) { //copy the players but take care to remove the piece played
-            players[count++]=p.clone();
-            if(players[count-1].getPlayerNumber()==move.getPlayer().getPlayerNumber()) {
-                players[count - 1].removePiece(move.getPiece().getLabel());
-                players[count - 1].setNotFirstMove(); //THIS LINE SHOULDNT BE NECESSARY YET IT IS
-            }
-        }
-        move.writePieceIntoBoard(state);
-        children = new ArrayList<>();
-        visitiedNum = 0;
+
+        //children = new ArrayList<>();
+        visitedNum = 0;
         score = 0;
         ucbScore = (double)move.getPiece().getNumberOfBlocks();
     }
@@ -80,17 +70,17 @@ public class Node {
      * @return the final score for the playerOfInterest (1 for a win)
      */
     public int simulation(int playerturn, int playerOfInterest){
+        initializeNode();// make the move, copy players
         int countPass=0; //number of time a player has passed during a simulation
         Board board = state.clone(); //clone the board
-        Player[] temp = new Player[players.length];//clone the players
-        for(Player p : players) temp[p.getPlayerNumber()-1]=p.clone();
+     //   Player[] temp = new Player[players.length];//clone the players
+     //   for(Player p : players) temp[p.getPlayerNumber()-1]=p.clone();
         while(countPass<players.length){ //while not everyone has passed in a turn
             if(playerturn==0) countPass=0; // beginning of the turn, nobody has passed yet
-            Move move = temp[playerturn].randomPossibleMove(board); //random move
+            Move move = players[playerturn].randomPossibleMove(board); //random move
             if(move!=null) {
                 move.writePieceIntoBoard(board);
-                temp[playerturn].getPiecesList().remove(move.getPiece());
-                //temp[playerturn].setNotFirstMove(); //THIS LINE SHOULD NOT BE NECESSARY YET IT IS
+                players[playerturn].getPiecesList().remove(move.getPiece());
             }else{
                 countPass++;
             }
@@ -98,11 +88,25 @@ public class Node {
         }
         //board.print();
         int[] playerScores=new int[players.length];
-        for(Player p: temp) for(Piece piece: p.getPiecesList()) playerScores[p.getPlayerNumber()-1]+=piece.getNumberOfBlocks();
+        for(Player p: players) for(Piece piece: p.getPiecesList()) playerScores[p.getPlayerNumber()-1]+=piece.getNumberOfBlocks();
 
        // System.out.println(move.getPiece().getLabel()+" "+playerScores[0]+" "+playerScores[1]+" "+playerScores[2]+" "+playerScores[3]);
         for(int score:playerScores) if(playerScores[playerOfInterest]>score) return 0;//loss
         return 1;//win
+    }
+
+    public void initializeNode(){
+        state = parent.getState().clone();
+        players = new Player[parent.getPlayers().length];
+        int count =0;
+        for(Player p : parent.getPlayers()) { //copy the players but take care to remove the piece played
+            players[count++]=p.clone();
+            if(players[count-1].getPlayerNumber()==move.getPlayer().getPlayerNumber()) {
+                players[count - 1].removePiece(move.getPiece().getLabel());
+                players[count - 1].setNotFirstMove();
+            }
+        }
+        move.writePieceIntoBoard(state);
     }
 
     public double getUCB1(){
@@ -110,7 +114,7 @@ public class Node {
     }
 
     public double computeUCB(){
-        ucbScore= (double)score/(double)visitiedNum + Node.c*Math.sqrt(Math.log(parent.getVisitiedNum())/(double)visitiedNum);
+        ucbScore= (double)score/(double) visitedNum + Node.c*Math.sqrt(Math.log(2*parent.getVisitedNum())/(double) visitedNum);
         return ucbScore;
     }
 
@@ -142,12 +146,12 @@ public class Node {
         this.move = move;
     }
 
-    public int getVisitiedNum() {
-        return visitiedNum;
+    public int getVisitedNum() {
+        return visitedNum;
     }
 
     public void addVisitiedNum() {
-        this.visitiedNum ++;
+        this.visitedNum++;
         if(parent!=this) {
             parent.addVisitiedNum();
             computeUCB();
