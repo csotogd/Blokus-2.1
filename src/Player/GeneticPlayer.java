@@ -221,17 +221,19 @@ public class GeneticPlayer extends BotPlayer {
             movesAndScores.put(move, movesAndScores.get(move) + score);
 
         }
-
+/*
         //commented alternative IGNORE THIS!!!
         ArrayList<Move> possibleMoves = super.possibleMoveSet(board);
         for (Move move: possibleMoves){
             //for every move, see which of the corner of the piece is furthest awy from the starting corner.
             //score will be the distance between it and the corner. The further away the greater the distance
             ArrayList<Corner> cornerContacts=move.getPiece().getCornersContacts(move.getPosition());
-            int maxDistance=-1;
+            float maxDistance=-1;
             for(Corner corner: cornerContacts ){
                 Vector2d cornerPosition=corner.getPosition();
-                int distance= cornerPosition.moduleDistance(this.startingCorner);
+                float distance= cornerPosition.moduleDistance(this.startingCorner);
+                //note that module distace will prioritize the sides as a 4 squared 'I' will score higher than
+
                 if(distance>maxDistance){
                     maxDistance=distance;
                 }
@@ -242,7 +244,7 @@ public class GeneticPlayer extends BotPlayer {
 
             }
 
-
+*/
 
 
 
