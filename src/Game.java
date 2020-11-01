@@ -2,6 +2,7 @@ import GameBoard.Board;
 import GameBoard.BoardUI;
 import Move.Move;
 import Player.BotPlayer;
+import Player.GeneticPlayer;
 import Player.HumanPlayer;
 import Player.Player;
 import Tools.Vector2d;
@@ -70,7 +71,7 @@ public class Game extends Application {
                 //TODO add the Monte Carlo Player class
                 players[i-1]=new BotPlayer(i,playersName[i-1]);
             }else if(playerType.equals("Genetic Player")){
-                //players[i-1]=new GeneticPlayer(i);
+                players[i-1]=new GeneticPlayer(i);
             }
             players[i-1].setColor(colors[i-1]);
             players[i-1].setName(playersName[i-1]);

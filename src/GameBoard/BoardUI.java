@@ -664,19 +664,19 @@ public class BoardUI{
         //then the user will drag it manually into there
         //TODO make it so that no action can be taken while ai is taking its turn
         //TODO handle logic and animation for ai move
-        //if(actualPlayer instanceof GeneticPlayer){
-            //TODO handle a genetic algo move
-        //}else
-            if(actualPlayer instanceof BotPlayer) {
-            Move move = mc.simulation(actualPlayer.getNumber()-1, 3000);
-            if (move.makeMove(board)) {
-                move.writePieceIntoBoard(board);
-                move.getPlayer().getMoveLog().push(move);
-                move.getPiece().setUsed(true);//TODO erase this none sense line of code, completely useless
-                move.getPlayer().getPiecesUsed().add(move.getPiece());
-                if (move.getPlayer().isFirstMove()) move.getPlayer().setFirstMove(false);
-                moveAllowed(null, move.getPiece(), allPieces[actualPlayer.getNumber() - 1]);
-            }
+        Move move = null;
+        if(actualPlayer instanceof GeneticPlayer){
+            move = ((GeneticPlayer) actualPlayer).calculateMove(board);
+        }else if(actualPlayer instanceof BotPlayer) {
+            move = mc.simulation(actualPlayer.getNumber()-1, 3000);
+        }
+        if (move.makeMove(board)) {
+            move.writePieceIntoBoard(board);
+            move.getPlayer().getMoveLog().push(move);
+            move.getPiece().setUsed(true);//TODO erase this none sense line of code, completely useless
+            move.getPlayer().getPiecesUsed().add(move.getPiece());
+            if (move.getPlayer().isFirstMove()) move.getPlayer().setFirstMove(false);
+            moveAllowed(null, move.getPiece(), allPieces[actualPlayer.getNumber() - 1]);
         }
 
     }

@@ -1,4 +1,3 @@
-/*
 package Player;
 
 import DataBase.Piece;
@@ -19,11 +18,12 @@ public class GeneticPlayer extends BotPlayer {
         super(number);
     }
 
-    */
-/**
+/*
      *
      * @return the move chosen by the ai
-     *//*
+
+ */
+
 
     public Move calculateMove(Board board){
        //while we code all the different strategies, make this call the one you want to try
@@ -128,12 +128,13 @@ public class GeneticPlayer extends BotPlayer {
             Move move = entry.getKey();
             ArrayList<Corner> cornerContacts = move.getPiece().getCornersContacts(move.getPosition());
             //see how many of the corner of the added piece can be used to place another piece.
-            */
 /*so for example a piece in the shape of an 'L might have 2 corners, however
             * one is in contact with one piece of the same colour(otherwise L would no be able to be placed)
             * The other corner might be free, or also in contact with a piece, we need to check that.
             * If one corner was free then we would assign 1, if 2 we would assign 2 and so on.....
-            * *//*
+            *
+
+ */
 
 
 
@@ -175,14 +176,15 @@ public class GeneticPlayer extends BotPlayer {
 
     //TODO: test it
 
-    */
-/**
+/*
      * strategy that calculates how far away from the starting corner a move is
      *
      * @param weight
      * @param movesAndScores
      * @param board
-     *//*
+
+ */
+
 
     private void farFromStartingCorner(float weight, HashMap<Move, Float> movesAndScores,Board board){
 
@@ -214,8 +216,6 @@ public class GeneticPlayer extends BotPlayer {
         }
 
         //commented alternative IGNORE THIS!!!
-*/
-/*
         ArrayList<Move> possibleMoves = super.possibleMoveSet(board);
         for (Move move: possibleMoves){
             //for every move, see which of the corner of the piece is furthest awy from the starting corner.
@@ -235,7 +235,7 @@ public class GeneticPlayer extends BotPlayer {
 
             }
 
-*//*
+
 
 
 
@@ -268,4 +268,3 @@ public class GeneticPlayer extends BotPlayer {
         System.out.println();
     }
 }
-*/
