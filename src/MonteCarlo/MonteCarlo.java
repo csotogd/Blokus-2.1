@@ -26,7 +26,7 @@ public class MonteCarlo {
     public Move simulation(int player, long timeLimit){
         long start = System.currentTimeMillis(); //start of the timer
         root = new Node(board, players);
-        System.out.println(root.expand(this.players[player]));// expand will append a children of every possible move to the root
+        System.out.println(root.expand(this.players[player].clone()));// expand will append a children of every possible move to the root
 
 //        System.out.println("p"+player+" "+root.getChildren().size()); // for debug purpose print the number of possible move
     /*    for(Node children : root.getChildren()){ //DO at least one simulation per node...
@@ -50,6 +50,7 @@ public class MonteCarlo {
         Node res = root.getChildren().get(0);//choose the most visited node move
         //for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitiedNum());
         for(Node children : root.getChildren()) if(children.getVisitiedNum()>=res.getVisitiedNum()) res=children;
+        for(Player p: players) if(p.getPlayerNumber()==res.getMove().getPlayer().getPlayerNumber()) return new Move(p,res.getMove().getPiece(), res.getMove().getPosition());
         return res.getMove();
     }
 
