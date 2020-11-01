@@ -23,7 +23,8 @@ public class HumanPlayer extends Player {
         Player p = new HumanPlayer(this.number);
         p.setStartingCorner(this.startingCorner);
         for(Piece piece : this.piecesList) p.getPiecesList().add(piece.getPiece());
-        p.setFirstMove(this.firstMove);
+        if(this.firstMove) p.setFirstMove(true);
+        else p.setNotFirstMove();
         return p;
     }
 }
