@@ -66,20 +66,20 @@ public class GeneticPlayer extends BotPlayer {
         for (Map.Entry<Move, Float> entry : movesAndScores.entrySet()) {
             //for every move, see which of the corners of the piece is closest to the middle of the board.
             //score will be the minimal distance between any corner of the piece and middle. The closer the shorter the distance
+            //the score has to increase the shorter the distance is between corner and middle
+            //therefore maximum Distance - minimum Distance
             Move move = entry.getKey();
             ArrayList<Corner> cornerContacts = move.getPiece().getCornersContacts(move.getPosition());
             Vector2d middle = new Vector2d (board.getBoardDimension()/2, board.getBoardDimension()/2);
-            int minDistance=1000;
-            //if score shall increase the closer a corner is to the middle, work with maxDistance and distance 2, then minDistance = 0
-            //int maxDistance= middle.moduleDistance(this.startingCorner);
+            int minDistance = 0;
+            int maxDistance = middle.moduleDistance(this.startingCorner);
 
             for(Corner corner: cornerContacts ){
                 Vector2d cornerPosition = corner.getPosition();
-                int distance = cornerPosition.moduleDistance(middle);
-                //int distance2 = maxDistance - cornerPosition.moduleDistance(center);
+                int distance = maxDistance - cornerPosition.moduleDistance(middle);
                 System.out.println("corner position:" ); cornerPosition.printVector();
                 System.out.println("module distance:"+distance);
-                if(distance<minDistance){
+                if(minDistance<distance){
                     minDistance = distance;
                 }
             }
@@ -91,6 +91,7 @@ public class GeneticPlayer extends BotPlayer {
 
             //now the  for each move is updated according to what we calculated and the weight given.
             movesAndScores.put(move, movesAndScores.get(move) + score);
+        }
     }
 
     private void biggestPiece(float weight, HashMap<Move, Float> movesAndScores,Board board){
