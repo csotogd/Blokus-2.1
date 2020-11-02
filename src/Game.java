@@ -34,7 +34,7 @@ import javax.sound.midi.Soundbank;
 public class Game extends Application {
 
     private Player[] players;
-    private final int DIMENSION = Data.getDIMENSION();
+    private int DIMENSION;
     private String[] playersName;
 
     /**
@@ -43,6 +43,7 @@ public class Game extends Application {
      */
     @Override
     public void start(Stage stage){
+        DIMENSION = Data.getDIMENSION();
         playersName = Data.getPlayersName();
         initializePlayers();
         BoardUI gameBoard = new BoardUI(players,stage);

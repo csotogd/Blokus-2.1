@@ -234,7 +234,7 @@ public abstract class Player {
                     }else{ // verify corners on board
                         List<Corner> pieceCorner = piece.getCornersContacts(new Vector2d(0, 0));
                         for (int k = 0; k < pieceCorner.size(); k++) {
-                            //if(cornersOnBoard.size()==0) System.out.println(startingCorner.get_x()+" "+startingCorner.get_y());//sometimes it bugs here
+                            if(cornersOnBoard.size()==0) System.out.println(startingCorner.get_x()+" "+startingCorner.get_y());//sometimes it bugs here
                             int randomCornerBoard = r.nextInt(cornersOnBoard.size());
                             for (int l = 0; l < cornersOnBoard.size(); l++) { //emptycorner is the only thing that is not random
                                 for (Vector2d emptyCorner : cornersOnBoard.get((l + randomCornerBoard) % cornersOnBoard.size()).getToCornerPositions()) { //for all the possible empty squares that would become corner contact
