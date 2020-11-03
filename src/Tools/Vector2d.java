@@ -127,6 +127,11 @@ public class Vector2d {
         System.out.println("x = " + x + " y = " + y);
     }
 
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y  + ")";
+    }
+
     public static void main(String[] args) {
         Vector2d vector1= new Vector2d(15,6);
         Vector2d vector2 = new Vector2d(19, 0);

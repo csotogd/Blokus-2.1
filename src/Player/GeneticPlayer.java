@@ -39,11 +39,11 @@ public class GeneticPlayer extends BotPlayer {
         //uncomment to test a strategy
 
         //the weights is what we will calculate in the genetic algorithm
-        //addsMostCorners(1,movesAndScores, board);
-        blocksMostCorners(1,movesAndScores, board);
-        closestToMiddle(0.1f,movesAndScores, board);
-        //biggestPiece(1,movesAndScores, board);
-        farFromStartingCorner(0.1f,movesAndScores, board);
+        addsMostCorners(1,movesAndScores, board);
+        blocksMostCorners(10,movesAndScores, board);
+        closestToMiddle(1,movesAndScores, board);
+        biggestPiece(1,movesAndScores, board);
+        farFromStartingCorner(1,movesAndScores, board);
 
         printBestMove(movesAndScores);
 
@@ -68,8 +68,6 @@ public class GeneticPlayer extends BotPlayer {
 
 
     private void blocksMostCorners(float weight, HashMap<Move, Float> movesAndScores, Board board){
-        //TODO: Seems to work kinda, but needs a lot more testing
-
         for (Map.Entry<Move, Float> entry : movesAndScores.entrySet()) {
             Move move = entry.getKey();
             Piece piece = move.getPiece();
@@ -79,14 +77,19 @@ public class GeneticPlayer extends BotPlayer {
             int blockCornerNumber = 0;
             for (int i = 0; i < shape.length; i++){
                 for (int j = 0; j < shape[0].length; j++){
+                    //What if one piece blocks 2 corners?
+                    //TODO: Fix this
                     if (shape[i][j] != 0 && isDiffPlayerToCorner(i + position.get_y(), j + position.get_x(), board)){
                         blockCornerNumber++;
                     }
                 }
             }
 
+
             //this is a high estimate, but now we are sure that the unweighted score is between 0 and 1.
-            float normalization = piece.getNumberOfBlocks() * 4;
+            //float normalization = piece.getNumberOfBlocks() * 4;
+            //First used the above, but this way the score would be relative to the number of blocks in the piece
+            float normalization = 20;
             float score = weight * (blockCornerNumber/normalization);
 
             movesAndScores.put(move, movesAndScores.get(move) + score);
@@ -97,25 +100,25 @@ public class GeneticPlayer extends BotPlayer {
         int[][] grid = board.getBoard();
         try {
             int topLeft = grid[YPos - 1][XPos - 1];
-            return topLeft != 0 && topLeft != number && checkSides(YPos, XPos, grid, topLeft);
+            if (topLeft != 0 && topLeft != number && checkSides(YPos, XPos, grid, topLeft)) return true;
         } catch (ArrayIndexOutOfBoundsException e){
 
         }
         try {
             int topRight = grid[YPos - 1][XPos + 1];
-            return topRight != 0 && topRight != number && checkSides(YPos, XPos, grid, topRight);
+            if (topRight != 0 && topRight != number && checkSides(YPos, XPos, grid, topRight)) return true;
         } catch (ArrayIndexOutOfBoundsException e){
 
         }
         try {
             int bottomLeft = grid[YPos + 1][XPos - 1];
-            return bottomLeft != 0 && bottomLeft != number && checkSides(YPos, XPos, grid, bottomLeft);
+            if (bottomLeft != 0 && bottomLeft != number && checkSides(YPos, XPos, grid, bottomLeft)) return true;
         } catch (ArrayIndexOutOfBoundsException e){
 
         }
         try {
             int bottomRight = grid[YPos + 1][XPos + 1];
-            return bottomRight != 0 && bottomRight != number && checkSides(YPos, XPos, grid, bottomRight);
+            if (bottomRight != 0 && bottomRight != number && checkSides(YPos, XPos, grid, bottomRight)) return true;
         } catch (ArrayIndexOutOfBoundsException e){
 
         }
@@ -128,13 +131,13 @@ public class GeneticPlayer extends BotPlayer {
      * @param XPos
      * @param grid
      * @param playerNumber The number of the player who has the toCorner
-     * @return
+     * @return true when all direct sides of (Ypos, XPos) are not playerNumber
      */
     private boolean checkSides(int YPos, int XPos, int[][] grid, int playerNumber){
-        return (XPos - 1 < 0 || grid[YPos][XPos - 1] != playerNumber) &&
-                (YPos - 1 < 0 || grid[YPos - 1][XPos] != playerNumber) &&
-                (XPos + 1 >= grid[0].length || grid[YPos][XPos + 1] != playerNumber) &&
-                (YPos + 1 >= grid.length || grid[YPos + 1][XPos] != playerNumber);
+        return (XPos - 1 < 0 || grid[YPos][XPos - 1] != playerNumber) &&//check left
+                (YPos - 1 < 0 || grid[YPos - 1][XPos] != playerNumber) &&//check top
+                (XPos + 1 >= grid[0].length || grid[YPos][XPos + 1] != playerNumber) &&//check right
+                (YPos + 1 >= grid.length || grid[YPos + 1][XPos] != playerNumber);//check bottom
     }
 
     private void closestToMiddle(float weight, HashMap<Move, Float> movesAndScores, Board board) {
