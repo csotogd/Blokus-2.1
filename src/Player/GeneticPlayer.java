@@ -39,11 +39,11 @@ public class GeneticPlayer extends BotPlayer {
         //uncomment to test a strategy
 
         //the weights is what we will calculate in the genetic algorithm
-         //addsMostCorners(1,movesAndScores, board);
-        //blocksMostCorners(1,movesAndScores, board);
-        //closestToMiddle(1,movesAndScores, board);
+        //addsMostCorners(1,movesAndScores, board);
+        blocksMostCorners(1,movesAndScores, board);
+        closestToMiddle(0.1f,movesAndScores, board);
         //biggestPiece(1,movesAndScores, board);
-        farFromStartingCorner(1,movesAndScores, board);
+        farFromStartingCorner(0.1f,movesAndScores, board);
 
         printBestMove(movesAndScores);
 
@@ -67,7 +67,75 @@ public class GeneticPlayer extends BotPlayer {
     //return type can be changed
 
 
-    private void blocksMostCorners(float weight,HashMap<Move, Float> movesAndScores, Board board){;}
+    private void blocksMostCorners(float weight, HashMap<Move, Float> movesAndScores, Board board){
+        //TODO: Seems to work kinda, but needs a lot more testing
+
+        for (Map.Entry<Move, Float> entry : movesAndScores.entrySet()) {
+            Move move = entry.getKey();
+            Piece piece = move.getPiece();
+            int[][] shape = piece.getShape();
+            Vector2d position = move.getPosition();
+
+            int blockCornerNumber = 0;
+            for (int i = 0; i < shape.length; i++){
+                for (int j = 0; j < shape[0].length; j++){
+                    if (shape[i][j] != 0 && isDiffPlayerToCorner(i + position.get_y(), j + position.get_x(), board)){
+                        blockCornerNumber++;
+                    }
+                }
+            }
+
+            //this is a high estimate, but now we are sure that the unweighted score is between 0 and 1.
+            float normalization = piece.getNumberOfBlocks() * 4;
+            float score = weight * (blockCornerNumber/normalization);
+
+            movesAndScores.put(move, movesAndScores.get(move) + score);
+        }
+    }
+
+    private boolean isDiffPlayerToCorner(int YPos, int XPos, Board board){
+        int[][] grid = board.getBoard();
+        try {
+            int topLeft = grid[YPos - 1][XPos - 1];
+            return topLeft != 0 && topLeft != number && checkSides(YPos, XPos, grid, topLeft);
+        } catch (ArrayIndexOutOfBoundsException e){
+
+        }
+        try {
+            int topRight = grid[YPos - 1][XPos + 1];
+            return topRight != 0 && topRight != number && checkSides(YPos, XPos, grid, topRight);
+        } catch (ArrayIndexOutOfBoundsException e){
+
+        }
+        try {
+            int bottomLeft = grid[YPos + 1][XPos - 1];
+            return bottomLeft != 0 && bottomLeft != number && checkSides(YPos, XPos, grid, bottomLeft);
+        } catch (ArrayIndexOutOfBoundsException e){
+
+        }
+        try {
+            int bottomRight = grid[YPos + 1][XPos + 1];
+            return bottomRight != 0 && bottomRight != number && checkSides(YPos, XPos, grid, bottomRight);
+        } catch (ArrayIndexOutOfBoundsException e){
+
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether a toCorner is actually valid (a piece can be placed there)
+     * @param YPos
+     * @param XPos
+     * @param grid
+     * @param playerNumber The number of the player who has the toCorner
+     * @return
+     */
+    private boolean checkSides(int YPos, int XPos, int[][] grid, int playerNumber){
+        return (XPos - 1 < 0 || grid[YPos][XPos - 1] != playerNumber) &&
+                (YPos - 1 < 0 || grid[YPos - 1][XPos] != playerNumber) &&
+                (XPos + 1 >= grid[0].length || grid[YPos][XPos + 1] != playerNumber) &&
+                (YPos + 1 >= grid.length || grid[YPos + 1][XPos] != playerNumber);
+    }
 
     private void closestToMiddle(float weight, HashMap<Move, Float> movesAndScores, Board board) {
         //for every move, see how close the closest corner is to the middle.
@@ -263,7 +331,7 @@ public class GeneticPlayer extends BotPlayer {
         float max=-100;
         Move maxMove=null;
         for (Map.Entry<Move, Float> entry : movesAndScores.entrySet()){
-            if(entry.getValue()>=max) {
+            if(entry.getValue()>max) {
                 max = entry.getValue();
                 maxMove=entry.getKey();
             }
