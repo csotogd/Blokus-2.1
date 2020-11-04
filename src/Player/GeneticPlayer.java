@@ -96,29 +96,67 @@ public class GeneticPlayer extends BotPlayer {
         }
     }
 
+    /**
+     * This method checks whether a certain coordinate is a toCorner of a different player.
+     * So it checks if on that square, a different player could make a move
+     * @param YPos y position of the square
+     * @param XPos x position of the square
+     * @param board current game board
+     * @return true if the given square is a toCorner from another player
+     */
     private boolean isDiffPlayerToCorner(int YPos, int XPos, Board board){
         int[][] grid = board.getBoard();
+        /*
+        We check every corner point of p, here denoted by a c
+        grid:
+            c 0 c
+            0 p 0
+            c 0 c
+        If we encounter a position c where c is a player number other then this player, then we check whether
+        that player can make a move on p. We do this by checking all of the sides of p (denoted by the 0's).
+        If one of those sides is equal to the player number (of the opponent), then this player could not make
+        a move on p, and this position is not counted. However, if none of the sides are this player number,
+        then the opponent could make a move. If this move would be performed, then this square would be taken.
+        So we know that this move blocks a corner and we add 1 to the score.
+
+        This method and checkSides are made so the main strategy method doesn't get too long.
+
+        Maybe you can fix the issues by putting this method in the if statement expression, instead of the
+        condition. Then let it return an integer instead of a boolean. Just make a new variable at the beginning
+        of this method and set it to 0, and then increment that value everytime you reach a point marked with a *
+        Then, at the end you return that variable and add it to the blockCornerNumber
+
+        You still need to find something for when one player has p as a toCorner twice:
+        1 0 1
+        0 p 0
+        0 0 0
+        when this happens, this corner would be counted twice (after you fixed the previous problem).
+        But you would only block one move from player 1. So it should only be counted once, right?
+
+        Good luck!
+         */
+
         try {
             int topLeft = grid[YPos - 1][XPos - 1];
-            if (topLeft != 0 && topLeft != number && checkSides(YPos, XPos, grid, topLeft)) return true;
+            if (topLeft != 0 && topLeft != number && checkSides(YPos, XPos, grid, topLeft)) return true;//*
         } catch (ArrayIndexOutOfBoundsException e){
 
         }
         try {
             int topRight = grid[YPos - 1][XPos + 1];
-            if (topRight != 0 && topRight != number && checkSides(YPos, XPos, grid, topRight)) return true;
+            if (topRight != 0 && topRight != number && checkSides(YPos, XPos, grid, topRight)) return true;//*
         } catch (ArrayIndexOutOfBoundsException e){
 
         }
         try {
             int bottomLeft = grid[YPos + 1][XPos - 1];
-            if (bottomLeft != 0 && bottomLeft != number && checkSides(YPos, XPos, grid, bottomLeft)) return true;
+            if (bottomLeft != 0 && bottomLeft != number && checkSides(YPos, XPos, grid, bottomLeft)) return true;//*
         } catch (ArrayIndexOutOfBoundsException e){
 
         }
         try {
             int bottomRight = grid[YPos + 1][XPos + 1];
-            if (bottomRight != 0 && bottomRight != number && checkSides(YPos, XPos, grid, bottomRight)) return true;
+            if (bottomRight != 0 && bottomRight != number && checkSides(YPos, XPos, grid, bottomRight)) return true;//*
         } catch (ArrayIndexOutOfBoundsException e){
 
         }
@@ -127,9 +165,9 @@ public class GeneticPlayer extends BotPlayer {
 
     /**
      * Checks whether a toCorner is actually valid (a piece can be placed there)
-     * @param YPos
-     * @param XPos
-     * @param grid
+     * @param YPos y position of the square
+     * @param XPos x position of the square
+     * @param grid the board.board variable
      * @param playerNumber The number of the player who has the toCorner
      * @return true when all direct sides of (Ypos, XPos) are not playerNumber
      */
