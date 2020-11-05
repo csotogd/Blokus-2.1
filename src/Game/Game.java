@@ -95,6 +95,7 @@ public class Game extends Application {
         return players;
     }
 
+
     /**
      * method to initialize each player pieces
      */

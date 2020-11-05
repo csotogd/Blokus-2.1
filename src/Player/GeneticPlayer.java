@@ -14,11 +14,78 @@ import java.util.Map;
 
 public class GeneticPlayer extends BotPlayer {
 
+    protected float[] weights=new float[5];
+
+
+
     public GeneticPlayer(int number) {
         super(number);
     }
 
-/*
+    /**
+     *
+     * @param number
+     * @param weights needs to be of length 5.
+     *                every entry represents the weight of a strategy in the folowwing order.
+     *         addsMostCorners
+     *         blocksMostCorners
+     *         closestToMiddle
+     *         biggestPiece
+     *         farFromStartingCorner
+     */
+    public GeneticPlayer(int number, float weights[]) {
+        super(number);
+        this.weights=weights;
+    }
+    public float[] getWeightsAsArray() {
+        return weights;
+    }
+
+    public void setWeightsAsArray(float[] weights){
+        this.weights=weights;
+    }
+
+    public void setWeightAddMostCorners(float weight){
+    this.weights[0]=weight;
+    }
+    public float getWeightAddMostCorners(){
+        return this.weights[0];
+    }
+
+    public void setWeightBlocksMostCorners(float weight){
+        this.weights[1]=weight;
+    }
+    public float getWeightBlocksMostCorners(){
+        return this.weights[1];
+    }
+
+    public void setWeightClosestToMiddle(float weight){
+        this.weights[2]=weight;
+    }
+    public float getWeightClosestToMiddle(){
+        return this.weights[2];
+    }
+
+    public void setWeightBiggestPiece(float weight){
+        this.weights[3]=weight;
+    }
+    public float getWeightBiggestPiece(float weight){
+        return this.weights[3];
+    }
+
+    public void setWeightFarFromStartingPoint(float weight){
+        this.weights[4]=weight;
+    }
+    public float getWeightFarFromStartingPoint(float weight){
+        return this.weights[4];
+    }
+
+
+
+
+
+
+    /*
      *
      * @return the move chosen by the ai
 
@@ -127,7 +194,7 @@ public class GeneticPlayer extends BotPlayer {
         Then, at the end you return that variable and add it to the blockCornerNumber
 
         You still need to find something for when one player has p as a toCorner twice:
-        1 0 1
+        1 0 3
         0 p 0
         0 0 0
         when this happens, this corner would be counted twice (after you fixed the previous problem).
@@ -177,6 +244,9 @@ public class GeneticPlayer extends BotPlayer {
                 (XPos + 1 >= grid[0].length || grid[YPos][XPos + 1] != playerNumber) &&//check right
                 (YPos + 1 >= grid.length || grid[YPos + 1][XPos] != playerNumber);//check bottom
     }
+
+
+
 
     private void closestToMiddle(float weight, HashMap<Move, Float> movesAndScores, Board board) {
         //for every move, see how close the closest corner is to the middle.

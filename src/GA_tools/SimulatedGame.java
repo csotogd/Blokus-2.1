@@ -38,7 +38,7 @@ public class SimulatedGame {
         //game state of human move not considered
     }
 
-public void startSimulation(){
+public void simulate(){
         actualPlayer=players[0];
         handleAITurn();
 }
@@ -254,9 +254,21 @@ public void startSimulation(){
             players[i]=new GeneticPlayer(i+1);
         }
         SimulatedGame simulation= new SimulatedGame(dimension, players);
-        simulation.startSimulation();
+        simulation.simulate();
 
     }
 
+
+    public Player getWinner(){
+        int winnerScore = -30000 ;
+        Player winner=null;
+        for (Player player : players){
+            if (player.getPoints() >= winnerScore){
+                winnerScore=player.getPoints();
+                winner= player;
+            }
+        }
+        return winner;
+    }
 
 }
