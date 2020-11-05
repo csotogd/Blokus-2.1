@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class Board{
 
     public int[][] board;
-    private final int DIMENSION = Data.getDIMENSION();
+    public  int DIMENSION = Data.getDIMENSION();
     Player[] players;
 
     public Board(Player[] players) {
@@ -28,6 +28,12 @@ public class Board{
         createBoard();
     }
 
+    public Board(Player[] players, int dim) {
+        DIMENSION=dim;
+        this.board = new int[DIMENSION][DIMENSION];
+        this.players = players;
+        createBoard();
+    }
     public void createBoard() {
         for (int i = 0; i < DIMENSION; i++) {
             for (int j = 0; j < DIMENSION; j++) {

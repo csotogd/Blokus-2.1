@@ -40,15 +40,15 @@ public class GeneticPlayer extends BotPlayer {
 
         //the weights is what we will calculate in the genetic algorithm
         addsMostCorners(1,movesAndScores, board);
-        blocksMostCorners(10,movesAndScores, board);
-        closestToMiddle(1,movesAndScores, board);
-        biggestPiece(1,movesAndScores, board);
-        farFromStartingCorner(1,movesAndScores, board);
+       // blocksMostCorners(10,movesAndScores, board);
+        //closestToMiddle(1,movesAndScores, board);
+        //biggestPiece(1,movesAndScores, board);
+        //farFromStartingCorner(1,movesAndScores, board);
 
         printBestMove(movesAndScores);
 
 
-        float maxScore = 0;
+        float maxScore = -9000;
         Move bestMove = null;
         for (Move move : movesAndScores.keySet()){
             if (movesAndScores.get(move) > maxScore){
@@ -57,7 +57,7 @@ public class GeneticPlayer extends BotPlayer {
             }
         }
         if (bestMove == null){
-          //  System.out.println("There is no best move, or every moves' score is 0");
+            System.out.println("There is no best move, or every moves' score is 0");
         }
         //bestMove.print();
 
@@ -286,9 +286,8 @@ public class GeneticPlayer extends BotPlayer {
         }
     }
 
-    //TODO: test it
 
-/*
+/**
      * strategy that calculates how far away from the starting corner a move is
      *
      * @param weight
@@ -296,8 +295,6 @@ public class GeneticPlayer extends BotPlayer {
      * @param board
 
  */
-
-
     private void farFromStartingCorner(float weight, HashMap<Move, Float> movesAndScores,Board board){
 
         for (Map.Entry<Move, Float> entry : movesAndScores.entrySet()) {
@@ -369,7 +366,7 @@ public class GeneticPlayer extends BotPlayer {
 
 
     private void printBestMove(HashMap<Move, Float> movesAndScores){
-        float max=-100;
+        float max=-900;
         Move maxMove=null;
         for (Map.Entry<Move, Float> entry : movesAndScores.entrySet()){
             if(entry.getValue()>max) {
@@ -377,12 +374,15 @@ public class GeneticPlayer extends BotPlayer {
                 maxMove=entry.getKey();
             }
         }
-        System.out.println("best move: ");
-        System.out.println("score: "+movesAndScores.get(maxMove));
-        System.out.println("piece: "+maxMove.getPiece().getLabel());
-        maxMove.getPiece().printShape();
-        System.out.println("cordinates: ");maxMove.getPosition().printVector();
-        System.out.println();
-        System.out.println();
+        if(maxMove!=null) {
+            System.out.println("best move: ");
+            System.out.println("score: " + movesAndScores.get(maxMove));
+            System.out.println("piece: " + maxMove.getPiece().getLabel());
+            maxMove.getPiece().printShape();
+            System.out.println("cordinates: ");
+            maxMove.getPosition().printVector();
+            System.out.println();
+            System.out.println();
+        }
     }
 }

@@ -27,12 +27,12 @@ public class SimulatedGame {
     private BoardUI.GameState state;
     private ArrayList<Move> movesLog=new ArrayList<>();
     private  int nbrMoves=0;
-    private int moveLimit=5;
+    private int moveLimit=100;
 
-    public SimulatedGame(int DIMENSION, Player[] players){
+    public SimulatedGame(int dimension, Player[] players){
         String[] playersName= new String[players.length];
-        this.players = this.initializePlayers(playersName, DIMENSION, players);
-         this.board = new Board(this.players);
+        this.players = this.initializePlayers(playersName, dimension, players);
+         this.board = new Board(this.players, dimension);
          state= BoardUI.GameState.AI_MOVE;
 
         //game state of human move not considered
@@ -95,10 +95,13 @@ public void startSimulation(){
                 board.print();
 
                 move = ((GeneticPlayer) actualPlayer).calculateMove(board);
-                makeMove(move);
-                moveAllowed(move.getPiece());
+                if(move !=null) {
+                    makeMove(move);
+                    moveAllowed(move.getPiece());
+                }
+                else
+                    actualPlayer.setSkippedLastMove(true);
 
-                System.out.println("number of moves"+nbrMoves);
 
 
             }
@@ -245,7 +248,7 @@ public void startSimulation(){
     public static void main(String[] args) {
         //testing
 
-        int dimension= 20;
+        int dimension= 8;
         Player [] players = new Player[4];
         for (int i=0; i<4; i++){
             players[i]=new GeneticPlayer(i+1);
