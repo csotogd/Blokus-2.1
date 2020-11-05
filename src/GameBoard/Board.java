@@ -226,6 +226,10 @@ public class Board{
         this.board = board;
     }
 
+    public int getNumberOfPlayers(){
+        return players.length;
+    }
+
     /**
      * prints the current situation of the board, used for debugging purposes
      */

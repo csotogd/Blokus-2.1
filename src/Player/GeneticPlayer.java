@@ -146,8 +146,9 @@ public class GeneticPlayer extends BotPlayer {
                 for (int j = 0; j < shape[0].length; j++){
                     //What if one piece blocks 2 corners?
                     //TODO: Fix this
-                    if (shape[i][j] != 0 && isDiffPlayerToCorner(i + position.get_y(), j + position.get_x(), board)){
-                        blockCornerNumber++;
+                    if (shape[i][j] != 0){
+                        int nbrCornersBlocked = isDiffPlayerToCorner(i + position.get_y(), j + position.get_x(), board);
+                        blockCornerNumber+=nbrCornersBlocked;
                     }
                 }
             }
@@ -155,8 +156,8 @@ public class GeneticPlayer extends BotPlayer {
 
             //this is a high estimate, but now we are sure that the unweighted score is between 0 and 1.
             //float normalization = piece.getNumberOfBlocks() * 4;
-            //First used the above, but this way the score would be relative to the number of blocks in the piece
-            float normalization = 20;
+            //biggest piece has 5 squares and can block at most 3 players per square
+            float normalization = 5*3; //
             float score = weight * (blockCornerNumber/normalization);
 
             movesAndScores.put(move, movesAndScores.get(move) + score);
@@ -169,9 +170,9 @@ public class GeneticPlayer extends BotPlayer {
      * @param YPos y position of the square
      * @param XPos x position of the square
      * @param board current game board
-     * @return true if the given square is a toCorner from another player
+     * @return the number of players for which the given square was a corner
      */
-    private boolean isDiffPlayerToCorner(int YPos, int XPos, Board board){
+    private int isDiffPlayerToCorner(int YPos, int XPos, Board board){
         int[][] grid = board.getBoard();
         /*
         We check every corner point of p, here denoted by a c
@@ -194,7 +195,7 @@ public class GeneticPlayer extends BotPlayer {
         Then, at the end you return that variable and add it to the blockCornerNumber
 
         You still need to find something for when one player has p as a toCorner twice:
-        1 0 3
+        1 0 1
         0 p 0
         0 0 0
         when this happens, this corner would be counted twice (after you fixed the previous problem).
@@ -203,31 +204,43 @@ public class GeneticPlayer extends BotPlayer {
         Good luck!
          */
 
+        boolean playerBlocked[]= new boolean[board.getNumberOfPlayers()];
+        //playerBlocked[i] will store true if a corner of player numbered i+1 is a happened at the given square.
+        //at most we can have 3 corners, one for each player except the current one
+
         try {
             int topLeft = grid[YPos - 1][XPos - 1];
-            if (topLeft != 0 && topLeft != number && checkSides(YPos, XPos, grid, topLeft)) return true;//*
+            if (topLeft != 0 && topLeft != number && checkSides(YPos, XPos, grid, topLeft))
+                playerBlocked[topLeft-1]=true;
         } catch (ArrayIndexOutOfBoundsException e){
 
         }
         try {
             int topRight = grid[YPos - 1][XPos + 1];
-            if (topRight != 0 && topRight != number && checkSides(YPos, XPos, grid, topRight)) return true;//*
+            if (topRight != 0 && topRight != number && checkSides(YPos, XPos, grid, topRight))
+                playerBlocked[topRight-1]=true;
         } catch (ArrayIndexOutOfBoundsException e){
 
         }
         try {
             int bottomLeft = grid[YPos + 1][XPos - 1];
-            if (bottomLeft != 0 && bottomLeft != number && checkSides(YPos, XPos, grid, bottomLeft)) return true;//*
+            if (bottomLeft != 0 && bottomLeft != number && checkSides(YPos, XPos, grid, bottomLeft))
+                playerBlocked[bottomLeft-1]=true;
         } catch (ArrayIndexOutOfBoundsException e){
 
         }
         try {
             int bottomRight = grid[YPos + 1][XPos + 1];
-            if (bottomRight != 0 && bottomRight != number && checkSides(YPos, XPos, grid, bottomRight)) return true;//*
+            if (bottomRight != 0 && bottomRight != number && checkSides(YPos, XPos, grid, bottomRight))
+                playerBlocked[bottomRight-1]=true;
         } catch (ArrayIndexOutOfBoundsException e){
 
         }
-        return false;
+        int nbrOfBlocks=0;
+        for(int i=0; i<=playerBlocked.length; i++)
+            if (playerBlocked[i])
+                nbrOfBlocks++;
+        return nbrOfBlocks;
     }
 
     /**
