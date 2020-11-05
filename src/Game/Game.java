@@ -1,3 +1,5 @@
+package Game;
+
 import GameBoard.Board;
 import GameBoard.BoardUI;
 import Move.Move;
@@ -45,10 +47,13 @@ public class Game extends Application {
     public void start(Stage stage){
         DIMENSION = Data.getDIMENSION();
         playersName = Data.getPlayersName();
-        initializePlayers();
+        players=initializePlayers(playersName, DIMENSION, players);
+        for(Player player:players)
+            System.out.println(player.getPlayerNumber());
+
         BoardUI gameBoard = new BoardUI(players,stage);
         Parent root = gameBoard.gameBoard;
-        stage.setTitle("Blokus Game Group 15");
+        stage.setTitle("Blokus Game.Game Group 15");
         Scene scene = new Scene(root, 1000, 1000);
         stage.setScene(scene);
         stage.setFullScreen(true);
@@ -58,10 +63,10 @@ public class Game extends Application {
     /**
      * method used to initialize every player
      */
-    private void initializePlayers(){
+    public static Player[] initializePlayers(String[] playersName, int DIMENSION, Player[] players){
         Color[] colors = {Color.RED,Color.YELLOW,Color.GREEN,Color.BLUE};
         players= new Player[playersName.length];
-        System.out.println("this code is in game.java line 66,67,68, jo, martin and gyu, comment where necessary it please");
+        //System.out.println("this code is in game.java line 66,67,68, jo, martin and gyu, comment where necessary it please");
 
         for(int i=1; i<= playersName.length; i++){
             String playerType = Data.getPlayerTypes()[i-1];
@@ -77,7 +82,7 @@ public class Game extends Application {
             players[i-1].setColor(colors[i-1]);
             players[i-1].setName(playersName[i-1]);
         }
-        initializePlayerPieces();
+        initializePlayerPieces(playersName, players);
         players[0].setStartingCorner(new Vector2d(0,0));
         if(players.length==4){
             players[1].setStartingCorner(new Vector2d(DIMENSION-1,0));
@@ -87,12 +92,13 @@ public class Game extends Application {
             players[1].setStartingCorner(new Vector2d(DIMENSION-1,DIMENSION-1));
         }
 
+        return players;
     }
 
     /**
      * method to initialize each player pieces
      */
-    private void initializePlayerPieces(){
+    public static void initializePlayerPieces(String[] playersName,  Player[] players){
 
         for(int i=1; i<= playersName.length; i++){
             PieceFactory pieceFactory= PieceFactory.get();
