@@ -65,6 +65,16 @@ public class Node {
         return false;
     }
 
+    public boolean randomExpand(Player player){
+
+        for(int i=0;i<10;i++){
+            Move m = player.randomPossibleMoveClone(state);
+            children.add(new Node(this,m));
+        }
+        if(children.size()>0) return true;
+        return false;
+    }
+
     /**
      * Simulate a play until it can't find a move for any player
      * @return the final score for the playerOfInterest (1 for a win)

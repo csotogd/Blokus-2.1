@@ -95,7 +95,6 @@ public class BoardUI{
         this.gameBoard = createBoard();
         makePiecesOpaque();
 
-        state=GameState.HUMAN_MOVE; //TODO change this for second period
         this.mc = new MonteCarlo(players,board);
 
         if (actualPlayer instanceof HumanPlayer)
@@ -606,24 +605,23 @@ public class BoardUI{
      * to be called in every move
      */
     private void updateState(){
-
+        System.out.println("OUIIII");
         if(state== GameState.HUMAN_MOVE || state==GameState.AI_MOVE) {
             if (noOneMoved()){
                 state = GameState.END;
             System.out.println("In game status:  mo one moved");
-            }
-            else {
+            }else{
                 System.out.println(actualPlayer.getName()+ " skipped last move?: "+actualPlayer.getSkippedLastMove());
                 //System.out.println("In game status:  someone did move moved");
                 nextTurn();
                 if (actualPlayer instanceof HumanPlayer)
                 state = GameState.HUMAN_MOVE;
                 else {
-                    state = GameState.AI_MOVE;
-                    handleAITurn();
+                    if(state!=GameState.END){
+                        state = GameState.AI_MOVE;
+                        handleAITurn();
+                    }
                 }
-
-
             }
             debuggingPiecesUsed();
         }
@@ -631,9 +629,9 @@ public class BoardUI{
 
         if (state==GameState.END){
 
-                countPoints();
-                System.out.println("THE GAME HAS ENDED");
-                stage.close();
+            countPoints();
+            System.out.println("THE GAME HAS ENDED");
+            stage.close();
             final Stage dialog = new Stage();
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.initOwner(stage);
@@ -668,7 +666,7 @@ public class BoardUI{
         if(actualPlayer instanceof GeneticPlayer){
             move = ((GeneticPlayer) actualPlayer).calculateMove(board);
         }else if(actualPlayer instanceof BotPlayer) {
-            move = mc.simulation(actualPlayer.getNumber()-1, 3000);
+            move = mc.simulation(actualPlayer.getNumber()-1, 5000);
         }
         if (move.makeMove(board)) {
             move.writePieceIntoBoard(board);
@@ -690,8 +688,6 @@ public class BoardUI{
         for (Player player: players){
             if(!player.getSkippedLastMove())
                 return false;
-
-
         }
         return true;
     }

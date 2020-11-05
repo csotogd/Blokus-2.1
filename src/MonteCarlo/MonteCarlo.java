@@ -26,7 +26,7 @@ public class MonteCarlo {
     public Move simulation(int player, long timeLimit){
         long start = System.currentTimeMillis(); //start of the timer
         root = new Node(board, players);
-        System.out.println(root.expand(this.players[player].clone()));// expand will append a children of every possible move to the root
+        root.randomExpand(this.players[player].clone());// expand will append a children of every possible move to the root
         //TODO : not expand every possible move ?
 //        System.out.println("p"+player+" "+root.getChildren().size()); // for debug purpose print the number of possible move
 
