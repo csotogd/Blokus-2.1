@@ -349,4 +349,12 @@ public abstract class Player {
 
         board.print();
     }
+
+    public boolean equals(Object other){
+        if(!(other instanceof Player)) return false;
+        other = (Player) other;
+        if(number!=((Player) other).getNumber()) return false;
+        if(piecesList.size()!=((Player) other).getPiecesList().size()) return false;
+        return true;
+    }
 }
