@@ -213,13 +213,8 @@ public class Game extends Application {
 
 
         if (state== GameState.END){
-
             countPoints();
             System.out.println("THE GAME HAS ENDED");
-            stage.close();
-            final Stage dialog = new Stage();
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.initOwner(stage);
             VBox dialogVbox = new VBox(20);
             dialogVbox.getChildren().add(new Text("GAME END"));
             for (Player player:players) {
@@ -232,8 +227,8 @@ public class Game extends Application {
             pane.setBackground(Data.createBackGround());
             pane.getChildren().add(dialogVbox);
             Scene dialogScene = new Scene(pane, 300, 200);
-            dialog.setScene(dialogScene);
-            dialog.show();
+            stage.setScene(dialogScene);
+            stage.show();
 
         }
 
