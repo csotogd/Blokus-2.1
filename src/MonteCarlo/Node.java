@@ -65,10 +65,30 @@ public class Node {
         return false;
     }
 
+    /**
+     * Expand with random moves a state
+     * @param player the player for which we want to expand the moves
+     * @return true if it was successful, false otherwise
+     */
     public boolean randomExpand(Player player){
 
         for(int i=0;i<10;i++){
-            Move m = player.randomPossibleMoveClone(state);
+            Move m = player.randomPossibleMoveClone(state, player.getPiecesList());
+            children.add(new Node(this,m));
+        }
+        if(children.size()>0) return true;
+        return false;
+    }
+
+    /**
+     * Expand with random moves bias towards bigger piece
+     * @param player the player for which we want to expand the moves
+     * @return true if it was successful, false otherwise
+     */
+    public boolean randomExpandBias(Player player){
+
+        for(int i=0;i<10;i++){
+            Move m = player.randomPossibleMoveClone(state, new ArrayList<Piece>());
             children.add(new Node(this,m));
         }
         if(children.size()>0) return true;

@@ -260,7 +260,7 @@ public abstract class Player {
 
 
 
-    public Move randomPossibleMoveClone(Board board){
+    public Move randomPossibleMoveClone(Board board, List<Piece> piecesList){
         ArrayList<Corner> cornersOnBoard = board.getCorner(this.getStartingCorner());//list of corners on the board
         Random r = new Random();
         if(piecesList.size()>0) {
