@@ -1,100 +1,107 @@
+package Game;
+
 import GameBoard.Board;
 import GameBoard.BoardUI;
 import Move.Move;
+import Player.BotPlayer;
+import Player.GeneticPlayer;
 import Player.HumanPlayer;
 import Player.Player;
 import Tools.Vector2d;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import DataBase.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Rectangle;
 import GameBoard.BoardUI;
 
+import java.sql.SQLOutput;
+import java.util.Scanner;
 import java.awt.*;
 import java.util.ArrayList;
 import GameBoard.BoardUI;
 import java.util.List;
 import java.util.LinkedList;
+//import Player.GeneticPlayer;
+
+import javax.sound.midi.Soundbank;
 
 public class Game extends Application {
 
     private Player[] players;
-    private Player currentTurn;
-    private GameStatus status;
-    private ArrayList<Move> movesPlayed= new ArrayList<>();
-    private int numberOfPlayers = 4;
-    private ArrayList<Move> movesLog=new ArrayList<>();
-    private final Vector2d DIMENSION = new Vector2d(20, 20);
+    private int DIMENSION;
+    private String[] playersName;
 
+    /**
+     * method overiden from the application
+     * @param stage
+     */
     @Override
     public void start(Stage stage){
-        initializeNewGame(numberOfPlayers,new Vector2d(50,50));
-        BoardUI gameBoard = new BoardUI(players);
+        DIMENSION = Data.getDIMENSION();
+        playersName = Data.getPlayersName();
+        players=initializePlayers(playersName, DIMENSION, players);
+        for(Player player:players)
+            System.out.println(player.getPlayerNumber());
+
+        BoardUI gameBoard = new BoardUI(players,stage);
         Parent root = gameBoard.gameBoard;
-        stage.setTitle("Blokus Game Group 15");
+        stage.setTitle("Blokus Game.Game Group 15");
         Scene scene = new Scene(root, 1000, 1000);
         stage.setScene(scene);
         stage.setFullScreen(true);
         stage.show();
     }
 
-    public enum GameStatus {
-        INTRO,
-        MOVE,
-        END,
-
-    }
-
-//NO BOT OPTION
-    public void initializeNewGame(int numberOfPlayers, Vector2d boardDimensions){
-
-        initializePlayers(numberOfPlayers);
-
-        //Draw everything
-        currentTurn=players[0];
-
-
-
-    }
-    private void initializePlayers(int numberOfPlayers){
+    /**
+     * method used to initialize every player
+     */
+    public static Player[] initializePlayers(String[] playersName, int DIMENSION, Player[] players){
         Color[] colors = {Color.RED,Color.YELLOW,Color.GREEN,Color.BLUE};
-        players= new Player[numberOfPlayers];
-        for(int i=1; i<= numberOfPlayers; i++){
-            players[i-1]=new HumanPlayer(i);
+        players= new Player[playersName.length];
+        //System.out.println("this code is in game.java line 66,67,68, jo, martin and gyu, comment where necessary it please");
+
+        for(int i=1; i<= playersName.length; i++){
+            String playerType = Data.getPlayerTypes()[i-1];
+            if(playerType.equals("Human Player")){
+                players[i-1]=new HumanPlayer(i);
+            }else if(playerType.equals("Monte Carlo Player")){
+                System.out.println("Bot");
+                //TODO add the Monte Carlo Player class
+                players[i-1]=new BotPlayer(i,playersName[i-1]);
+            }else if(playerType.equals("Genetic Player")){
+                players[i-1]=new GeneticPlayer(i);
+            }
             players[i-1].setColor(colors[i-1]);
-            players[i-1].setName("Martin");
+            players[i-1].setName(playersName[i-1]);
         }
-        initializePlayerPieces(numberOfPlayers);
+        initializePlayerPieces(playersName, players);
         players[0].setStartingCorner(new Vector2d(0,0));
         if(players.length==4){
-            players[1].setStartingCorner(new Vector2d(0,19));
-            players[2].setStartingCorner(new Vector2d(19,19));
-            players[3].setStartingCorner(new Vector2d(19,0));
+            players[1].setStartingCorner(new Vector2d(DIMENSION-1,0));
+            players[2].setStartingCorner(new Vector2d(DIMENSION-1,DIMENSION-1));
+            players[3].setStartingCorner(new Vector2d(0,DIMENSION-1));
         }else{
-            players[1].setStartingCorner(new Vector2d(19,19));
+            players[1].setStartingCorner(new Vector2d(DIMENSION-1,DIMENSION-1));
         }
 
+        return players;
     }
 
 
-    private void initPlayersStartCorner(int numberOfPlayers){
-        Vector2d boardDimension= DIMENSION;
-        players[0].setStartingCorner(new Vector2d(0,0));
-        players[1].setStartingCorner(new Vector2d(boardDimension.get_x()-1, boardDimension.get_y()-1));
-        if(numberOfPlayers>2)
-            players[2].setStartingCorner(new Vector2d(boardDimension.get_x()-1, 0));
-        if(numberOfPlayers>3)
-            players[3].setStartingCorner(new Vector2d(0,boardDimension.get_y()-1));
-    }
+    /**
+     * method to initialize each player pieces
+     */
+    public static void initializePlayerPieces(String[] playersName,  Player[] players){
 
-    private void initializePlayerPieces(int numberOfPlayers){
-
-        for(int i=1; i<= numberOfPlayers; i++){
+        for(int i=1; i<= playersName.length; i++){
             PieceFactory pieceFactory= PieceFactory.get();
             List<Piece> pieces = pieceFactory.getAllPieces();
 
@@ -104,16 +111,19 @@ public class Game extends Application {
 
     }
 
-    private void nextTurn(){
-        /*If if it is player 1 turn, then next turn will correspond to player 2,
+
+/*If if it is player 1 turn, then next turn will correspond to player 2,
          after the last player, we go back to the first one
          */
+    /*
+    private void nextTurn(){
+
 
         if (currentTurn.getPlayerNumber()<numberOfPlayers)
             currentTurn=players[currentTurn.getPlayerNumber()]; //player 2 occupies index 1 in array of players
         else
             currentTurn=players[0];
-    }
+    }*/
 /*
     //writes the piece into the board and adds it to the log
     public boolean makeMove(Piece piece, Vector2d position){
@@ -127,7 +137,7 @@ public class Game extends Application {
 
         }
 
- */
+
 
     //To be called after every move
     private void updateState(){
@@ -146,17 +156,17 @@ public class Game extends Application {
                 countPoints();
                 displayWinner();
                 //should show something ,ike play again?
-                  */
+
             }
         }
 
-
+ */
 
 
     /**
      * If none of the players made its move, then the game just ended
      * @return true if none of the plaayers made its move
-     */
+     *//*
     private boolean noOneMoved(){
         for (Player player: players){
             if(!player.getSkippedLastMove())
@@ -178,7 +188,7 @@ public class Game extends Application {
      * The player with the highest score wins. A player who played all of his or her pieces is awarded a +20 point bonus
      * if the last piece played was a monomino, or a +15 point bonus for any other piece
      * @param player
-     */
+     *//*
     private void countPointsPlayer(Player player){
         int points=0;
         int piecesPlaced=0;
@@ -204,16 +214,5 @@ public class Game extends Application {
 
     }
 
-
-    public void setNumberOfPlayers(int numberOfPlayers) {
-        this.numberOfPlayers = numberOfPlayers;
-    }
-
-    public Player[] getPlayers() {
-        return players;
-    }
-
-    public int getNumberOfPlayers() {
-        return numberOfPlayers;
-    }
+    */
 }

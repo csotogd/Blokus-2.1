@@ -9,6 +9,12 @@ import GameBoard.Board;
 
 import java.util.ArrayList;
 
+/*
+* Wheneverr we are going to define a move, make it, see if it is a possible move, etc....we use this class
+* Contains method to check if a move is valid.
+* Every time we make a move, a lot of operations are triggered. Every player stores a log of moves, the ui
+* is updated, the piece is set as used......
+* */
 public class Move {
     private Player player;
     private Piece piece;//needs to be rotated, mirror as the players wants
@@ -43,23 +49,56 @@ public class Move {
          * 5. piece was not used
          */
 
-        //TODO: add a method or just a variable to see if it's the first piece instead of verifying it in noDirectContact AND cornerContact
-        return (!piece.isUsed()) && inBounds(board) &&
-                emptySpace(board) && cornerContact(board) && noDirectContact(board) ;
+        if(piece.isUsed()){
+           // System.out.println("piece used");
+            return false;
+        }else if(!inBounds(board)){
+           // System.out.println("out of bound");
+            return false;
+        }else if(!emptySpace(board)){
+            //System.out.println("place occupied");
+            return false;
+        }else if(!cornerContact(board)&&!firstLegalMove(board)){
+            //System.out.println("no corner?");
+            return false;
+        }else if(!noDirectContact(board)){
+           // System.out.println("contact with piece");
+            return false;
+        }
+        return true ;
+        //(!piece.isUsed()) && inBounds(board) &&
+        //                emptySpace(board) && cornerContact(board) && noDirectContact(board)
     }
 
+    private boolean firstLegalMove(Board board) {
+        if(!player.isFirstMove()) return false;
+        for (int i = 0; i < piece.getShape().length; i++) {
+            for (int j = 0; j < piece.getShape()[0].length; j++) {
+                if(piece.getShape()[i][j]!=0 &&
+                        position.get_y()+i==player.getStartingCorner().get_y() &&
+                        position.get_x()+j==player.getStartingCorner().get_x())
+                    return true;
+            }
+        }return false;
+    }
 
+    /**
+     * Checks if the current piece with current coordinates are in bound
+     * @param board board on which the move is played
+     * @return True if in boun,false if out of bound
+     */
     private boolean inBounds(Board board){
-
-
         if(this.position.get_x()<0||this.position.get_y()<0||
-                this.position.get_x()>=board.getDIMENSION().get_x()||this.position.get_y()>=board.getDIMENSION().get_y()) return false;
-        if(this.position.get_x()+piece.getShape()[0].length>board.getDIMENSION().get_x()||
-                this.position.get_y()+piece.getShape().length>board.getDIMENSION().get_y()) return false;
+                this.position.get_x()>=board.getDIMENSION()||this.position.get_y()>=board.getDIMENSION()) return false;
+        if(this.position.get_x()+piece.getShape()[0].length>board.getDIMENSION()||
+                this.position.get_y()+piece.getShape().length>board.getDIMENSION()) return false;
         return true;
-
     }
 
+
+    public Move() {
+        super();
+    }
 
     /**
      * checks if every piece block can be place in an empty square of the board
@@ -90,22 +129,13 @@ public class Move {
      * @return true if no direct contact exists
      */
     private boolean noDirectContact(Board board){
-        //TODO: this bit here can go in a method
-    boolean corner = false;
-    for(int x=0;x<piece.getShape()[0].length;x++)
-        for (int y = 0; y < piece.getShape().length; y++)
-            if(position.get_x()+x==player.getStartingCorner().get_x()&&
-            position.get_y()+y==player.getStartingCorner().get_y()&&
-            piece.getShape()[y][x]!=0) corner=true;
-    if(corner)
-        return true; //!! it doesn't check if there is already a piece that occupies this position because
-    // it assumes it was already checked
+
     for(int x=0;x<piece.getShape()[0].length;x++) {
         for (int y = 0; y < piece.getShape().length; y++) {
             if(piece.getShape()[y][x]!=0){
-                if(position.get_y()+y+1<board.getDIMENSION().get_y() && board.board[position.get_y()+y+1][position.get_x()+x]==player.getPlayerNumber()) return false;
+                if(position.get_y()+y+1<board.getDIMENSION() && board.board[position.get_y()+y+1][position.get_x()+x]==player.getPlayerNumber()) return false;
                 if(position.get_y()+y-1>=0 && board.board[position.get_y()+y-1][position.get_x()+x]==player.getPlayerNumber()) return false;
-                if(position.get_x()+x+1<board.getDIMENSION().get_x() && board.board[position.get_y()+y][position.get_x()+x+1]==player.getPlayerNumber()) return false;
+                if(position.get_x()+x+1<board.getDIMENSION() && board.board[position.get_y()+y][position.get_x()+x+1]==player.getPlayerNumber()) return false;
                 if(position.get_x()+x-1>=0 && board.board[position.get_y()+y][position.get_x()+x-1]==player.getPlayerNumber()) return false;
 
                 }
@@ -173,23 +203,15 @@ public class Move {
          * it then checks for expected position on the board if it's occupied by a block of the player
          * finally calls isCorner that checks if there is only one block on the board
          */
-        //TODO: this bit here as well
-        boolean corner = false;
-        for(int x=0;x<piece.getShape()[0].length;x++)
-            for (int y = 0; y < piece.getShape().length; y++)
-                if(position.get_x()+x==player.getStartingCorner().get_x()&&
-                        position.get_y()+y==player.getStartingCorner().get_y()&&
-                        piece.getShape()[y][x]!=0) corner=true;
-        if(corner)
-            return true;
+
 
         for(Corner pieceCorner: piece.getCornersContacts(position)){
             for(Vector2d board_cor:pieceCorner.getToCornerPositions()) {
-                if(pieceCorner.getPosition().get_y()==1&&pieceCorner.getPosition().get_x()==3) {
+             /*   if(pieceCorner.getPosition().get_y()==1&&pieceCorner.getPosition().get_x()==3) {
                     System.out.print(board.board[board_cor.get_y()][board_cor.get_x()] == player.getPlayerNumber());
                     System.out.print(isCorner(pieceCorner.getPosition(), board_cor, board));
                 }
-                System.out.println();
+                System.out.println();*/
 
                 if (board.inBoard(board_cor) &&
                         board.board[board_cor.get_y()][board_cor.get_x()] == player.getPlayerNumber() &&
@@ -259,20 +281,22 @@ public class Move {
      * If the move is not possible it will aim to do it anyway.
      * To be used after isALlowed
      */
-public void writePieceIntoBoard(Board board) {
-    for (int i = 0; i < piece.getShape().length; i++) {
-        for (int j = 0; j < piece.getShape()[0].length; j++) {
-            if (board.board[position.get_y() + i][position.get_x() + j] == 0 &&
-                    piece.getShape()[i][j] != 0)
-                board.board[position.get_y() + i][position.get_x() + j] = player.getPlayerNumber();
+    public void writePieceIntoBoard(Board board) {
+        for (int i = 0; i < piece.getShape().length; i++) {
+            for (int j = 0; j < piece.getShape()[0].length; j++) {
+                if (board.board[position.get_y() + i][position.get_x() + j] == 0 &&
+                        piece.getShape()[i][j] != 0)
+                    board.board[position.get_y() + i][position.get_x() + j] = player.getPlayerNumber();
+            }
         }
+        if(player.isFirstMove()) player.setNotFirstMove();//THIS LINE DOESNT ALWAYS WORK WHYYYYYYYYY
     }
 
-}
     /**
-     * 1. check is piece is allowed
+     * 1. check is piece is allowed, if it is:
      * 2. writes it into the board
      * 3. marks it as used
+     * 4. stores the move in the player log
      * @param board
      * @return true if it was possible, false if the move was not executed
      */
@@ -282,12 +306,15 @@ public void writePieceIntoBoard(Board board) {
             //add piece to the board
             this.writePieceIntoBoard(board);
             player.getMoveLog().push(this);
-            board.paint();
+            this.piece.setUsed(true);//TODO erase this none sense line of code, completely useless
+            this.player.getPiecesUsed().add(this.piece);
+            //System.out.println("number of blocks from make move: "+piece.getNumberOfBlocks());
+            if(player.isFirstMove()) player.setFirstMove(false);
 
             return true;
         }
         else
-            System.out.println("Move not allowed");
+ //           System.out.println("Move not allowed");
         return false;
         }
 
@@ -303,13 +330,14 @@ public void writePieceIntoBoard(Board board) {
         return position;
     }
 
+    //dont mind this, it´s just testing stuff
     public static void main(String[] args){
         HumanPlayer player1 = new HumanPlayer(1);
         HumanPlayer player2=new HumanPlayer(2);
         Board board= new Board(new Player[]{player1,player2});
 
         player1.setStartingCorner(new Vector2d(0,0));
-        player2.setStartingCorner(new Vector2d(board.getDIMENSION().get_x()-1,board.getDIMENSION().get_y()-1));
+        player2.setStartingCorner(new Vector2d(board.getDIMENSION()-1,board.getDIMENSION()-1));
         player1.setPiecesList(PieceFactory.get().getAllPieces());
         player2.setPiecesList(PieceFactory.get().getAllPieces());
         System.out.println(player1.getPiecesList().get(1));
@@ -387,6 +415,11 @@ public void writePieceIntoBoard(Board board) {
         }
 
     }
+public void print(){
+    System.out.println( "Player: "+player.getName()+" \tPosition: "+position.get_x()+", "+ position.get_y()+"\t") ;
+    System.out.println("piece: ");
+    piece.printShape();
 
+}
 
 }

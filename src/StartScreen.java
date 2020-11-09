@@ -1,10 +1,11 @@
+import DataBase.Data;
+import Game.Game;
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.effect.BoxBlur;
-import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -22,15 +23,13 @@ public class StartScreen extends Application {
     private static final int WIDTH = 800;
     private static final int HEIGHT = 800;
 
+
     //each button contains a function that is run everytime it is pressed
 
     private Stage stage;
 
     private List<Pair<String, Runnable>> menuData = Arrays.asList(
-            new Pair<String, Runnable>("Single Player", () -> {
-                new Game().start(stage);
-            }),
-            new Pair<String, Runnable>("Multiplayer", () -> {
+            new Pair<String, Runnable>("Play", () -> {
                 new Game().start(stage);
             }),
             new Pair<String, Runnable>("Settings", () -> {
@@ -40,13 +39,7 @@ public class StartScreen extends Application {
                     e.printStackTrace();
                 }
             }),
-            new Pair<String, Runnable>("Solvers", () -> {
-                try {
-                    new SolversScreen().start(stage);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }),
+
             new Pair<String, Runnable>("Exit to Desktop", Platform::exit)
     );
 
@@ -60,7 +53,8 @@ public class StartScreen extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         root.setId("start-screen-pane");
-        root.setBackground(createBackGround());
+        Background background = Data.createBackGround();
+        root.setBackground(background);
         Scene scene = new Scene(root, 800, 800);
         addContent();
         scene.setFill(Color.BLACK);
@@ -93,17 +87,6 @@ public class StartScreen extends Application {
         title.setTranslateX(WIDTH / 2. - title.getTitleWidth() / 2);
         title.setTranslateY(HEIGHT / 3.);
         root.getChildren().add(title);
-    }
-
-    public Background createBackGround(){
-        Image image = new Image("https://images.hdqwalls.com/wallpapers/simple-gray-background-4k-br.jpg",800,800,false,true);
-
-        BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
-
-        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
-
-        Background background = new Background(backgroundImage);
-        return background;
     }
 
     private void addMenu(double x, double y) {
