@@ -6,6 +6,7 @@ import Game.Game;
 import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
