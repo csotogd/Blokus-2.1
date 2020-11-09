@@ -286,6 +286,10 @@ public abstract class Player {
                         for (int k = 0; k < pieceCorner.size(); k++) {
                             if(cornersOnBoard.size()==0) return null;
                             int randomCornerBoard = r.nextInt(cornersOnBoard.size());
+                            if(this.getPiecesList().size()>12&&cornersOnBoard.size()>1){
+                                int randomCornerBoard2 = r.nextInt(cornersOnBoard.size());
+                                randomCornerBoard = getFarestPiece(randomCornerBoard,randomCornerBoard2,cornersOnBoard);
+                            }
                             for (int l = 0; l < cornersOnBoard.size(); l++) { //emptycorner is the only thing that is not random
                                 for (Vector2d emptyCorner : cornersOnBoard.get((l + randomCornerBoard) % cornersOnBoard.size()).getToCornerPositions()) { //for all the possible empty squares that would become corner contact
                                     //move the piece so that it is contact with the corner with the part of it we want
@@ -306,6 +310,16 @@ public abstract class Player {
         }
         //System.out.println("Method possibleMove() piece can not be placed for p"+getPlayerNumber());
         return null; // if no piece can be placed in any of the corners
+    }
+
+    private int getFarestPiece(int random1, int random2, List<Corner> cornersOnBoard){
+        Corner corner1 = cornersOnBoard.get(random1);
+        Corner corner2 = cornersOnBoard.get(random2);
+
+        if((corner1.getPosition().get_x()+corner1.getPosition().get_y())<(corner2.getPosition().get_x()+corner2.getPosition().get_y())){
+            return  random2;
+        }
+        return random1;
     }
 
 

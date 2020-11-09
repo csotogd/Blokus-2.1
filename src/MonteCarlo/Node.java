@@ -86,13 +86,44 @@ public class Node {
      * @return true if it was successful, false otherwise
      */
     public boolean randomExpandBias(Player player){
-
+        List biggestPieces;
+        if(player.getPiecesList().size()<10){
+            biggestPieces = player.getPiecesList();
+        }else{
+            biggestPieces = getBiggestPieces(player);
+        }
         for(int i=0;i<10;i++){
-            Move m = player.randomPossibleMoveClone(state, new ArrayList<Piece>());
-            children.add(new Node(this,m));
+            Move m = player.randomPossibleMoveClone(state, biggestPieces);
+            if(m!=null){
+                children.add(new Node(this,m));
+            }
         }
         if(children.size()>0) return true;
         return false;
+    }
+
+
+
+    public List<Piece> getBiggestPieces(Player player){
+        int maxNbrOfBlocks = Integer.MIN_VALUE;
+        for (Piece piece:player.getPiecesList()) {
+            if(piece.getNumberOfBlocks()>maxNbrOfBlocks){
+                maxNbrOfBlocks = piece.getNumberOfBlocks();
+            }
+        }
+        List<Piece> biggestPieces = new ArrayList<>();
+        int diff = 0;
+        while(biggestPieces.size()<10&&diff<=5){
+            for (Piece piece:player.getPiecesList()) {
+                if(piece.getNumberOfBlocks()==maxNbrOfBlocks-diff){
+                    biggestPieces.add(piece);
+                }
+            }
+            if(biggestPieces.size()<10){
+                diff++;
+            }
+        }
+        return biggestPieces;
     }
 
     /**
