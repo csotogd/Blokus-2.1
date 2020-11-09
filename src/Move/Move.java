@@ -7,8 +7,6 @@ import Player.*;
 import Tools.Vector2d;
 import GameBoard.Board;
 
-import java.util.ArrayList;
-
 /*
 * Wheneverr we are going to define a move, make it, see if it is a possible move, etc....we use this class
 * Contains method to check if a move is valid.
@@ -113,7 +111,7 @@ public class Move {
         for(int i=0; i<piece.getShape().length; i++){
             for(int j=0; j<piece.getShape()[0].length; j++){
                 if(piece.getShape()[i][j]!=0 &&
-                        board.board[i+position.get_y()][j+position.get_x()] != 0)
+                        board.boardArray[i+position.get_y()][j+position.get_x()] != 0)
                     return false;
 
             }
@@ -133,10 +131,10 @@ public class Move {
     for(int x=0;x<piece.getShape()[0].length;x++) {
         for (int y = 0; y < piece.getShape().length; y++) {
             if(piece.getShape()[y][x]!=0){
-                if(position.get_y()+y+1<board.getDIMENSION() && board.board[position.get_y()+y+1][position.get_x()+x]==player.getPlayerNumber()) return false;
-                if(position.get_y()+y-1>=0 && board.board[position.get_y()+y-1][position.get_x()+x]==player.getPlayerNumber()) return false;
-                if(position.get_x()+x+1<board.getDIMENSION() && board.board[position.get_y()+y][position.get_x()+x+1]==player.getPlayerNumber()) return false;
-                if(position.get_x()+x-1>=0 && board.board[position.get_y()+y][position.get_x()+x-1]==player.getPlayerNumber()) return false;
+                if(position.get_y()+y+1<board.getDIMENSION() && board.boardArray[position.get_y()+y+1][position.get_x()+x]==player.getPlayerNumber()) return false;
+                if(position.get_y()+y-1>=0 && board.boardArray[position.get_y()+y-1][position.get_x()+x]==player.getPlayerNumber()) return false;
+                if(position.get_x()+x+1<board.getDIMENSION() && board.boardArray[position.get_y()+y][position.get_x()+x+1]==player.getPlayerNumber()) return false;
+                if(position.get_x()+x-1>=0 && board.boardArray[position.get_y()+y][position.get_x()+x-1]==player.getPlayerNumber()) return false;
 
                 }
             }
@@ -214,7 +212,7 @@ public class Move {
                 System.out.println();*/
 
                 if (board.inBoard(board_cor) &&
-                        board.board[board_cor.get_y()][board_cor.get_x()] == player.getPlayerNumber() &&
+                        board.boardArray[board_cor.get_y()][board_cor.get_x()] == player.getPlayerNumber() &&
                         isCorner(pieceCorner.getPosition(), board_cor, board)) return true;
             }
         }
@@ -269,7 +267,7 @@ public class Move {
         int count=0;
         for (int i =0 ; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
-                if(board.board[Math.min(p1.get_y(),p2.get_y())+i][Math.min(p1.get_x(), p2.get_x())+j]==player.getPlayerNumber()) count++;
+                if(board.boardArray[Math.min(p1.get_y(),p2.get_y())+i][Math.min(p1.get_x(), p2.get_x())+j]==player.getPlayerNumber()) count++;
             }
         }
         if(count == 1) return true;
@@ -284,9 +282,9 @@ public class Move {
     public void writePieceIntoBoard(Board board) {
         for (int i = 0; i < piece.getShape().length; i++) {
             for (int j = 0; j < piece.getShape()[0].length; j++) {
-                if (board.board[position.get_y() + i][position.get_x() + j] == 0 &&
+                if (board.boardArray[position.get_y() + i][position.get_x() + j] == 0 &&
                         piece.getShape()[i][j] != 0)
-                    board.board[position.get_y() + i][position.get_x() + j] = player.getPlayerNumber();
+                    board.boardArray[position.get_y() + i][position.get_x() + j] = player.getPlayerNumber();
             }
         }
         if(player.isFirstMove()) player.setNotFirstMove();//THIS LINE DOESNT ALWAYS WORK WHYYYYYYYYY
@@ -354,7 +352,7 @@ public class Move {
 //            firstMove.writePieceIntoBoard(board);
         }
         //move.writePieceIntoBoard(board);
-        for(int[] line : board.board){
+        for(int[] line : board.boardArray){
             for(int i : line){
                 System.out.print(i);
             }
@@ -407,7 +405,7 @@ public class Move {
         System.out.println(l1);
         System.out.println((!lm.piece.isUsed()) +" "+ lm.inBounds(board) +" "+
                 lm.emptySpace(board) +" "+ lm.cornerContact(board) +" "+ lm.noDirectContact(board));
-        for(int[] line : board.board){
+        for(int[] line : board.boardArray){
             for(int i : line){
                 System.out.print(i);
             }

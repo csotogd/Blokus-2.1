@@ -2,8 +2,7 @@ package GameBoard;
 
 import DataBase.Data;
 import DataBase.Piece;
-import DataBase.PieceFactory;
-import MonteCarlo.MonteCarlo;
+import Game.Game;
 import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
@@ -13,22 +12,13 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-
-import Player.*;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-
-import java.util.ArrayList;
-import java.util.List;
 /*
 * It´s a ui class but many logic operations happen here too, take a look
 *
@@ -39,98 +29,50 @@ public class BoardUI{
     public Pane principal;
     public GridPane gameBoardRep;
     private final int DIMENSION = Data.getDIMENSION();
+    private Game game;
 
-    public Board board;
     public Parent gameBoard;
     public Player[] players; //Initialize in game object
     private Background background;
     private final Vector2d RECTANGLE_SIZE = new Vector2d(100,280);
     private final int CELL_SIZE = 25;
-    private Player actualPlayer;
-    private int playerCounter;
-    private final int NUMBER_OF_PIECES_PER_PLAYER=20;
 
-    public GameState state;
-    private ArrayList<Move> movesLog=new ArrayList<>();
 
     Pane center;
     Pane right;
     Pane bottom;
     Pane left;
     Pane top;
-    FlowPane allPieces[];
+    public FlowPane allPieces[];
     int actualSelectedPieceNbr;
-    Text turnOfPlayerText;
-
-    Stage stage;
-
-    MonteCarlo mc;
-
-    /**
-     * the game can have those 3 states
-     */
-    public enum GameState {
-        HUMAN_MOVE,
-        AI_MOVE,
-        END
-
-    }
+    public Text turnOfPlayerText;
+    boolean beginning = true;
 
 
     /**
      *
-     * @param players string array of the name of the players giving the information of the number of players
-     * @param stage stage of the scene to be able to close the window when the game is ended
      */
-    public BoardUI(Player[] players, Stage stage){
-        this.stage = stage;
-        this.players = players;
+    public BoardUI(Game game){
+        this.game = game;
+        players = game.getPlayers();
         allPieces = new FlowPane[players.length];
-        this.playerCounter = 0;
-        this.actualPlayer = this.players[playerCounter++];
         this.background = Data.createBackGround();
-        this.board = new Board(players);
         this.principal = new Pane();
         paint();
+        beginning = false;
+
         this.gameBoard = createBoard();
         makePiecesOpaque();
-
-        this.mc = new MonteCarlo(players,board);
-
-        if (actualPlayer instanceof HumanPlayer)
-            state = GameState.HUMAN_MOVE;
-        else {
-            state = GameState.AI_MOVE;
-            handleAITurn();
-        }
-
-
-/*        if(!Data.isNormalGame()){
-            System.out.println("algo game");
-            MonteCarlo mc = new MonteCarlo(players,board);
-            for (Player player:players) {
-                Move move1 = mc.simulation(player.getNumber()-1,1000);
-                if(move1.makeMove(board)){
-                            *//*
-                        move1.writePieceIntoBoard(board);
-                        move1.getPlayer().getMoveLog().push(move1);
-                        move1.getPiece().setUsed(true);//TODO erase this none sense line of code, completely useless
-                        move1.getPlayer().getPiecesUsed().add(move1.getPiece());
-                        if(move1.getPlayer().isFirstMove()) move1.getPlayer().setFirstMove(false);
-
-                             *//*
-                    moveAllowed(null,move1.getPiece(),allPieces[actualPlayer.getNumber()-1]);
-
-
-                }
-            }
-
-        }*/
-
-
     }
 
     public void paint() {
+        if(!beginning){
+            makePiecesOpaque();
+            turnOfPlayerText.setText(game.getActualPlayer().getName());
+            turnOfPlayerText.setFill(game.getActualPlayer().getColor());
+            refreshPieces();
+        }
+
         //Clear previous cells
         principal.getChildren().clear();
         gameBoardRep = new GridPane();
@@ -185,36 +127,18 @@ public class BoardUI{
     }
 
     public  Color paintColor(int col, int row){
-        if(board.board[col][row]==0){
+        if(game.board.boardArray[col][row]==0){
             return Color.WHITE;
-        }else if(board.board[col][row]==1){
+        }else if(game.board.boardArray[col][row]==1){
             return Color.RED;
-        }else if(board.board[col][row]==2){
+        }else if(game.board.boardArray[col][row]==2){
             return Color.YELLOW;
-        }else if(board.board[col][row]==3){
+        }else if(game.board.boardArray[col][row]==3){
             return Color.GREEN;
-        }else if(board.board[col][row]==4){
+        }else if(game.board.boardArray[col][row]==4){
             return Color.BLUE;
         }
         return null;
-    }
-
-    public void moveAllowed(Pane piece, Piece pieceRoot,Pane allPieces){
-        //System.out.println("piece removed");
-        if(piece!=null){
-            allPieces.getChildren().remove(piece); //every piece also has an internal used state which is updated
-        }
-        actualPlayer.removePiece(pieceRoot.getLabel());
-        //actualPlayer.getPiecesList().remove(pieceRoot);
-        updateState();
-        // actualPlayer = players[playerCounter++];
-        // if(playerCounter>=players.length) playerCounter=0;
-        //choiceBox.getSelectionModel().select(0);
-        makePiecesOpaque();
-        turnOfPlayerText.setText(actualPlayer.getName());
-        turnOfPlayerText.setFill(actualPlayer.getColor());
-        refreshPieces();
-        paint();
     }
 
     /**
@@ -227,15 +151,15 @@ public class BoardUI{
             for (Object object:allPieces[player.getNumber()-1].getChildren()) {
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
-                    if (isPiece!=actualSelectedPieceNbr&&actualPlayer==player){
+                    if (isPiece!=actualSelectedPieceNbr&&game.getActualPlayer().equals(player)){
                         GridPane piece = (GridPane) object;
                         piece.setOpacity(0.3);
                         //piece.setDisable(true);
-                    }else if(isPiece==actualSelectedPieceNbr&&actualPlayer==player){
+                    }else if(isPiece==actualSelectedPieceNbr&&game.getActualPlayer().equals(player)){
                         GridPane piece = (GridPane) object;
                         piece.setOpacity(1);
                         //piece.setDisable(false);
-                    }else if(actualPlayer!=player){
+                    }else if(!game.getActualPlayer().equals(player)){
                         GridPane piece = (GridPane) object;
                         piece.setOpacity(0.3);
                         piece.setDisable(true);
@@ -330,10 +254,10 @@ public class BoardUI{
         text.setTranslateY(-30); text.setTranslateX(-50);
         text.setFont(Font.font("Verdana", 20));
         text.setFill(Color.WHITE);
-        turnOfPlayerText = new Text(actualPlayer.getName());
+        turnOfPlayerText = new Text(game.getActualPlayer().getName());
         turnOfPlayerText.setTranslateY(15);turnOfPlayerText.setTranslateX(-50);
         turnOfPlayerText.setFont(Font.font("Verdana", 30));
-        turnOfPlayerText.setFill(actualPlayer.getColor());
+        turnOfPlayerText.setFill(game.getActualPlayer().getColor());
         StackPane layout = new StackPane();
         if(players.length!=2){
             Node player4 = pieceOfPlayer(3);
@@ -341,9 +265,6 @@ public class BoardUI{
         }else {
             layout.getChildren().addAll(principal,text,turnOfPlayerText);
         }
-
-
-
         return layout;
     }
 
@@ -365,16 +286,16 @@ public class BoardUI{
         //TODO fix drag after rotating a piece and also rotate the array INTEGER of the piece
         rightRotate.setOnAction(actionEvent ->  {
             int pieceNbr = actualSelectedPieceNbr;
-            Piece piece = actualPlayer.getPiecesList().get(pieceNbr-1);
+            Piece piece = game.getActualPlayer().getPiecesList().get(pieceNbr-1);
             piece.rotateRight();
             int isPiece = 0;
-            for (Object object:allPieces[actualPlayer.getNumber()-1].getChildren()) {
+            for (Object object:allPieces[game.getActualPlayer().getNumber()-1].getChildren()) {
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
                     if((isPiece==pieceNbr)){
-                        int index = allPieces[actualPlayer.getNumber()-1].getChildren().indexOf(object);
-                        allPieces[actualPlayer.getNumber()-1].getChildren().remove(index);
-                        allPieces[actualPlayer.getNumber()-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[actualPlayer.getNumber()-1]));
+                        int index = allPieces[game.getActualPlayer().getNumber()-1].getChildren().indexOf(object);
+                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().remove(index);
+                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().add(index,drawPiece(game.getActualPlayer().getColor(),piece,allPieces[game.getActualPlayer().getNumber()-1]));
                         break;
                     }
                 }
@@ -386,16 +307,16 @@ public class BoardUI{
         flip.setTranslateX(0); flip.setTranslateY(-20);
         flip.setOnAction(actionEvent ->  {
             int pieceNbr = actualSelectedPieceNbr;
-            Piece piece = actualPlayer.getPiecesList().get(pieceNbr-1);
+            Piece piece = game.getActualPlayer().getPiecesList().get(pieceNbr-1);
             piece.rotateUpsideDown();
             int isPiece = 0;
-            for (Object object:allPieces[actualPlayer.getNumber()-1].getChildren()) {
+            for (Object object:allPieces[game.getActualPlayer().getNumber()-1].getChildren()) {
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
                     if((isPiece==pieceNbr)){
-                        int index = allPieces[actualPlayer.getNumber()-1].getChildren().indexOf(object);
-                        allPieces[actualPlayer.getNumber()-1].getChildren().remove(index);
-                        allPieces[actualPlayer.getNumber()-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[actualPlayer.getNumber()-1]));
+                        int index = allPieces[game.getActualPlayer().getNumber()-1].getChildren().indexOf(object);
+                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().remove(index);
+                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().add(index,drawPiece(game.getActualPlayer().getColor(),piece,allPieces[game.getActualPlayer().getNumber()-1]));
 /*
                         allPieces[playerCounter-1].getChildren().remove(index);
                         allPieces[playerCounter-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[playerCounter-1]));
@@ -411,20 +332,20 @@ public class BoardUI{
         //TODO fix drag after rotating a piece and also rotate the array INTEGER of the piece
         leftRotate.setOnAction(actionEvent ->  {
             int pieceNbr = actualSelectedPieceNbr;
-            Piece piece = actualPlayer.getPiecesList().get(pieceNbr-1);
+            Piece piece = game.getActualPlayer().getPiecesList().get(pieceNbr-1);
             piece.rotateLeft();
             int isPiece = 0;
-            for(Object object:allPieces[actualPlayer.getNumber()-1].getChildren()) {
+            for(Object object:allPieces[game.getActualPlayer().getNumber()-1].getChildren()) {
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
                     if((isPiece==pieceNbr)){
-                        int index = allPieces[actualPlayer.getNumber()-1].getChildren().indexOf(object);
+                        int index = allPieces[game.getActualPlayer().getNumber()-1].getChildren().indexOf(object);
                         /*
                         allPieces[playerCounter-1].getChildren().remove(index);
                         allPieces[playerCounter-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[playerCounter-1]));
                         */
-                        allPieces[actualPlayer.getNumber()-1].getChildren().remove(index);
-                        allPieces[actualPlayer.getNumber()-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[actualPlayer.getNumber()-1]));
+                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().remove(index);
+                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().add(index,drawPiece(game.getActualPlayer().getColor(),piece,allPieces[game.getActualPlayer().getNumber()-1]));
 
                         break;
                     }
@@ -451,9 +372,6 @@ public class BoardUI{
         }else {
             layout.getChildren().addAll(text,text1,principal,rightRotate,leftRotate,flip,text2);
         }
-
-
-
         return layout;
     }
 
@@ -560,10 +478,10 @@ public class BoardUI{
                 //System.out.println(position.get_x() + "  " + position.get_y());
                 //System.out.println("starting corner: "+actualPlayer.getStartingCorner().get_x()+" "+actualPlayer.getStartingCorner().get_y());
 
-                Move move = new Move(actualPlayer,pieceRoot,position);
+                Move move = new Move(game.getActualPlayer(),pieceRoot,position);
 
-                if(makeMove(move)){
-                    moveAllowed(piece,pieceRoot,allPieces);
+                if(game.makeMove(move)){
+                    game.moveAllowed(piece,pieceRoot,allPieces);
                 }else{
                     piece.setScaleX(1);piece.setScaleY(1);
                     piece.setTranslateX(pieceRoot.getPosInBoardX());
@@ -575,221 +493,5 @@ public class BoardUI{
         });
 
         return piece;
-    }
-
-    /**
-     * Handles turns flow
-     *
-     * If if it is player 1 turn, then next turn will correspond to player 2,
-          after the last player, we go back to the first one
-    */
-    private void nextTurn(){
-
-        if (actualPlayer.getPlayerNumber()<players.length)
-            actualPlayer=players[actualPlayer.getPlayerNumber()]; //player 2 occupies index 1 in array of players
-        else
-            actualPlayer=players[0];
-
-        //after the new player is assigned, we should check if thath player is able to do at least one move, else we skip him
-        if( !  actualPlayer.possibleMove(board)){
-            actualPlayer.setSkippedLastMove(true);//no move made, player out of the game.
-            System.out.println("player "+actualPlayer.getName()+" can not move, no available moves");
-            updateState();
-        }
-        else
-            actualPlayer.setSkippedLastMove(false);
-
-    }
-
-    /**
-     * to be called in every move
-     */
-    private void updateState(){
-        System.out.println("OUIIII");
-        if(state== GameState.HUMAN_MOVE || state==GameState.AI_MOVE) {
-            if (noOneMoved()){
-                state = GameState.END;
-            System.out.println("In game status:  mo one moved");
-            }else{
-                System.out.println(actualPlayer.getName()+ " skipped last move?: "+actualPlayer.getSkippedLastMove());
-                //System.out.println("In game status:  someone did move moved");
-                nextTurn();
-                if (actualPlayer instanceof HumanPlayer)
-                state = GameState.HUMAN_MOVE;
-                else {
-                    if(state!=GameState.END){
-                        state = GameState.AI_MOVE;
-                        handleAITurn();
-                    }
-                }
-            }
-            debuggingPiecesUsed();
-        }
-
-
-        if (state==GameState.END){
-
-            countPoints();
-            System.out.println("THE GAME HAS ENDED");
-            stage.close();
-            final Stage dialog = new Stage();
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.initOwner(stage);
-            VBox dialogVbox = new VBox(20);
-            dialogVbox.getChildren().add(new Text("GAME END"));
-            for (Player player:players) {
-                Text score = new Text();
-                score.setFill(player.getColor());
-                score.setText(player.getName() + " score: " + player.getPoints());
-                dialogVbox.getChildren().add(score);
-            }
-            Pane pane = new FlowPane();
-            pane.setBackground(background);
-            pane.getChildren().add(dialogVbox);
-            Scene dialogScene = new Scene(pane, 300, 200);
-            dialog.setScene(dialogScene);
-            dialog.show();
-
-        }
-
-
-
-    }
-
-    private void handleAITurn(){
-        System.out.println("handle");
-        //So far this will only print the current piece into the board,
-        //then the user will drag it manually into there
-        //TODO make it so that no action can be taken while ai is taking its turn
-        //TODO handle logic and animation for ai move
-        Move move = null;
-        if(actualPlayer instanceof GeneticPlayer){
-            move = ((GeneticPlayer) actualPlayer).calculateMove(board);
-        }else if(actualPlayer instanceof BotPlayer) {
-            move = mc.simulation(actualPlayer.getNumber()-1, 5000);
-        }
-        if (move.makeMove(board)) {
-            move.writePieceIntoBoard(board);
-            move.getPlayer().getMoveLog().push(move);
-            move.getPiece().setUsed(true);//TODO erase this none sense line of code, completely useless
-            move.getPlayer().getPiecesUsed().add(move.getPiece());
-            if (move.getPlayer().isFirstMove()) move.getPlayer().setFirstMove(false);
-            moveAllowed(null, move.getPiece(), allPieces[actualPlayer.getNumber() - 1]);
-        }
-
-    }
-
-
-    /**
-     * If none of the players made its move, then the game just ended
-     * @return true if none of the plaayers made its move
-     */
-    private boolean noOneMoved(){
-        for (Player player: players){
-            if(!player.getSkippedLastMove())
-                return false;
-        }
-        return true;
-    }
-
-    private void countPoints(){
-        System.out.println("In countPoints(): ");
-        for(Player player: players) {
-            countPointsPlayer(player);
-
-            System.out.println(player.getName()+"has "+player.getPoints()+" points");
-        }
-    }
-
-
-
-    /**
-     * When a game ends, each player counts every square that he/she did NOT place on the board,
-     * each counting as a negative (-1) point (e.g. a tetromino is worth -4 points).
-     * The player with the highest score wins. A player who played all of his or her pieces is awarded a +20 point bonus
-     * if the last piece played was a monomino, or a +15 point bonus for any other piece
-     * @param player
-     */
-    private void countPointsPlayer(Player player){/*
-        int points=0;
-        int piecesPlaced=0;
-        int blocksNotPlaced=0;
-        for(Piece piece : player.getPiecesList()){
-            if(piece.isUsed()) {   //in board ui, pieces are not marked as used
-                piecesPlaced++;
-                System.out.println("piece used");
-            }
-            else {
-                blocksNotPlaced += piece.getNumberOfBlocks();
-                System.out.println("number of blocks: "+piece.getNumberOfBlocks());
-            }
-        }
-        System.out.println(player.getName()+" pieces placed: "+piecesPlaced);
-        System.out.println(player.getName()+" BLocks not placed: "+blocksNotPlaced);
-        points-=blocksNotPlaced;
-
-        if (piecesPlaced==player.getPiecesList().size()){
-            Piece lastPiece= player.getMoveLog().peek().getPiece();
-            if(lastPiece.getNumberOfBlocks()==1)
-                points+=20;
-            else
-                points+=15;
-
-        }
-        System.out.println(player.getName()+" Points: "+ points);
-
-        player.setPoints(points);
-*/
-        int points=0;
-        int piecesPlaced=0;
-        int blocksNotPlaced=0;
-        for(Piece piece : player.getPiecesUsed()){
-                //in board ui, pieces are not marked as used
-                piecesPlaced++;
-                System.out.println("piece used");
-            }
-            for(Piece piece : player.getPiecesList()) {
-                blocksNotPlaced += piece.getNumberOfBlocks();
-               // System.out.println("number of blocks: "+piece.getNumberOfBlocks());
-            }
-
-
-        points-=blocksNotPlaced;
-
-        if (piecesPlaced==NUMBER_OF_PIECES_PER_PLAYER){//if I check if number of unused pieeces is 0, the size might be 1 when it should be 0 cause the deletion is done in the ui logic after the make move...but just maybe, I have not checked
-            Piece lastPiece= player.getMoveLog().peek().getPiece();
-            System.out.println("last piece placed"+ lastPiece.getLabel());
-            if(lastPiece.getNumberOfBlocks()==1)
-                points+=20;
-            else
-                points+=15;
-
-        }
-        System.out.println(player.getName()+" Points: "+ points);
-
-        player.setPoints(points);
-
-
-    }
-
-
-
-    //writes the piece into the board and adds it to the log
-    public boolean makeMove(Move move){
-        if(move.makeMove(board)) {
-            movesLog.add(move);
-            //updateState();
-            return true;
-        }
-        return false;
-
-    }
-
-    public void debuggingPiecesUsed() {
-        for (Piece piece : actualPlayer.getPiecesList()) {
-            if (piece.isUsed())
-                System.out.println("piece " + piece.getLabel() + "is used");
-
-        }
     }
 }
