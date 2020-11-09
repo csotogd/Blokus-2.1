@@ -43,7 +43,7 @@ public class MonteCarlo {
             if(choosen.simulation((player+1)%players.length,player)>0) choosen.addScore();//if we get a win update the score as well
         }
         Node res = root.getChildren().get(0);//choose the most visited node move
-         for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
+        for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
         for(Node children : root.getChildren()) if(children.getVisitedNum()>=res.getVisitedNum()) res=children;
         for(Player p: players) if(p.getPlayerNumber()==res.getMove().getPlayer().getPlayerNumber()) return new Move(p,res.getMove().getPiece(), res.getMove().getPosition());
         return res.getMove();

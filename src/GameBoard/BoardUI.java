@@ -7,6 +7,7 @@ import MonteCarlo.MonteCarlo;
 import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -76,6 +77,21 @@ public class BoardUI{
 
     }
 
+    public void start(){
+        while (!noOneMoved()) {
+            for (Player player:players) {
+                if (player instanceof HumanPlayer) {
+                    state = GameState.HUMAN_MOVE;
+                    //updateState();
+                    //nextTurn();
+                } else {
+                    state = GameState.AI_MOVE;
+                    handleAITurn();
+                }
+            }
+        }
+    }
+
 
     /**
      *
@@ -94,40 +110,16 @@ public class BoardUI{
         paint();
         this.gameBoard = createBoard();
         makePiecesOpaque();
-
         this.mc = new MonteCarlo(players,board);
-
-        if (actualPlayer instanceof HumanPlayer)
+        if (actualPlayer instanceof HumanPlayer) {
             state = GameState.HUMAN_MOVE;
-        else {
+            //updateState();
+            //nextTurn();
+        } else {
             state = GameState.AI_MOVE;
             handleAITurn();
         }
-
-
-/*        if(!Data.isNormalGame()){
-            System.out.println("algo game");
-            MonteCarlo mc = new MonteCarlo(players,board);
-            for (Player player:players) {
-                Move move1 = mc.simulation(player.getNumber()-1,1000);
-                if(move1.makeMove(board)){
-                            *//*
-                        move1.writePieceIntoBoard(board);
-                        move1.getPlayer().getMoveLog().push(move1);
-                        move1.getPiece().setUsed(true);//TODO erase this none sense line of code, completely useless
-                        move1.getPlayer().getPiecesUsed().add(move1.getPiece());
-                        if(move1.getPlayer().isFirstMove()) move1.getPlayer().setFirstMove(false);
-
-                             *//*
-                    moveAllowed(null,move1.getPiece(),allPieces[actualPlayer.getNumber()-1]);
-
-
-                }
-            }
-
-        }*/
-
-
+        //start();
     }
 
     public void paint() {
@@ -605,7 +597,7 @@ public class BoardUI{
      * to be called in every move
      */
     private void updateState(){
-        System.out.println("OUIIII");
+
         if(state== GameState.HUMAN_MOVE || state==GameState.AI_MOVE) {
             if (noOneMoved()){
                 state = GameState.END;
@@ -619,7 +611,7 @@ public class BoardUI{
                 else {
                     if(state!=GameState.END){
                         state = GameState.AI_MOVE;
-                        handleAITurn();
+                        //handleAITurn();
                     }
                 }
             }
@@ -628,7 +620,6 @@ public class BoardUI{
 
 
         if (state==GameState.END){
-
             countPoints();
             System.out.println("THE GAME HAS ENDED");
             stage.close();
@@ -663,6 +654,20 @@ public class BoardUI{
         //TODO make it so that no action can be taken while ai is taking its turn
         //TODO handle logic and animation for ai move
         Move move = null;
+        Task task = new Task<Void>() {
+            @Override public Void call() {
+                final int max = 1000000;
+                for (int i=1; i<=max; i++) {
+                    if (isCancelled()) {
+                        break;
+                    }
+                    updateProgress(i, max);
+                }
+                return null;
+            }
+        };
+
+        new Thread(task).start();
         if(actualPlayer instanceof GeneticPlayer){
             move = ((GeneticPlayer) actualPlayer).calculateMove(board);
         }else if(actualPlayer instanceof BotPlayer) {
