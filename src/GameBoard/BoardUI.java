@@ -47,7 +47,7 @@ public class BoardUI{
     public FlowPane allPieces[];
     int actualSelectedPieceNbr;
     public Text turnOfPlayerText;
-    boolean beginning = true;
+    public boolean beginning = true;
 
     public Button rightRotate;
     public Button flip;

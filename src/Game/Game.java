@@ -225,6 +225,7 @@ public class Game extends Application {
     }
 
     public void handleAITurn(){
+        //TODO fix problem of piece of second turn of bot not disabled
         boardUI.allPieces[actualPlayer.getNumber()-1].getChildren().get(3).setDisable(true);
         boardUI.allPieces[actualPlayer.getNumber()-1].getChildren().get(3).setOpacity(0.3);
         boardUI.leftRotate.setDisable(true);
@@ -260,11 +261,6 @@ public class Game extends Application {
                 boardUI.leftRotate.setDisable(true);
                 boardUI.rightRotate.setDisable(true);
                 boardUI.flip.setDisable(true);
-                move.writePieceIntoBoard(board);
-                move.getPlayer().getMoveLog().push(move);
-                move.getPiece().setUsed(true);//TODO erase this none sense line of code, completely useless
-                move.getPlayer().getPiecesUsed().add(move.getPiece());
-                if (move.getPlayer().isFirstMove()) move.getPlayer().setFirstMove(false);
                 moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]);
             }
         });
