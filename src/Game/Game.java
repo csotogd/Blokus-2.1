@@ -239,7 +239,6 @@ public class Game extends Application {
         boardUI.leftRotate.setDisable(true);
         boardUI.rightRotate.setDisable(true);
         boardUI.flip.setDisable(true);
-
         Service<Move> calculateMove = new Service<>(){
             @Override
             protected Task<Move> createTask() {
@@ -265,10 +264,7 @@ public class Game extends Application {
             // safely modify the UI
 
             Move move = calculateMove.getValue();
-            if (calculateMove.isRunning()&&move.makeMove(board)) {
-                boardUI.leftRotate.setDisable(true);
-                boardUI.rightRotate.setDisable(true);
-                boardUI.flip.setDisable(true);
+            if (move.makeMove(board)) {
                 moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]);
             }
         });
