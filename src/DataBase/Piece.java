@@ -19,6 +19,9 @@ public class Piece {
     private int number;//can be either 1,2,3,4 depending on the player
     private double posInBoardX; //UI related
     private double posInBoardY;
+    private boolean cornerComputed;
+    private ArrayList<Corner> corners;
+    private Vector2d position;
     private Piece origin;
 
     /**
@@ -44,26 +47,23 @@ public class Piece {
     }
 
     /**
-     * CONSTRUCTOR 2
+     * CONSTRUCTOR 2 used by clone method
      * @param label name of the piece
      * @param array shape-> state of the piece
      * @param mirror possible to flip the piece
      * @param rotation number of rotation without flipping
      * @param totalConfig total number of configuration
-     * @param origin the original piece
+     * @param nblocks the number of block
      */
-    public Piece (String label, int[][]  array, boolean mirror, int rotation, int totalConfig, Piece origin) {
+    private Piece (String label, int[][]  array, boolean mirror, int rotation, int totalConfig, int nblocks) {
         this.shape = array;
         this.mirror = mirror;
         this.nbRotation = rotation;
         this.totalConfig=totalConfig;
         this.label=label;
         this.used = false;
-        this.numberOfBlocks=0;
-        this.origin=origin;
-        for(int[] line : shape)
-            for(int i: line)
-                if(i!=0) this.numberOfBlocks++;
+        this.numberOfBlocks=nblocks;
+        this.cornerComputed=false;
     }
 
     /**
@@ -73,14 +73,25 @@ public class Piece {
     public Piece clone(){
         int [][]shape= new int[getShape().length][getShape()[0].length];
         for(int i=0; i<this.shape.length; i++)
-            for(int j=0; j<this.shape[i].length; j++)
-                shape[i][j]=this.shape[i][j];
+            System.arraycopy(this.shape[i],0,shape[i], 0, this.shape[i].length);
         String label= this.label;
         boolean mirror= this.mirror; //this is probably not necessary
         int rotation = this.nbRotation; //this is probably not necessary
 
-        return new Piece(label, shape, mirror, rotation, totalConfig, this.origin);
+        Piece clone = new Piece(label, shape, mirror, rotation, totalConfig, this.numberOfBlocks);
+        if(cornerComputed) clone.setCorners(corners);
+
+        return clone;
 }
+
+    private void setCorners(List<Corner> corners) {
+        if(corners.size()>0) {
+            this.corners = new ArrayList<>();
+            for (Corner c : corners) this.corners.add(c.clone());
+            cornerComputed = true;
+        }
+        System.out.println("hey");
+    }
 
 
     /**
@@ -126,6 +137,7 @@ public class Piece {
             }
             shape=newState;
         }
+        cornerComputed=false;//TODO: maybe find a way to rearrange the corners already computed instead of setting this to false?
     }
 
     /**
@@ -141,6 +153,7 @@ public class Piece {
             }
             shape=newState;
         }
+        cornerComputed=false;//TODO: maybe find a way to rearrange the corners already computed instead of setting this to false?
     }
 
     /**
@@ -156,6 +169,7 @@ public class Piece {
             }
             shape=newState;
         }
+        cornerComputed=false; //TODO: maybe find a way to rearrange the corners already computed instead of setting this to false?
     }
 
     public boolean isUsed() {
@@ -248,50 +262,63 @@ public class Piece {
      * @return the positions of the hypothetical corners w.r.t. coordinates of the board !!
      */
     public ArrayList<Corner> getCornersContacts(Vector2d position){
-        ArrayList<Corner> result = new ArrayList<>(); //contains the corners of the piece
-        for (int y = 0; y < shape.length; y++) {
-            for (int x = 0; x < shape[0].length; x++) {
-                if(shape[y][x]!=0){
-                    boolean top=true, right=true, down=true, left=true; //is not occupied by a block
-                    Vector2d current_position = position.add(new Vector2d(x,y));
-                    if(y>0 && shape[y-1][x]!=0) top = false; //if top outside OR top block occupied
-                    if(y<shape.length-1 && shape[y+1][x]!=0) down =false; //if down outside OR down block occupied
-                    if(x>0 && shape[y][x-1]!=0) left=false; //if left outside OR left block occupied
-                    if(x<shape[0].length-1 && shape[y][x+1]!=0) right = false; //if right outside OR right block occupied
-                    Corner current = null;
-                    if(top&&left){ //now adding corresponding corner positions
-                        current = new Corner(current_position,current_position.add(new Vector2d(-1,-1)));
-                        result.add(current);
-                    }
-                    if(top&&right){
-                        if(current == null){
-                            current = new Corner(current_position,current_position.add(new Vector2d(1,-1)));
-                            result.add(current);
-                        }else{
-                            current.addAdjacent(current_position.add(new Vector2d(1,-1)));
+        if(!cornerComputed) { //if the corners have not been computed since last rotation, search for them
+            corners = new ArrayList<>(); //contains the corners of the piece
+            for (int y = 0; y < shape.length; y++) {
+                for (int x = 0; x < shape[0].length; x++) {
+                    if (shape[y][x] != 0) {
+                        boolean top = true, right = true, down = true, left = true; //is not occupied by a block
+                        Vector2d current_position = position.add(new Vector2d(x, y));
+                        if (y > 0 && shape[y - 1][x] != 0) top = false; //if top outside OR top block occupied
+                        if (y < shape.length - 1 && shape[y + 1][x] != 0)
+                            down = false; //if down outside OR down block occupied
+                        if (x > 0 && shape[y][x - 1] != 0) left = false; //if left outside OR left block occupied
+                        if (x < shape[0].length - 1 && shape[y][x + 1] != 0)
+                            right = false; //if right outside OR right block occupied
+                        Corner current = null;
+                        if (top && left) { //now adding corresponding corner positions
+                            current = new Corner(current_position, current_position.add(new Vector2d(-1, -1)));
+                            corners.add(current);
                         }
-                    }
-                    if(down&&left){
-                        if(current==null){
-                            current = new Corner(current_position, current_position.add(new Vector2d(-1,1)));
-                            result.add(current);
-                        }else{
-                            current.addAdjacent(current_position.add(new Vector2d(-1,1)));
+                        if (top && right) {
+                            if (current == null) {
+                                current = new Corner(current_position, current_position.add(new Vector2d(1, -1)));
+                                corners.add(current);
+                            } else {
+                                current.addAdjacent(current_position.add(new Vector2d(1, -1)));
+                            }
                         }
-                    }
-                    if(down&&right){
-                        if(current==null){
-                            current = new Corner(current_position, current_position.add(new Vector2d(1,1)));
-                            result.add(current);
-                        }else{
-                            current.addAdjacent(current_position.add(new Vector2d(1,1)));
+                        if (down && left) {
+                            if (current == null) {
+                                current = new Corner(current_position, current_position.add(new Vector2d(-1, 1)));
+                                corners.add(current);
+                            } else {
+                                current.addAdjacent(current_position.add(new Vector2d(-1, 1)));
+                            }
                         }
-                    }
+                        if (down && right) {
+                            if (current == null) {
+                                current = new Corner(current_position, current_position.add(new Vector2d(1, 1)));
+                                corners.add(current);
+                            } else {
+                                current.addAdjacent(current_position.add(new Vector2d(1, 1)));
+                            }
+                        }
 
+                    }
                 }
             }
+            cornerComputed=true;
+        }else{ //else we just modify the coordinates of the old corners
+            Vector2d shift = position.subtract(this.position); //amount of coorndinates to add to get to current position
+               for(Corner corner: corners){
+                   corner.setPosition(corner.getPosition().add(shift));
+                   corner.toCornerAdd(shift);
+            }
         }
-        return result;
+        //System.out.println("old:"+ this.position+" new: "+position);
+        this.position=position.clone();
+        return corners;
     }
 
     public String toString(){
@@ -304,6 +331,15 @@ public class Piece {
             s.append("\n");
         }
         return s.toString();
+    }
+
+    public boolean isCornerComputed() {
+        if(cornerComputed) return true;
+        return false;
+    }
+
+    public void setCornerComputed(boolean cornerComputed) {
+        this.cornerComputed = cornerComputed;
     }
 
     public static void main(String[]args){

@@ -195,7 +195,7 @@ public class Move {
      * @param board
      * @return true if there is any direct contact with ANY of the blocks. * (none-limiting blocks including)
      * since it will be used with methods noDirectContact() and emptySpace(), * should not be a problem.
-     *
+     * TODO: keep in memory those corners from the board, and change when...?
      */
     private boolean cornerContact(Board board){
         /**
