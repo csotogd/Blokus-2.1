@@ -1,5 +1,7 @@
 package Game;
 
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import GameBoard.Board;
 import GameBoard.BoardUI;
 import MonteCarlo.MonteCarlo;
@@ -17,24 +19,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Scale;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import DataBase.*;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Rectangle;
-import GameBoard.BoardUI;
 
-import java.sql.SQLOutput;
-import java.util.Scanner;
-import java.awt.*;
 import java.util.ArrayList;
-import GameBoard.BoardUI;
 import java.util.List;
-import java.util.LinkedList;
 //import Player.GeneticPlayer;
 
-import javax.sound.midi.Soundbank;
 
 public class Game extends Application {
 
@@ -231,17 +222,61 @@ public class Game extends Application {
             stage.show();
 
         }
-
-
-
     }
 
     public void handleAITurn(){
-        System.out.println("handle");
-        //So far this will only print the current piece into the board,
-        //then the user will drag it manually into there
-        //TODO make it so that no action can be taken while ai is taking its turn
-        //TODO handle logic and animation for ai move
+        boardUI.allPieces[actualPlayer.getNumber()-1].getChildren().get(3).setDisable(true);
+        boardUI.allPieces[actualPlayer.getNumber()-1].getChildren().get(3).setOpacity(0.3);
+        boardUI.leftRotate.setDisable(true);
+        boardUI.rightRotate.setDisable(true);
+        boardUI.flip.setDisable(true);
+
+        Service<Move> calculateMove = new Service<Move>(){
+            @Override
+            protected Task<Move> createTask() {
+                return new Task<Move>(){
+                    @Override
+                    protected Move call() throws Exception {
+                        Move move = null;
+                        if(actualPlayer instanceof GeneticPlayer){
+                            move = ((GeneticPlayer) actualPlayer).calculateMove(board);
+                        }else if(actualPlayer instanceof BotPlayer) {
+                            move = mc.simulation(actualPlayer.getNumber()-1, 5000);
+                        }
+                        return move;
+                    }
+                };
+            }
+        };
+        calculateMove.start();
+
+        calculateMove.setOnSucceeded(e -> {
+            // this code executed when task is successfully completed
+            // this is executed on the FX Application Thread, so you can
+            // safely modify the UI
+
+            Move move = calculateMove.getValue();
+            if (calculateMove.isRunning()&&move.makeMove(board)) {
+                boardUI.leftRotate.setDisable(true);
+                boardUI.rightRotate.setDisable(true);
+                boardUI.flip.setDisable(true);
+                move.writePieceIntoBoard(board);
+                move.getPlayer().getMoveLog().push(move);
+                move.getPiece().setUsed(true);//TODO erase this none sense line of code, completely useless
+                move.getPlayer().getPiecesUsed().add(move.getPiece());
+                if (move.getPlayer().isFirstMove()) move.getPlayer().setFirstMove(false);
+                moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]);
+            }
+        });
+
+
+
+        //boardUI.leftRotate.setDisable(false);
+        //boardUI.rightRotate.setDisable(false);
+        //boardUI.flip.setDisable(false);
+
+
+        /*
         Move move = null;
         if(actualPlayer instanceof GeneticPlayer){
             move = ((GeneticPlayer) actualPlayer).calculateMove(board);
@@ -257,6 +292,7 @@ public class Game extends Application {
             moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]);
         }
 
+         */
     }
 
 

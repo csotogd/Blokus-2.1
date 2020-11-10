@@ -49,6 +49,10 @@ public class BoardUI{
     public Text turnOfPlayerText;
     boolean beginning = true;
 
+    public Button rightRotate;
+    public Button flip;
+    public Button leftRotate;
+
 
     /**
      *
@@ -282,7 +286,7 @@ public class BoardUI{
         principal.setWidth(RECTANGLE_SIZE.get_y()*1.5f);
 
         actualSelectedPieceNbr = 1;
-        Button rightRotate = new Button("Right rotation");
+        rightRotate = new Button("Right rotation");
         rightRotate.setTranslateX(105); rightRotate.setTranslateY(-20);
         //TODO fix drag after rotating a piece and also rotate the array INTEGER of the piece
         rightRotate.setOnAction(actionEvent ->  {
@@ -303,7 +307,7 @@ public class BoardUI{
             }
         });
 
-        Button flip = new Button("Flip");
+        flip = new Button("Flip");
         //TODO finish the flip rotation
         flip.setTranslateX(0); flip.setTranslateY(-20);
         flip.setOnAction(actionEvent ->  {
@@ -318,17 +322,13 @@ public class BoardUI{
                         int index = allPieces[game.getActualPlayer().getNumber()-1].getChildren().indexOf(object);
                         allPieces[game.getActualPlayer().getNumber()-1].getChildren().remove(index);
                         allPieces[game.getActualPlayer().getNumber()-1].getChildren().add(index,drawPiece(game.getActualPlayer().getColor(),piece,allPieces[game.getActualPlayer().getNumber()-1]));
-/*
-                        allPieces[playerCounter-1].getChildren().remove(index);
-                        allPieces[playerCounter-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[playerCounter-1]));
-               */
                         break;
                     }
                 }
             }
         });
 
-        Button leftRotate = new Button("Left rotation");
+        leftRotate = new Button("Left rotation");
         leftRotate.setTranslateX(-110); leftRotate.setTranslateY(-20);
         //TODO fix drag after rotating a piece and also rotate the array INTEGER of the piece
         leftRotate.setOnAction(actionEvent ->  {
@@ -341,10 +341,6 @@ public class BoardUI{
                     isPiece++;
                     if((isPiece==pieceNbr)){
                         int index = allPieces[game.getActualPlayer().getNumber()-1].getChildren().indexOf(object);
-                        /*
-                        allPieces[playerCounter-1].getChildren().remove(index);
-                        allPieces[playerCounter-1].getChildren().add(index,drawPiece(actualPlayer.getColor(),piece,allPieces[playerCounter-1]));
-                        */
                         allPieces[game.getActualPlayer().getNumber()-1].getChildren().remove(index);
                         allPieces[game.getActualPlayer().getNumber()-1].getChildren().add(index,drawPiece(game.getActualPlayer().getColor(),piece,allPieces[game.getActualPlayer().getNumber()-1]));
 
