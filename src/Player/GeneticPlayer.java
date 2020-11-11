@@ -12,6 +12,7 @@ import java.util.Map;
 
 
 public class GeneticPlayer extends BotPlayer {
+    public static final int NUMBER_OF_STRATAEGIES=5;
 
     protected float[] weights=new float[5];
 
