@@ -142,6 +142,14 @@ public class Corner {
         for(Vector2d v:toCornerPositions){
             clone.addAdjacent(v.clone());
         }
+        if(relativeToCornerPositions!=null){
+            int count = 0;
+            clone.relativeToCornerPositions = new Vector2d[4];
+            for(Vector2d v: relativeToCornerPositions){
+                if(v!=null) clone.relativeToCornerPositions[count]=clone.getToCornerPositions().get(toCornerPositions.indexOf(relativeToCornerPositions[count]));
+                count++;
+            }
+        }
         return clone;
     }
 
