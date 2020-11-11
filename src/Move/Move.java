@@ -202,14 +202,13 @@ public class Move {
     private boolean isCorner(Vector2d p1, Vector2d p2, Board board) {
         int count=0;
         int x = Math.min(p1.get_x(), p2.get_x()), y=Math.min(p1.get_y(),p2.get_y());
-        if(x<0||y<0||(x+1)>19||(y+1)>19){
+        if(x<0||y<0||(x+1)>=board.getDIMENSION()||(y+1)>=board.getDIMENSION()){
 //            board.print();
 //            System.out.println(piece+" "+position);
 //            System.out.println(player.getPlayerNumber());
 //            System.out.println(x+" "+y);
 //            System.out.println(p1+" "+p2);
             return false;
-
         }
         for (int i =0 ; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
