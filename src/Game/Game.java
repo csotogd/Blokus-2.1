@@ -24,7 +24,6 @@ import DataBase.*;
 
 import java.util.ArrayList;
 import java.util.List;
-//import Player.GeneticPlayer;
 
 
 public class Game extends Application {
@@ -62,12 +61,11 @@ public class Game extends Application {
     }
 
     /**
-     * method overiden from the application
+     * method overiden from the application that start the javafx framework
      * @param stage
      */
     @Override
     public void start(Stage stage){
-
         Parent root = this.boardUI.gameBoard;
         stage.setTitle("Blokus Game.Game Group 15");
         Scene scene = new Scene(root, 1000, 1000);
@@ -76,6 +74,9 @@ public class Game extends Application {
         stage.show();
     }
 
+    /**
+     * initialization of the game parameters
+     */
     public void initializeGame(){
         DIMENSION = Data.getDIMENSION();
         players=initializePlayers(Data.getPlayersName(), DIMENSION, players);
@@ -144,6 +145,12 @@ public class Game extends Application {
 
     }
 
+    /**
+     * method that handles when a move has been allowed on the board
+     * @param piece is the representation of the piece of the player
+     * @param pieceRoot is the object of the piece of the player
+     * @param allPieces is the array of all the left pieces of each player
+     */
     public void moveAllowed(Pane piece, Piece pieceRoot, Pane allPieces){
         //System.out.println("piece removed");
         if(piece!=null){
@@ -180,6 +187,7 @@ public class Game extends Application {
 
     /**
      * to be called in every move
+     * method that updates the game display
      */
     public void updateState(){
         if(state== GameState.HUMAN_MOVE || state== GameState.AI_MOVE) {
@@ -224,6 +232,9 @@ public class Game extends Application {
         }
     }
 
+    /**
+     * method used to handle a future AI move
+     */
     public void handleAITurn(){
         boardUI.leftRotate.setDisable(true);
         boardUI.rightRotate.setDisable(true);
@@ -261,31 +272,6 @@ public class Game extends Application {
                 moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]);
             }
         });
-
-
-
-        //boardUI.leftRotate.setDisable(false);
-        //boardUI.rightRotate.setDisable(false);
-        //boardUI.flip.setDisable(false);
-
-
-        /*
-        Move move = null;
-        if(actualPlayer instanceof GeneticPlayer){
-            move = ((GeneticPlayer) actualPlayer).calculateMove(board);
-        }else if(actualPlayer instanceof BotPlayer) {
-            move = mc.simulation(actualPlayer.getNumber()-1, 5000);
-        }
-        if (move.makeMove(board)) {
-            move.writePieceIntoBoard(board);
-            move.getPlayer().getMoveLog().push(move);
-            move.getPiece().setUsed(true);//TODO erase this none sense line of code, completely useless
-            move.getPlayer().getPiecesUsed().add(move.getPiece());
-            if (move.getPlayer().isFirstMove()) move.getPlayer().setFirstMove(false);
-            moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]);
-        }
-
-         */
     }
 
 
@@ -301,6 +287,9 @@ public class Game extends Application {
         return true;
     }
 
+    /**
+     * method that counts the score of each player
+     */
     public void countPoints(){
         System.out.println("In countPoints(): ");
         for(Player player: players) {
@@ -352,9 +341,11 @@ public class Game extends Application {
 
     }
 
-
-
-    //writes the piece into the board and adds it to the log
+    /**
+     * writes the piece into the board and adds it to the log
+     * @param move move asked to be handle
+     * @return true if the move is allowed on the board, false otherwise
+     */
     public boolean makeMove(Move move){
         if(move.makeMove(board)) {
             movesLog.add(move);
@@ -365,6 +356,9 @@ public class Game extends Application {
 
     }
 
+    /**
+     * method needed when needs to debug pieces bug
+     */
     public void debuggingPiecesUsed() {
         for (Piece piece : actualPlayer.getPiecesList()) {
             if (piece.isUsed())
