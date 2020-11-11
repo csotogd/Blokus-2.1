@@ -228,6 +228,7 @@ public void simulate(){
         for(int i=1; i<= playersName.length; i++){
             players[i-1].setColor(colors[i-1]);
             players[i-1].setName(playersName[i-1]);
+            //players[i-1].setNumber(i);//need to test this line
         }
         Game.initializePlayerPieces(playersName, players);
         players[0].setStartingCorner(new Vector2d(0,0));

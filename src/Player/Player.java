@@ -355,6 +355,10 @@ public abstract class Player {
         board.print();
     }
 
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
     public boolean equals(Object other){
         if(!(other instanceof Player)) return false;
         other = (Player) other;

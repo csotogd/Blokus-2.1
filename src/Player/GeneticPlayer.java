@@ -105,9 +105,9 @@ public class GeneticPlayer extends BotPlayer {
         //uncomment to test a strategy
 
         //the weights is what we will calculate in the genetic algorithm
-        addsMostCorners(1,movesAndScores, board);
+        //addsMostCorners(1,movesAndScores, board);
        // blocksMostCorners(10,movesAndScores, board);
-        //closestToMiddle(1,movesAndScores, board);
+        closestToMiddle(1,movesAndScores, board);
         //biggestPiece(1,movesAndScores, board);
         //farFromStartingCorner(1,movesAndScores, board);
 
