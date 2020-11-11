@@ -242,7 +242,7 @@ public abstract class Player {
                                     Vector2d positionOfPiece = emptyCorner.subtract(pieceCorner.get(k).getPosition());
                                     Move move = new Move(this, piece, positionOfPiece);
 
-                                    if (move.isAllowed(board, true)) {
+                                    if (move.isAllowed(board)) {
                                         return move;
                                     }
                                 }
