@@ -82,6 +82,28 @@ public class Corner {
         return toCornerPositions;
     }
 
+    /**
+     * change the position
+     * @param newPos the new coordinates for the vector
+     */
+    public void setPosition(Vector2d newPos) {
+        this.position = newPos;
+    }
+
+    public void toCornerAdd(Vector2d shift) {
+        for(int i=0;i<this.toCornerPositions.size();i++){
+            this.toCornerPositions.get(i).addInPlace(shift);
+        }
+    }
+
+    public Corner clone(){
+        Corner clone = new Corner(position.clone());
+        for(Vector2d v:toCornerPositions){
+            clone.addAdjacent(v.clone());
+        }
+        return clone;
+    }
+
 
 /*
 

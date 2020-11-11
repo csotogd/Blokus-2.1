@@ -22,9 +22,8 @@ public class SimulatedGame {
     public Board board;
     public Player[] players; //Initialize in game object
     private Player actualPlayer;
-    private int playerCounter;
     private final int NUMBER_OF_PIECES_PER_PLAYER=20;
-    private BoardUI.GameState state;
+    private Game.GameState state;
     private ArrayList<Move> movesLog=new ArrayList<>();
     private  int nbrMoves=0;
     private int moveLimit=100;
@@ -33,7 +32,7 @@ public class SimulatedGame {
         String[] playersName= new String[players.length];
         this.players = this.initializePlayers(playersName, dimension, players);
          this.board = new Board(this.players, dimension);
-         state= BoardUI.GameState.AI_MOVE;
+         state= Game.GameState.AI_MOVE;
 
         //game state of human move not considered
     }
@@ -49,7 +48,7 @@ public void simulate(){
      */
     private void updateState(){
         if(moveLimit<=nbrMoves) {
-            state = BoardUI.GameState.END;
+            state = Game.GameState.END;
             System.out.println(nbrMoves);
             try {
                 TimeUnit.SECONDS.sleep(4);
@@ -59,9 +58,9 @@ public void simulate(){
             }
         }
 
-        if( state== BoardUI.GameState.AI_MOVE) {
+        if( state== Game.GameState.AI_MOVE) {
             if (noOneMoved()){
-                state = BoardUI.GameState.END;
+                state = Game.GameState.END;
                 System.out.println("In game status:  mo one moved");
             }
             else {
@@ -69,13 +68,13 @@ public void simulate(){
                 //System.out.println("In game status:  someone did move moved");
                 nextTurn();
 
-                    state = BoardUI.GameState.AI_MOVE;
+                    state = Game.GameState.AI_MOVE;
                     handleAITurn();
 
             }
            // debuggingPiecesUsed();
         }
-        if (state== BoardUI.GameState.END){
+        if (state== Game.GameState.END){
             countPoints();
             System.out.println("THE GAME HAS ENDED");
         }

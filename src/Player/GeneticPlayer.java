@@ -6,7 +6,6 @@ import GameBoard.Corner;
 import Move.Move;
 import Tools.Vector2d;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -173,7 +172,7 @@ public class GeneticPlayer extends BotPlayer {
      * @return the number of players for which the given square was a corner
      */
     private int isDiffPlayerToCorner(int YPos, int XPos, Board board){
-        int[][] grid = board.getBoard();
+        int[][] grid = board.getBoardArray();
         /*
         We check every corner point of p, here denoted by a c
         grid:
@@ -340,10 +339,10 @@ public class GeneticPlayer extends BotPlayer {
                 for(Vector2d toCornerPosition : corner.getToCornerPositions()){
 
                     try {
-                        if (board.board[toCornerPosition.get_y()][toCornerPosition.get_x()] == 0){
+                        if (board.boardArray[toCornerPosition.get_y()][toCornerPosition.get_x()] == 0){
                             addedFreeCorners++; //if the corner is empty and free to use
                     }
-                        else if(board.board[toCornerPosition.get_y()][toCornerPosition.get_x()]==this.number){
+                        else if(board.boardArray[toCornerPosition.get_y()][toCornerPosition.get_x()]==this.number){
                             addedFreeCorners--; //you blocked a self-corner, at least one is blocked to put the piece there
                             //you might be adding a pioece with 6 blocking corners, then that is a negative score
                            // System.out.println("blocked self corner");
