@@ -6,6 +6,7 @@ import GameBoard.BoardUI;
 import Player.Player;
 import Game.Game;
 import Tools.Vector2d;
+import com.sun.javafx.scene.traversal.WeightedClosestCorner;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Background;
@@ -21,13 +22,33 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import  java.util.Random;
-/*many games will be simulated at once*/
+
+/**
+ *
+ * runs a genetic algorithm for weight calculation.
+ * We have a population of many genetic players
+ * Every individual is a genetic player with different weights
+ * In every generation, all individuals are split into groups of 4 RANDOMLY
+ * Those 4 players play against each other and produce a winner.
+ * The winner is stored.
+ * All the winners reproduce until a population of hte same size is produced.
+ * There might be different reproducing strategies, the one we have right now is also random in itself.
+ * The previous generation dies including the winners. It is replaced by the new
+ * generation formed by the winners descendants
+ *
+ *We repeat this proccess for a number of time.
+ *
+ * Then we will make all those individual play each other until only one is left (that code is still to be written)
+ *
+ */
 public class weightCalculator {
     private int populationSize=800; //must be multiple of 4
     private ArrayList<GeneticPlayer> winners;//could also be a population of weights... we´ll see
     private  ArrayList<GeneticPlayer> population;
+    private int nbrOfPlayers=4;
+    private int generations= 10;
 
-    private ArrayList<GeneticPlayer> createPopulation(){
+    private  ArrayList<GeneticPlayer> createPopulation(){
         ArrayList<GeneticPlayer> population= new ArrayList<GeneticPlayer>();
         Random random= new Random();
         //will assign random weights between 0 and 1 to the strategies of every player
@@ -77,7 +98,9 @@ public class weightCalculator {
 
 
 
-    private void transitionNextGeneration(){
+    private static void transitionNextGeneration(){
+        Random r= new Random();
+
         //shuffle the populations so people at the beggining may face people in the end
         Collections.shuffle(this.population);
         //we will match up 4 players for a game and remove them from the population
@@ -88,53 +111,61 @@ public class weightCalculator {
             matchUpAndPlay();
         }
 
-
-        //simulate games
+        //fill up the population with winners
+        while(population.size()!=populationSize){
+            int dadIndex=r.nextInt(winners.size());
+            int momIndex=r.nextInt(winners.size());
+            GeneticPlayer father= winners.get(dadIndex);
+            GeneticPlayer mother= winners.get(momIndex);
+            GeneticPlayer kid=reproduceByInterval(father, mother);
+            population.add(kid);
+        }
 
 
     }
 
+
 private void matchUpAndPlay(){
     Player[] players = new Player[4];
+    Random random= new Random();
+    //we match up random players from the population
+    for(int i=1; i<=nbrOfPlayers; i++){
+        int index = random.nextInt(population.size());//select one individual from the ones that are left
+        GeneticPlayer player= population.get(i);
+        player.setNumber(i);
+        players[i-1]=player;
+
+        //delete it from the population
+        population.remove(player);
+    }
 
 
+    //let those 4 players play against each other
     int DIMENSION=20;
     SimulatedGame simulation= new SimulatedGame(DIMENSION, players);
     simulation.simulate();
-    //we crete and simulate a new game between those players
-    Player winner=simulation.getWinner();
+
+    //store winner
+    winners.add((GeneticPlayer) simulation.getWinner());
+
+
+}
+
+public void calculateWeights(){
+        this.createPopulation();
+        for (int i=0; i>this.generations; i++){
+            transitionNextGeneration();
+        }
+
+        //now we have to transit to a state where only individual survives
+
+
 
 }
 
     public static void main(String[] args) {
-        /*
-         * //WE need to
-         *
-         * 1. Reproducing winners by altering weights
-         * 2. introduce mutations
-         * 3. run the algorithm several times
-         *
-         *
-         * */
 
-
-
-        //to create a new game first we need to define new genetic players
-        Player[] players = new Player[4];
-        GeneticPlayer player1= new GeneticPlayer(1);
-        float player1Weights[]= {0.132f, 0.4745f, 0.8537f, 0.67319f, 0.0489f};
-        players[0]=player1;
-        //we do that for every player....
-
-
-        int DIMENSION=20;
-        SimulatedGame simulation= new SimulatedGame(DIMENSION, players);
-        simulation.simulate();
-    //we crete and simulate a new game between those players
-        Player winner=simulation.getWinner();
-
-        //if we want to create a new game we repeat the proccess.
-        //knowing these, we can write a ga algorithm.
+        this.createPopulation();
 
 
 
