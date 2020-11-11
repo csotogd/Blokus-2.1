@@ -44,6 +44,7 @@ public class Piece {
         for(int[] line : shape)
             for(int i: line)
                 if(i!=0) this.numberOfBlocks++;
+        this.position=new Vector2d(0,0);
     }
 
     /**
@@ -64,6 +65,7 @@ public class Piece {
         this.used = false;
         this.numberOfBlocks=nblocks;
         this.cornerComputed=false;
+        this.position=new Vector2d(0,0);
     }
 
     /**
@@ -90,7 +92,6 @@ public class Piece {
             for (Corner c : corners) this.corners.add(c.clone());
             cornerComputed = true;
         }
-        System.out.println("hey");
     }
 
 
@@ -136,8 +137,26 @@ public class Piece {
                 }
             }
             shape=newState;
+            Vector2d temp=null;
+            if(position!=null) {
+                temp=this.position.clone();
+                this.position=this.position.scale(0);
+            }
+            else {
+                position = new Vector2d(0,0);
+            }
+            getCornersContacts(position);
+            for(Corner corner:this.corners){
+                Vector2d newPosition = new Vector2d(corner.getPosition().get_y(),shape.length-1-corner.getPosition().get_x());
+                Vector2d[] newPos = new Vector2d[4];
+                for(int i=0; i<4;i++) newPos[(i+3)%4]=corner.getRelativeToCornerPositions()[i];
+                corner.setRelativeToCornerPositions(newPos, newPosition);
+            }
+            if(temp!=null){
+                this.position = temp;
+                getCornersContacts(position);
+            }
         }
-        cornerComputed=false;//TODO: maybe find a way to rearrange the corners already computed instead of setting this to false?
     }
 
     /**
@@ -152,8 +171,26 @@ public class Piece {
                 }
             }
             shape=newState;
+            Vector2d temp = null;
+            if(position != null) {
+                temp = this.position.clone();
+                this.position = this.position.scale(0);
+            }
+            else {
+                position = new Vector2d(0,0);
+            }
+            getCornersContacts(position);
+            for(Corner corner:this.corners){
+                Vector2d newPosition = new Vector2d(shape[0].length-1-corner.getPosition().get_y(),corner.getPosition().get_x());
+                Vector2d[] newPos = new Vector2d[4];
+                for(int i=0; i<4;i++) newPos[(i+1)%4]=corner.getRelativeToCornerPositions()[i];
+                corner.setRelativeToCornerPositions(newPos, newPosition);
+            }
+            if(temp != null){
+                this.position = temp;
+                getCornersContacts(position);
+            }
         }
-        cornerComputed=false;//TODO: maybe find a way to rearrange the corners already computed instead of setting this to false?
     }
 
     /**
@@ -168,8 +205,26 @@ public class Piece {
                 }
             }
             shape=newState;
+            Vector2d temp=null;
+            if(position!=null) {
+                temp=this.position.clone();
+                this.position=this.position.scale(0);
+            }
+            else {
+                position = new Vector2d(0,0);
+            }
+            getCornersContacts(position);
+            for(Corner corner:this.corners){
+                Vector2d newPosition = new Vector2d(corner.getPosition().get_x(),shape.length-1-corner.getPosition().get_y());
+                Vector2d[] newPos = new Vector2d[4];
+                for(int i=0; i<4;i++) newPos[3-i]=corner.getRelativeToCornerPositions()[i];
+                corner.setRelativeToCornerPositions(newPos, newPosition);
+            }
+            if(temp!=null){
+                this.position = temp;
+                getCornersContacts(position);
+            }
         }
-        cornerComputed=false; //TODO: maybe find a way to rearrange the corners already computed instead of setting this to false?
     }
 
     public boolean isUsed() {
@@ -276,32 +331,39 @@ public class Piece {
                         if (x < shape[0].length - 1 && shape[y][x + 1] != 0)
                             right = false; //if right outside OR right block occupied
                         Corner current = null;
-                        if (top && left) { //now adding corresponding corner positions
-                            current = new Corner(current_position, current_position.add(new Vector2d(-1, -1)));
+                        if (top && left) { //now adding corresponding to corner positions
+                            current = new Corner(current_position, current_position.add(new Vector2d(-1, -1)),true);
                             corners.add(current);
+                            current.getRelativeToCornerPositions()[0]=current.getToCornerPositions().get(0);
                         }
                         if (top && right) {
                             if (current == null) {
-                                current = new Corner(current_position, current_position.add(new Vector2d(1, -1)));
+                                current = new Corner(current_position, current_position.add(new Vector2d(1, -1)),true);
                                 corners.add(current);
+                                current.getRelativeToCornerPositions()[1]=current.getToCornerPositions().get(0);
                             } else {
                                 current.addAdjacent(current_position.add(new Vector2d(1, -1)));
+                                current.getRelativeToCornerPositions()[1]=current.getToCornerPositions().get(current.getToCornerPositions().size()-1);
                             }
                         }
                         if (down && left) {
                             if (current == null) {
-                                current = new Corner(current_position, current_position.add(new Vector2d(-1, 1)));
+                                current = new Corner(current_position, current_position.add(new Vector2d(-1, 1)),true);
+                                current.getRelativeToCornerPositions()[3]=current.getToCornerPositions().get(0);
                                 corners.add(current);
                             } else {
                                 current.addAdjacent(current_position.add(new Vector2d(-1, 1)));
+                                current.getRelativeToCornerPositions()[3]=current.getToCornerPositions().get(current.getToCornerPositions().size()-1);
                             }
                         }
                         if (down && right) {
                             if (current == null) {
-                                current = new Corner(current_position, current_position.add(new Vector2d(1, 1)));
+                                current = new Corner(current_position, current_position.add(new Vector2d(1, 1)),true);
+                                current.getRelativeToCornerPositions()[2]=current.getToCornerPositions().get(0);
                                 corners.add(current);
                             } else {
                                 current.addAdjacent(current_position.add(new Vector2d(1, 1)));
+                                current.getRelativeToCornerPositions()[2]=current.getToCornerPositions().get(current.getToCornerPositions().size()-1);
                             }
                         }
 
@@ -311,14 +373,15 @@ public class Piece {
             cornerComputed=true;
         }else{ //else we just modify the coordinates of the old corners
             Vector2d shift = position.subtract(this.position); //amount of coorndinates to add to get to current position
-               for(Corner corner: corners){
-                   corner.setPosition(corner.getPosition().add(shift));
-                   corner.toCornerAdd(shift);
+            for(Corner corner: corners){
+                corner.setPosition(corner.getPosition().add(shift));
+                corner.toCornerAdd(shift);
             }
         }
-        //System.out.println("old:"+ this.position+" new: "+position);
         this.position=position.clone();
-        return corners;
+        ArrayList<Corner> ret = new ArrayList<>();
+        for(Corner c: corners) ret.add(c.clone());
+        return ret;
     }
 
     public String toString(){
@@ -342,40 +405,25 @@ public class Piece {
         this.cornerComputed = cornerComputed;
     }
 
-    public static void main(String[]args){
+    public static void main(String[]args) {
         int count = 1;
         //for(Piece p: PieceFactory.get().getAllPieces()) System.out.println((count++)+" "+p);
 
-        Piece p = new WPiece();
-        for(int[][] perm : p.getPermutations()){
-            for (int i = 0; i < perm.length; i++) {
-                for (int j = 0; j < perm[0].length; j++) {
-                    System.out.print(perm[i][j]);
-                }
-                System.out.println();
-            }
+        Piece p = new L4Piece();
+        System.out.println(p);
+//        p.getCornersContacts(new Vector2d(0,0)).remove(0);
+//        p.getCornersContacts(new Vector2d(0,0)).remove(0);
+        for(Corner c: p.getCornersContacts(new Vector2d(0,0))){
+            System.out.println(c.getPosition()+":");
+            for(Vector2d v:c.getToCornerPositions()) System.out.print(" "+v+" ");
             System.out.println();
         }
+        p.rotateLeft();
 
-        Piece p2 = new FPiece();
-        for(int[][] perm : p2.getPermutations()){
-            for (int i = 0; i < perm.length; i++) {
-                for (int j = 0; j < perm[0].length; j++) {
-                    System.out.print(perm[i][j]);
-                }
-                System.out.println();
-            }
-            System.out.println();
-        }
-
-        Piece p3 = new I1Piece();
-        for(int[][] perm : p3.getPermutations()){
-            for (int i = 0; i < perm.length; i++) {
-                for (int j = 0; j < perm[0].length; j++) {
-                    System.out.print(perm[i][j]);
-                }
-                System.out.println();
-            }
+        System.out.println(p);
+        for(Corner c: p.getCornersContacts(new Vector2d(5,5))){
+            System.out.println(c.getPosition()+":");
+            for(Vector2d v:c.getToCornerPositions()) System.out.print(" "+v+" ");
             System.out.println();
         }
     }
