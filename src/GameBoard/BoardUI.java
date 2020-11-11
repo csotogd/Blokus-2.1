@@ -152,24 +152,34 @@ public class BoardUI{
     public void makePiecesOpaque(){
 
         for (Player player : players) {
-            int isPiece = 0;
-            for (Object object:allPieces[player.getNumber()-1].getChildren()) {
-                if(object.getClass().equals(GridPane.class)){
-                    isPiece++;
-                    if (isPiece!=actualSelectedPieceNbr&&game.getActualPlayer().equals(player)){
-                        GridPane piece = (GridPane) object;
-                        piece.setOpacity(0.3);
-                        //piece.setDisable(true);
-                    }else if(isPiece==actualSelectedPieceNbr&&game.getActualPlayer().equals(player)){
-                        GridPane piece = (GridPane) object;
-                        piece.setOpacity(1);
-                        //piece.setDisable(false);
-                    }else if(!game.getActualPlayer().equals(player)){
+            if(player.isHumanPlayer()){
+                int isPiece = 0;
+                for (Object object:allPieces[player.getNumber()-1].getChildren()) {
+                    if(object.getClass().equals(GridPane.class)){
+                        isPiece++;
+                        if (isPiece!=actualSelectedPieceNbr&&game.getActualPlayer().equals(player)){
+                            GridPane piece = (GridPane) object;
+                            piece.setOpacity(0.3);
+                            //piece.setDisable(true);
+                        }else if(isPiece==actualSelectedPieceNbr&&game.getActualPlayer().equals(player)){
+                            GridPane piece = (GridPane) object;
+                            piece.setOpacity(1);
+                            //piece.setDisable(false);
+                        }else if(!game.getActualPlayer().equals(player)){
+                            GridPane piece = (GridPane) object;
+                            piece.setOpacity(0.3);
+                            piece.setDisable(true);
+                        }
+
+                    }
+                }
+            }else{
+                for (Object object:allPieces[player.getNumber()-1].getChildren()) {
+                    if(object.getClass().equals(GridPane.class)){
                         GridPane piece = (GridPane) object;
                         piece.setOpacity(0.3);
                         piece.setDisable(true);
                     }
-
                 }
             }
         }

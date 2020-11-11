@@ -225,19 +225,16 @@ public class Game extends Application {
     }
 
     public void handleAITurn(){
-        //TODO fix problem of piece of second turn of bot not disabled
-        boardUI.allPieces[actualPlayer.getNumber()-1].getChildren().get(3).setDisable(true);
-        boardUI.allPieces[actualPlayer.getNumber()-1].getChildren().get(3).setOpacity(0.3);
         boardUI.leftRotate.setDisable(true);
         boardUI.rightRotate.setDisable(true);
         boardUI.flip.setDisable(true);
 
-        Service<Move> calculateMove = new Service<Move>(){
+        Service<Move> calculateMove = new Service<>(){
             @Override
             protected Task<Move> createTask() {
-                return new Task<Move>(){
+                return new Task<>(){
                     @Override
-                    protected Move call() throws Exception {
+                    protected Move call(){
                         Move move = null;
                         if(actualPlayer instanceof GeneticPlayer){
                             move = ((GeneticPlayer) actualPlayer).calculateMove(board);
