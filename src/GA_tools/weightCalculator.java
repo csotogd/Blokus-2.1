@@ -98,7 +98,7 @@ public class weightCalculator {
 
 
 
-    private static void transitionNextGeneration(){
+    private  void transitionNextGeneration(){
         Random r= new Random();
 
         //shuffle the populations so people at the beggining may face people in the end
@@ -165,7 +165,7 @@ public void calculateWeights(){
 
     public static void main(String[] args) {
 
-        this.createPopulation();
+        
 
 
 
