@@ -161,15 +161,29 @@ public class Corner {
         return sb.toString();
     }
 
-//    public static void main(String[] args){
-//        Piece ppiece = new PPiece();
-//        ArrayList<Corner> copy = (ArrayList)ppiece.getCornersContacts(new Vector2d(0,0)).clone();
-//        for(Corner c: copy) System.out.println(c);
-//
-//        ppiece.getCornersContacts(new Vector2d(5,5));
-//        for(Corner c: copy) System.out.println(c);
-//
-//    }
+    public static void main(String[] args){
+        Player p1= new HumanPlayer(1,"j");
+        Player p2= new HumanPlayer(2,"i");
+
+        p1.setStartingCorner(new Vector2d(0,0));
+        p2.setStartingCorner(new Vector2d(19,19));
+
+        p1.setPiecesList(PieceFactory.get().getAllPieces());
+        p2.setPiecesList(PieceFactory.get().getAllPieces());
+
+        Player[] players=new Player[]{p1,p2};
+        Board board = new Board(players);
+
+        board.boardArray=new int[19][19];
+
+        for (int i = 0; i < 10; i++) {
+            p1.randomPossibleMove(board).makeMove(board);
+            board.print();
+        }
+
+
+
+    }
 
 
 }

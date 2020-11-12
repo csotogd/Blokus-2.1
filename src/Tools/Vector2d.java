@@ -140,6 +140,14 @@ public class Vector2d {
         return "(" + x + ", " + y  + ")";
     }
 
+    @Override
+    public boolean equals(Object o){
+        if(!(o instanceof Vector2d)) return false;
+        o = (Vector2d) o;
+        if(x!=((Vector2d) o).get_x()||y!=((Vector2d) o).get_y()) return false;
+        return true;
+    }
+
     public static void main(String[] args) {
         Vector2d vector1= new Vector2d(15,6);
         Vector2d vector2 = new Vector2d(19, 0);
