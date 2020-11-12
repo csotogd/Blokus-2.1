@@ -86,7 +86,7 @@ public class Board{
     public  ArrayList<Corner> getCorner( Vector2d startingPosition){
     Board board=this;
         ArrayList<Corner> corners = new ArrayList<>();
-        if(board.boardArray[startingPosition.get_y()][startingPosition.get_x()]==0){
+        if(board.boardArray[startingPosition.get_y()][startingPosition.get_x()]==0){//could be replace by checking the player 1st move
             Vector2d adjacent=startingPosition.add(new Vector2d(1,1));
             if(board.inBoard(adjacent)) {
                 corners.add(new Corner(startingPosition,adjacent));
@@ -131,8 +131,9 @@ public class Board{
             checked[position.get_y()][position.get_x()]=true;
             if(board.boardArray[position.get_y()][position.get_x()]==player){
                 boolean top=true, down=true, left=true, right=true; //NOT occupied by own blocks ie"free"
+                //if top block is inside the board limit we can check whether it is the player's block
                 if(board.inBoard(position.add(new Vector2d(0,-1))) && board.boardArray[position.get_y()-1][position.get_x()]==player){
-                    top=false;
+                    top=false;//top is occupied by own block, continue the recursion at that block
                     findCorners( checked, position.add(new Vector2d(0,-1)), corners, player);
                 }
                 if(board.inBoard(position.add(new Vector2d(0,1))) && board.boardArray[position.get_y()+1][position.get_x()]==player){

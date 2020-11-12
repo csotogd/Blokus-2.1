@@ -71,7 +71,7 @@ public class Move {
      * @param board board in which we place want to place the piece
      * @return whether it is possible to place that piece
      */
-    public boolean isAllowed(Board board, boolean skip){
+    public boolean isAllowed(Board board, boolean skip, Corner pieceCorner, Corner boardCorner){
 
         if(piece.isUsed()){
             // System.out.println("piece used");
@@ -82,7 +82,7 @@ public class Move {
         }else if(!emptySpace(board)){
             //System.out.println("place occupied");
             return false;
-        }else if(player.isFirstMove()&&!firstLegalMove(board)){
+        }else if(!skip&&!cornerContact(board,pieceCorner, boardCorner)&&!firstLegalMove(board)){
             //System.out.println("no corner?");
             return false;
         }else if(!noDirectContact(board)){
@@ -202,6 +202,14 @@ public class Move {
     private boolean isCorner(Vector2d p1, Vector2d p2, Board board) {
         int count=0;
         int x = Math.min(p1.get_x(), p2.get_x()), y=Math.min(p1.get_y(),p2.get_y());
+        if(x<0||y<0||(x+1)>=board.getDIMENSION()||(y+1)>=board.getDIMENSION()){
+//            board.print();
+//            System.out.println(piece+" "+position);
+//            System.out.println(player.getPlayerNumber());
+//            System.out.println(x+" "+y);
+//            System.out.println(p1+" "+p2);
+            return false;
+        }
         for (int i =0 ; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
                 if(board.boardArray[y+i][x+j]==player.getPlayerNumber()) count++;
@@ -209,6 +217,10 @@ public class Move {
         }
         if(count == 1) return true;
         return false;
+    }
+
+    private boolean cornerContact(Board board, Corner pieceCorner, Corner boardCorner) {
+        return pieceCorner.isCompatible(boardCorner);
     }
 
     /**
@@ -249,7 +261,7 @@ public class Move {
             return true;
         }
         else
- //           System.out.println("Move not allowed");
+            System.out.println("Move not allowed:"+piece+" @ "+position);
         return false;
         }
 
@@ -267,10 +279,10 @@ public class Move {
 
 
     public void print(){
-        System.out.println( "Player: "+player.getName()+" \tPosition: "+position.get_x()+", "+ position.get_y()+"\t") ;
+        System.out.println( "Player"+player.getPlayerNumber()+": "+player.getName()+" \tPosition: "+position.get_x()+", "+ position.get_y()+"\t") ;
         System.out.println("piece: ");
         piece.printShape();
-
+        piece.printLastC();
     }
 
 
@@ -293,16 +305,26 @@ public class Move {
 
         move.makeMove(board);
 
-        fpiece.rotateRight();
-        fpiece.rotateRight();
-        fpiece.rotateRight();
-        fpiece.rotateRight();
+        System.out.println(fpiece);
+        for(Corner c:fpiece.getCornersContacts(new Vector2d(15,15))) System.out.println(c);
 
-        Move move2 = new Move(player1,fpiece,new Vector2d(0,2));
-        System.out.println(move2.isAllowed(board));
+        Piece clone = fpiece.clone();
+        fpiece.rotateUpsideDown();
+        clone.rotateRight();
 
-        move2.makeMove(board);
-        board.print();
+        System.out.println(fpiece);
+        for(Corner c:fpiece.getCornersContacts(new Vector2d(5,5))) System.out.println(c);
+
+        System.out.println(clone);
+        for(Corner c:clone.getCornersContacts(new Vector2d(0,0))) System.out.println(c);
+
+//        Move move2 = new Move(player1,fpiece,new Vector2d(0,2));
+//        System.out.println(move2.isAllowed(board));
+//
+//        move2.makeMove(board);
+//        board.print();
+//
+//        System.out.println(player2.possibleMoveSet(board).size());
 
     }
 }
