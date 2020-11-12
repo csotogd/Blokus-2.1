@@ -7,6 +7,8 @@ import Player.*;
 import Tools.Vector2d;
 import GameBoard.Board;
 
+import java.util.ArrayList;
+
 /*
 * Whenever we are going to define a move, make it, see if it is a possible move, etc....we use this class
 * Contains method to check if a move is valid.
@@ -307,16 +309,20 @@ public class Move {
 
         System.out.println(fpiece);
         for(Corner c:fpiece.getCornersContacts(new Vector2d(15,15))) System.out.println(c);
-
+        ArrayList<Corner> fpCorner= fpiece.getCornersContacts(new Vector2d(0,0));
         Piece clone = fpiece.clone();
-        fpiece.rotateUpsideDown();
-        clone.rotateRight();
 
+//        ArrayList<Corner> cloneCorner= clone.getCornersContacts(new Vector2d(0,0));
+        clone.rotateRight();clone.rotateRight();
+        clone.rotateUpsideDown();
+        clone.rotateRight();
+        new Move(player1,fpiece,new Vector2d(3,3)).isAllowed(board);
+
+        new Move(player1,fpiece,new Vector2d(10,10)).isAllowed(board);
         System.out.println(fpiece);
         for(Corner c:fpiece.getCornersContacts(new Vector2d(5,5))) System.out.println(c);
-
         System.out.println(clone);
-        for(Corner c:clone.getCornersContacts(new Vector2d(0,0))) System.out.println(c);
+        for(Corner c:clone.getCornersContacts(new Vector2d(1,1))) System.out.println(c);
 
 //        Move move2 = new Move(player1,fpiece,new Vector2d(0,2));
 //        System.out.println(move2.isAllowed(board));

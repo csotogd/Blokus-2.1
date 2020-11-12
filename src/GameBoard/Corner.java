@@ -137,6 +137,7 @@ public class Corner {
         }
     }
 
+    @Override
     public Corner clone(){
         Corner clone = new Corner(position.clone());
         for(Vector2d v:toCornerPositions){
@@ -174,7 +175,7 @@ public class Corner {
         Player[] players=new Player[]{p1,p2};
         Board board = new Board(players);
 
-        board.boardArray=new int[19][19];
+        board.boardArray=new int[20][20];
 
         for (int i = 0; i < 10; i++) {
             p1.randomPossibleMove(board).makeMove(board);
