@@ -55,7 +55,7 @@ public class BoardUI{
 
 
     /**
-     *
+     *constructor
      */
     public BoardUI(Game game){
         this.game = game;
@@ -70,6 +70,9 @@ public class BoardUI{
         makePiecesOpaque();
     }
 
+    /**
+     * method that paint each case of board when an update is done
+     */
     public void paint() {
         if(!beginning){
             makePiecesOpaque();
@@ -131,6 +134,12 @@ public class BoardUI{
 
     }
 
+    /**
+     * paint a specific case of the board
+     * @param col column of the case
+     * @param row
+     * @return
+     */
     public  Color paintColor(int col, int row){
         if(game.board.boardArray[col][row]==0){
             return Color.WHITE;

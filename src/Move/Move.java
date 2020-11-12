@@ -8,7 +8,7 @@ import Tools.Vector2d;
 import GameBoard.Board;
 
 /*
-* Wheneverr we are going to define a move, make it, see if it is a possible move, etc....we use this class
+* Whenever we are going to define a move, make it, see if it is a possible move, etc....we use this class
 * Contains method to check if a move is valid.
 * Every time we make a move, a lot of operations are triggered. Every player stores a log of moves, the ui
 * is updated, the piece is set as used......
@@ -32,7 +32,6 @@ public class Move {
 
     //TODO test this method
     /**
-     * Has not been tested yet
      * @param board board in which we place want to place the piece
      * @return whether it is possible to place that piece
      */
@@ -61,6 +60,33 @@ public class Move {
             return false;
         }else if(!noDirectContact(board)){
            // System.out.println("contact with piece");
+            return false;
+        }
+        return true ;
+        //(!piece.isUsed()) && inBounds(board) &&
+        //                emptySpace(board) && cornerContact(board) && noDirectContact(board)
+    }
+
+    /**
+     * @param board board in which we place want to place the piece
+     * @return whether it is possible to place that piece
+     */
+    public boolean isAllowed(Board board, boolean skip, Corner pieceCorner, Corner boardCorner){
+
+        if(piece.isUsed()){
+            // System.out.println("piece used");
+            return false;
+        }else if(!inBounds(board)){
+            // System.out.println("out of bound");
+            return false;
+        }else if(!emptySpace(board)){
+            //System.out.println("place occupied");
+            return false;
+        }else if(!skip&&!cornerContact(board,pieceCorner, boardCorner)&&!firstLegalMove(board)){
+            //System.out.println("no corner?");
+            return false;
+        }else if(!noDirectContact(board)){
+            // System.out.println("contact with piece");
             return false;
         }
         return true ;
@@ -120,7 +146,6 @@ public class Move {
 
     }
 
-
     /**
      * checks if any of the pieces block is in direct contact (none corner) of another piece of the same player
      * @param board
@@ -141,52 +166,7 @@ public class Move {
         } return true;
     }
 
-
         //NONE of the blocks is in contact with another piece of the same player in a none- CORNER context?
-
-  /*  for(int i=0; i<piece.getShape().length; i++){
-        for(int j=0; j<piece.getShape()[0].length; j++){
-            if(piece.getShape()[i][j]==0)
-                ;//that´s not a block
-            else {
-                //if that block is not part of the piece, but has the player id in the board, then it is another
-                //piece of the same player
-                        //do it for all 4 corners of a piece
-                try {
-                    if (piece.getShape()[i + 1][j] == 0 &&
-                            board.board[position.get_x() + i + 1][position.get_y() + j] == piece.getNumber())
-                        return false;
-                }catch (IndexOutOfBoundsException e){ ;}
-
-                try {
-
-
-                    if (piece.getShape()[i - 1][j] == 0 &&
-                            board.board[position.get_x() + i - 1][position.get_y() + j] == piece.getNumber())
-                        return false;
-                }catch(IndexOutOfBoundsException e){}
-
-                try {
-                    if (piece.getShape()[i][j + 1] == 0 &&
-                            board.board[position.get_x() + i][position.get_y() + j + 1] == piece.getNumber())
-                        return false;
-                }catch (IndexOutOfBoundsException e){}
-
-                try {
-
-
-                    if (piece.getShape()[i][j - 1] == 0 &&
-                            board.board[position.get_x() + i][position.get_y() + j - 1] == piece.getNumber())
-                        return false;
-                }catch (IndexOutOfBoundsException e){}
-
-            }
-
-        }
-    }
-    return true;        */
-
-
 
     /**
      *
@@ -202,59 +182,15 @@ public class Move {
          * finally calls isCorner that checks if there is only one block on the board
          */
 
-
         for(Corner pieceCorner: piece.getCornersContacts(position)){
             for(Vector2d board_cor:pieceCorner.getToCornerPositions()) {
-             /*   if(pieceCorner.getPosition().get_y()==1&&pieceCorner.getPosition().get_x()==3) {
-                    System.out.print(board.board[board_cor.get_y()][board_cor.get_x()] == player.getPlayerNumber());
-                    System.out.print(isCorner(pieceCorner.getPosition(), board_cor, board));
-                }
-                System.out.println();*/
-
                 if (board.inBoard(board_cor) &&
                         board.boardArray[board_cor.get_y()][board_cor.get_x()] == player.getPlayerNumber() &&
                         isCorner(pieceCorner.getPosition(), board_cor, board)) return true;
             }
         }
         return false;
- /*   for(int i=0; i<piece.getShape().length; i++){
-        for(int j=0; j<piece.getShape()[0].length; j++){
-            if(piece.getShape()[i][j]==0)
-                ;//that´s not a block
-            else {
-                //if that block is not part of the piece, but has the player id in the board, then it is another
-                //piece of the same player
-                //do it for all 4 corners of a piece
-                try {
-                    if (piece.getShape()[i + 1][j + 1] == 0 &&
-                            board.board[position.get_x() + i + 1][position.get_y() + j + 1] == piece.getNumber())
-                        return true;
-                }catch (IndexOutOfBoundsException e){}
-
-                try {
-
-                    if (piece.getShape()[i + 1][j-1] == 0 &&
-                            board.board[position.get_x() + i +1 ][position.get_y() + j-1] == piece.getNumber())
-                        return true;
-                }catch (IndexOutOfBoundsException e){}
-
-                try {
-                    if (piece.getShape()[i-1][j+1] == 0 &&
-                            board.board[position.get_x() + i-1][position.get_y() + j+1] == piece.getNumber())
-                        return true;
-                }catch (IndexOutOfBoundsException e){}
-
-                try{
-                    if (piece.getShape()[i-1][j-1] == 0 &&
-                            board.board[position.get_x() + i-1][position.get_y() + j-1] == piece.getNumber())
-                        return true;
-                }catch (IndexOutOfBoundsException e){}
-            }
-
-        }
     }
-    return false;       */
-}
 
     /**
      * this method checks if two positions on the board is effectively touching corners to corners
@@ -265,13 +201,26 @@ public class Move {
      */
     private boolean isCorner(Vector2d p1, Vector2d p2, Board board) {
         int count=0;
+        int x = Math.min(p1.get_x(), p2.get_x()), y=Math.min(p1.get_y(),p2.get_y());
+        if(x<0||y<0||(x+1)>=board.getDIMENSION()||(y+1)>=board.getDIMENSION()){
+//            board.print();
+//            System.out.println(piece+" "+position);
+//            System.out.println(player.getPlayerNumber());
+//            System.out.println(x+" "+y);
+//            System.out.println(p1+" "+p2);
+            return false;
+        }
         for (int i =0 ; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
-                if(board.boardArray[Math.min(p1.get_y(),p2.get_y())+i][Math.min(p1.get_x(), p2.get_x())+j]==player.getPlayerNumber()) count++;
+                if(board.boardArray[y+i][x+j]==player.getPlayerNumber()) count++;
             }
         }
         if(count == 1) return true;
         return false;
+    }
+
+    private boolean cornerContact(Board board, Corner pieceCorner, Corner boardCorner) {
+        return pieceCorner.isCompatible(boardCorner);
     }
 
     /**
@@ -312,7 +261,7 @@ public class Move {
             return true;
         }
         else
- //           System.out.println("Move not allowed");
+            System.out.println("Move not allowed:"+piece+" @ "+position);
         return false;
         }
 
@@ -328,7 +277,15 @@ public class Move {
         return position;
     }
 
-    //dont mind this, it´s just testing stuff
+
+    public void print(){
+        System.out.println( "Player"+player.getPlayerNumber()+": "+player.getName()+" \tPosition: "+position.get_x()+", "+ position.get_y()+"\t") ;
+        System.out.println("piece: ");
+        piece.printShape();
+        piece.printLastC();
+    }
+
+
     public static void main(String[] args){
         HumanPlayer player1 = new HumanPlayer(1);
         HumanPlayer player2=new HumanPlayer(2);
@@ -343,81 +300,31 @@ public class Move {
         for(Piece p: player1.getPiecesList()){
             if(p.getLabel().equals("F")) fpiece = p;
         }
-        Move move = new Move(player1,fpiece,new Vector2d(3,0));
+        Move move = new Move(player1,player1.getPiecesList().get(1),new Vector2d(0,0));
         System.out.println(move.isAllowed(board));
-        Move firstMove = new Move(player1,player1.getPiecesList().get(2),new Vector2d(0,0));
-        if(firstMove.isAllowed(board)){
-            System.out.println("first move");
-            firstMove.makeMove(board);
-//            firstMove.writePieceIntoBoard(board);
-        }
-        //move.writePieceIntoBoard(board);
-        for(int[] line : board.boardArray){
-            for(int i : line){
-                System.out.print(i);
-            }
-                System.out.println();
-        }
-//        for(Corner c: fpiece.getCornersContacts(move.getPosition())){
-//            System.out.print(c.getPosition().get_x()+" "+c.getPosition().get_y()+" -- ");
-//            for(Vector2d complement:c.getToCornerPositions()) System.out.print(complement.get_x()+" "+complement.get_y()+"/");
-//            System.out.println();
-//        }
-        System.out.println((!move.piece.isUsed()) +" "+ move.inBounds(board) +" "+
-                move.emptySpace(board) +" "+ move.cornerContact(board) +" "+ move.noDirectContact(board));
-        if(move.isAllowed(board)){
-            System.out.println("second move");
-            move.makeMove(board);
-//            firstMove.writePieceIntoBoard(board);
-        }
 
+        move.makeMove(board);
 
-        Move move3 = new Move(player1,player1.getPiecesList().get(3),new Vector2d(6,1));
-        if(move3.isAllowed(board)){
-            move3.makeMove(board);
-        }
+        System.out.println(fpiece);
+        for(Corner c:fpiece.getCornersContacts(new Vector2d(15,15))) System.out.println(c);
 
-        Piece o=null;
-        for(Piece p:player2.getPiecesList()){
-            if(p.getLabel().equalsIgnoreCase("O4")) o = p;
-        }
-        System.out.println(o);
-        Move movep2 = new Move(player2,o,new Vector2d(18,18));
-        System.out.println((!movep2.piece.isUsed()) +" "+ movep2.inBounds(board) +" "+
-                movep2.emptySpace(board) +" "+ movep2.cornerContact(board) +" "+ movep2.noDirectContact(board));
-        if(movep2.isAllowed(board)){
-            movep2.makeMove(board);
-        }
+        Piece clone = fpiece.clone();
+        fpiece.rotateUpsideDown();
+        clone.rotateRight();
 
-        Piece o1 = null;
-        for(Piece p : player1.getPiecesList()) if(p.getLabel().equalsIgnoreCase("O4")) o1 = p;
-        Move om = new Move(player1,o1,new Vector2d(1,2));
-        om.makeMove(board);
-        System.out.println((!om.piece.isUsed()) +" "+ om.inBounds(board) +" "+
-                om.emptySpace(board) +" "+ om.cornerContact(board) +" "+ om.noDirectContact(board));
+        System.out.println(fpiece);
+        for(Corner c:fpiece.getCornersContacts(new Vector2d(5,5))) System.out.println(c);
 
-        Piece l1 = null;
-        for(Piece p : player1.getPiecesList()) if(p.getLabel().equalsIgnoreCase("I5")) l1 = p;
-        l1.rotateRight();
-        Move lm = new Move(player1,l1,new Vector2d(10,2));
-        lm.makeMove(board);
+        System.out.println(clone);
+        for(Corner c:clone.getCornersContacts(new Vector2d(0,0))) System.out.println(c);
 
-        System.out.println(l1);
-        System.out.println((!lm.piece.isUsed()) +" "+ lm.inBounds(board) +" "+
-                lm.emptySpace(board) +" "+ lm.cornerContact(board) +" "+ lm.noDirectContact(board));
-        for(int[] line : board.boardArray){
-            for(int i : line){
-                System.out.print(i);
-            }
-            System.out.println();
-        }
+//        Move move2 = new Move(player1,fpiece,new Vector2d(0,2));
+//        System.out.println(move2.isAllowed(board));
+//
+//        move2.makeMove(board);
+//        board.print();
+//
+//        System.out.println(player2.possibleMoveSet(board).size());
 
     }
-public void print(){
-    System.out.println( "Player: "+player.getName()+" \tPosition: "+position.get_x()+", "+ position.get_y()+"\t") ;
-    System.out.println("piece: ");
-    piece.printShape();
-
-}
-
 }
