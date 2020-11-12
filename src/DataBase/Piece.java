@@ -140,7 +140,7 @@ public class Piece {
                 }
             }
             shape=newState;
-            getCornersContacts(this.position.scale(0)); // set the corner to the 0 0 coordinates
+            getCornersContactsUpgraded(this.position.scale(0)); // set the corner to the 0 0 coordinates
             for(Corner corner:this.corners){
                 Vector2d newPosition = new Vector2d(corner.getPosition().get_y(),shape.length-1-corner.getPosition().get_x());
                 Vector2d[] newPos = new Vector2d[4];
@@ -163,7 +163,7 @@ public class Piece {
                 }
             }
             shape= newState;
-            getCornersContacts(this.position.scale(0)); // set the corner to the 0 0 coordinates
+            getCornersContactsUpgraded(this.position.scale(0)); // set the corner to the 0 0 coordinates
             for(Corner corner:this.corners){ // with right rotation, expected coordinates should be:
                 Vector2d newPosition = new Vector2d(shape[0].length-1-corner.getPosition().get_y(),corner.getPosition().get_x());
                 Vector2d[] newPos = new Vector2d[4];
@@ -187,7 +187,7 @@ public class Piece {
             shape=newState;
             Vector2d temp = null;
             if(position.get_x()!=0||position.get_y()!=0) temp= this.position.clone();
-            getCornersContacts(this.position.scale(0)); // set the corner to the 0 0 coordinates
+            getCornersContactsUpgraded(this.position.scale(0)); // set the corner to the 0 0 coordinates
             position=new Vector2d(0,0);
             for(Corner corner:this.corners){ //rotation
                 Vector2d newPosition = new Vector2d(corner.getPosition().get_x(),shape.length-1-corner.getPosition().get_y());
@@ -289,7 +289,7 @@ public class Piece {
      * Methods that finds coordinates of the corners of the piece and the coordinates of the corner of the piece on the board
      * @return the positions of the hypothetical corners w.r.t. coordinates of the board !!
      */
-    public ArrayList<Corner> getCornersContacts(Vector2d position){
+    public ArrayList<Corner> getCornersContactsUpgraded(Vector2d position){
         if(!cornerComputed) { //if the corners have not been computed since last rotation, search for them
             corners = new ArrayList<>(); //contains the corners of the piece
             for (int y = 0; y < shape.length; y++) {
@@ -360,6 +360,62 @@ public class Piece {
         return ret;
     }
 
+
+    /**
+     * Methods that finds coordinates of the corners of the piece and the coordinates of the corner of the piece on the board
+     * @return the positions of the hypothetical corners w.r.t. coordinates of the board !!
+     */
+    public ArrayList<Corner> getCornersContacts(Vector2d position){
+
+        ArrayList<Corner> corners = new ArrayList<>(); //contains the corners of the piece
+            for (int y = 0; y < shape.length; y++) {
+                for (int x = 0; x < shape[0].length; x++) {
+                    if (shape[y][x] != 0) {
+                        boolean top = true, right = true, down = true, left = true; //is not occupied by a block
+                        Vector2d current_position = position.add(new Vector2d(x, y));
+                        if (y > 0 && shape[y - 1][x] != 0) top = false; //if top outside OR top block occupied
+                        if (y < shape.length - 1 && shape[y + 1][x] != 0)
+                            down = false; //if down outside OR down block occupied
+                        if (x > 0 && shape[y][x - 1] != 0) left = false; //if left outside OR left block occupied
+                        if (x < shape[0].length - 1 && shape[y][x + 1] != 0)
+                            right = false; //if right outside OR right block occupied
+                        Corner current = null;
+                        if (top && left) { //now adding corresponding to corner positions
+                            current = new Corner(current_position, current_position.add(new Vector2d(-1, -1)),true);
+                            corners.add(current);
+                        }
+                        if (top && right) {
+                            if (current == null) {
+                                current = new Corner(current_position, current_position.add(new Vector2d(1, -1)),true);
+                                corners.add(current);
+                            } else {
+                                current.addAdjacent(current_position.add(new Vector2d(1, -1)));
+                            }
+                        }
+                        if (down && left) {
+                            if (current == null) {
+                                current = new Corner(current_position, current_position.add(new Vector2d(-1, 1)),true);
+                                corners.add(current);
+                            } else {
+                                current.addAdjacent(current_position.add(new Vector2d(-1, 1)));
+                            }
+                        }
+                        if (down && right) {
+                            if (current == null) {
+                                current = new Corner(current_position, current_position.add(new Vector2d(1, 1)),true);
+                                corners.add(current);
+                            } else {
+                                current.addAdjacent(current_position.add(new Vector2d(1, 1)));
+                            }
+                        }
+
+                    }
+                }
+            }
+        return corners;
+    }
+
+
     public String toString(){
         StringBuilder s = new StringBuilder();
         s.append(label+": \n\n");
@@ -405,6 +461,7 @@ public class Piece {
     }
 
     public void printLastC() {
+        if(this.corners!=null)
         for(Corner c:this.corners){
             System.out.println(c);
         }
