@@ -18,7 +18,7 @@ public class UPiece extends Piece {
     }
 
     public UPiece(int state) {
-        super("U", new int[][]{{1,0,1},{1,1,1}}, true, 4, 4,state);
+        super("U",  true, 4, 4,state);
     }
 
     @Override

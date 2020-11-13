@@ -24,7 +24,7 @@ public class YPiece extends Piece {
     }
 
     public YPiece(int state) {
-        super("Y", new int[][]{{1,0},{1,1},{1,0},{1,0}}, true, 4, 8,state);
+        super("Y",  true, 4, 8,state);
     }
 
     @Override

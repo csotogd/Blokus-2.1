@@ -23,7 +23,7 @@ public class PPiece extends Piece {
     }
 
     public PPiece(int state) {
-        super("P", new int[][]{{1,1},{1,1},{1,0}}, true, 4, 8,state);
+        super("P",  true, 4, 8,state);
     }
 
     @Override

@@ -26,7 +26,7 @@ public class FPiece extends Piece {
         super("F", new int[][]{{0, 1, 1}, {1, 1, 0}, {0, 1, 0}}, true, 4, 8);
     }
     public FPiece(int cs) {
-        super("F", new int[][]{{0, 1, 1}, {1, 1, 0}, {0, 1, 0}}, true, 4, 8, cs);
+        super("F",  true, 4, 8, cs);
     }
 
     /**

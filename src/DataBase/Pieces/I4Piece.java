@@ -20,7 +20,7 @@ public class I4Piece extends Piece {
     }
 
     public I4Piece(int state) {
-        super("I4", new int[][]{{1},{1},{1},{1}}, false, 2, 2,state);
+        super("I4",  false, 2, 2,state);
     }
 
     @Override

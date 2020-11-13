@@ -18,7 +18,7 @@ public class XPiece extends Piece {
     }
 
     public XPiece(int state) {
-        super("X", new int[][]{{0,1,0},{1,1,1},{0,1,0}}, false, 1, 1,state);
+        super("X",  false, 1, 1,state);
     }
 
     @Override
