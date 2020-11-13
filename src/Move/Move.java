@@ -284,7 +284,6 @@ public class Move {
         System.out.println( "Player"+player.getPlayerNumber()+": "+player.getName()+" \tPosition: "+position.get_x()+", "+ position.get_y()+"\t") ;
         System.out.println("piece: ");
         piece.printShape();
-        piece.printLastC();
     }
 
 
@@ -323,6 +322,8 @@ public class Move {
         for(Corner c:fpiece.getCornersContacts(new Vector2d(5,5))) System.out.println(c);
         System.out.println(clone);
         for(Corner c:clone.getCornersContacts(new Vector2d(1,1))) System.out.println(c);
+
+
 
 //        Move move2 = new Move(player1,fpiece,new Vector2d(0,2));
 //        System.out.println(move2.isAllowed(board));
