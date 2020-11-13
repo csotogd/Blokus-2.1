@@ -35,6 +35,7 @@ public class PieceFactory {
 
         for (Piece piece : prototype){
             piece.calculateNumberOfBlocks();
+            piece.getCorners();
         }
 
     }

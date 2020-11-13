@@ -243,7 +243,6 @@ public abstract class Player {
                                     Move move = new Move(this, piece, positionOfPiece);
 
                                     if (move.isAllowed(board)) {
-                                        move.print();
                                         return move;
                                     }
                                 }
