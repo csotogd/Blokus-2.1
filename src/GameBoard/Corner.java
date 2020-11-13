@@ -105,10 +105,10 @@ public class Corner {
         this.position = newPos;
     }
 
-    public void toCornerAdd(Vector2d shift) {
-        for(int i=0;i<this.toCornerPositions.size();i++){
-            this.toCornerPositions.get(i).addInPlace(shift);
-        }
+    public Corner cornerAdd(Vector2d shift) {
+        Corner newCorner = new Corner(position.add(shift));
+        for(Vector2d v: toCornerPositions) newCorner.addAdjacent(v.add(shift));
+        return newCorner;
     }
 
     public Vector2d[] getRelativeToCornerPositions() {
@@ -160,6 +160,12 @@ public class Corner {
         sb.append("\n");
         for(Vector2d v: toCornerPositions) sb.append(v.toString()+" ");
         return sb.toString();
+    }
+
+    public static List<Corner> copyOf(List<Corner> original){
+        ArrayList<Corner> copy = new ArrayList<>();
+        for(Corner c:original) copy.add(c.clone());
+        return copy;
     }
 
     public static void main(String[] args){
