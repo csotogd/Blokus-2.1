@@ -75,10 +75,19 @@ public class BoardUI{
      */
     public void paint() {
         if(!beginning){
+            refreshPieces();
             makePiecesOpaque();
             turnOfPlayerText.setText(game.getActualPlayer().getName());
             turnOfPlayerText.setFill(game.getActualPlayer().getColor());
-            refreshPieces();
+            if(game.getActualPlayer().isHumanPlayer()){
+                leftRotate.setDisable(false);
+                rightRotate.setDisable(false);
+                flip.setDisable(false);
+            }else{
+                leftRotate.setDisable(true);
+                rightRotate.setDisable(true);
+                flip.setDisable(true);
+            }
         }
 
         //Clear previous cells
@@ -159,7 +168,6 @@ public class BoardUI{
      * method that makes each pieces opaque except the actual chosen piece
      */
     public void makePiecesOpaque(){
-
         for (Player player : players) {
             if(player.isHumanPlayer()){
                 int isPiece = 0;

@@ -105,10 +105,10 @@ public class Corner {
         this.position = newPos;
     }
 
-    public void toCornerAdd(Vector2d shift) {
-        for(int i=0;i<this.toCornerPositions.size();i++){
-            this.toCornerPositions.get(i).addInPlace(shift);
-        }
+    public Corner cornerAdd(Vector2d shift) {
+        Corner newCorner = new Corner(position.add(shift));
+        for(Vector2d v: toCornerPositions) newCorner.addAdjacent(v.add(shift));
+        return newCorner;
     }
 
     public Vector2d[] getRelativeToCornerPositions() {
@@ -137,6 +137,7 @@ public class Corner {
         }
     }
 
+    @Override
     public Corner clone(){
         Corner clone = new Corner(position.clone());
         for(Vector2d v:toCornerPositions){
@@ -161,6 +162,12 @@ public class Corner {
         return sb.toString();
     }
 
+    public static List<Corner> copyOf(List<Corner> original){
+        ArrayList<Corner> copy = new ArrayList<>();
+        for(Corner c:original) copy.add(c.clone());
+        return copy;
+    }
+
     public static void main(String[] args){
         Player p1= new HumanPlayer(1,"j");
         Player p2= new HumanPlayer(2,"i");
@@ -174,7 +181,7 @@ public class Corner {
         Player[] players=new Player[]{p1,p2};
         Board board = new Board(players);
 
-        board.boardArray=new int[19][19];
+        board.boardArray=new int[20][20];
 
         for (int i = 0; i < 10; i++) {
             p1.randomPossibleMove(board).makeMove(board);
