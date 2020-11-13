@@ -226,8 +226,8 @@ public class Game extends Application {
             pane.setBackground(Data.createBackGround());
             pane.getChildren().add(dialogVbox);
             Scene dialogScene = new Scene(pane, 300, 200);
-            stage.setScene(dialogScene);
-            stage.show();
+            //stage.setScene(dialogScene);
+            //stage.show();
 
         }
     }
@@ -264,7 +264,7 @@ public class Game extends Application {
             // safely modify the UI
 
             Move move = calculateMove.getValue();
-            if (move.makeMove(board)) {
+            if (move!=null&&move.makeMove(board)) {
                 moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]);
             }
         });
