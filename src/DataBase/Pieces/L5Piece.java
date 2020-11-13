@@ -23,7 +23,7 @@ public class L5Piece extends Piece {
         }
 
     public L5Piece(int state) {
-        super("L5", new int[][]{{1,0},{1,0},{1,0},{1,1}}, true, 4, 8,state);
+        super("L5",  true, 4, 8,state);
     }
 
     @Override

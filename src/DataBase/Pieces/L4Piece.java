@@ -22,7 +22,7 @@ public class L4Piece extends Piece {
     }
 
     public L4Piece(int state) {
-        super("L4", new int[][]{{1,0},{1,0},{1,1}}, true, 4, 8,state);
+        super("L4", true, 4, 8,state);
     }
 
     @Override

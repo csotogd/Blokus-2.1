@@ -23,7 +23,7 @@ public class WPiece extends Piece {
     }
 
     public WPiece(int state) {
-        super("W", new int[][]{{1,0,0},{1,1,0},{0,1,1}}, true, 4, 4,state);
+        super("W", true, 4, 4,state);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class Z5Piece extends Piece {
     }
 
     public Z5Piece(int state) {
-        super("Z5", new int[][]{{1,1,0},{0,1,0},{0,1,1}}, true, 2, 4,state);
+        super("Z5", true, 2, 4,state);
     }
 
     @Override

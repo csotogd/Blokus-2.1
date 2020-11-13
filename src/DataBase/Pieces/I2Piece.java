@@ -21,7 +21,7 @@ public class I2Piece extends Piece {
     }
 
     public I2Piece(int state) {
-        super("I2", new int[][]{{1},{1}}, false, 2, 2,state);
+        super("I2",  false, 2, 2,state);
     }
 
     @Override

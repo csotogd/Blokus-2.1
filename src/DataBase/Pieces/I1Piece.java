@@ -20,7 +20,7 @@ public class I1Piece extends Piece {
     }
 
     public I1Piece(int currentS) {
-        super("I1", new int[][]{{1}}, false, 1, 1,currentS);
+        super("I1",false, 1, 1,currentS);
     }
 
     /**

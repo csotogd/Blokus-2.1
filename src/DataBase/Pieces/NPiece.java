@@ -24,7 +24,7 @@ public class NPiece extends Piece {
     }
 
     public NPiece(int state) {
-        super("N", new int[][]{{1,0},{1,0},{1,1},{0,1}}, true, 4, 8,state);
+        super("N", true, 4, 8,state);
     }
 
     @Override

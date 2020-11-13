@@ -23,7 +23,7 @@ public class T5Piece extends Piece {
     }
 
     public T5Piece(int current_state) {
-        super("T5", new int[][]{{1,1,1},{0,1,0},{0,1,0}}, true, 4, 4,current_state);
+        super("T5", true, 4, 4,current_state);
     }
 
     @Override

@@ -52,14 +52,13 @@ public abstract class Piece {
     /**
      * CONSTRUCTOR 2 used by clone method
      * @param label name of the piece
-     * @param array shape-> state of the piece
      * @param mirror possible to flip the piece
      * @param rotation number of rotation without flipping
      * @param totalConfig total number of configuration
      * @param currentS state of the piece
      */
-    public Piece (String label, int[][]  array, boolean mirror, int rotation, int totalConfig, int currentS) {
-        this.shape = array;
+    public Piece (String label, boolean mirror, int rotation, int totalConfig, int currentS) {
+        this.shape = getPermutations().get(currentS);
         this.mirror = mirror;
         this.nbRotation = rotation;
         this.totalConfig=totalConfig;

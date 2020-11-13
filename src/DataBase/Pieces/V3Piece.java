@@ -23,7 +23,7 @@ public class V3Piece extends Piece {
     }
 
     public V3Piece(int state) {
-        super("V3", new int[][]{{1,1}, {1,0}}, true, 4, 4,state);
+        super("V3", true, 4, 4,state);
     }
 
     @Override

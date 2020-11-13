@@ -20,7 +20,7 @@ public class I5Piece extends Piece {
     }
 
     public I5Piece(int state) {
-        super("I5", new int[][]{{1},{1},{1},{1},{1}}, false, 2, 2,state);
+        super("I5", false, 2, 2,state);
     }
 
     @Override
