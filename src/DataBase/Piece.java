@@ -140,14 +140,15 @@ public class Piece {
                 }
             }
             shape=newState;
-            getCornersContacts(this.position.scale(0)); // set the corner to the 0 0 coordinates
-            for(Corner corner:this.corners){
-                Vector2d newPosition = new Vector2d(corner.getPosition().get_y(),shape.length-1-corner.getPosition().get_x());
-                Vector2d[] newPos = new Vector2d[4];
-                for(int i=0; i<4;i++) newPos[(i+3)%4]=corner.getRelativeToCornerPositions()[i];
-                corner.setRelativeToCornerPositions(newPos, newPosition);
+            if(cornerComputed) {
+                getCornersContacts(this.position.scale(0)); // set the corner to the 0 0 coordinates
+                for (Corner corner : this.corners) {
+                    Vector2d newPosition = new Vector2d(corner.getPosition().get_y(), shape.length - 1 - corner.getPosition().get_x());
+                    Vector2d[] newPos = new Vector2d[4];
+                    for (int i = 0; i < 4; i++) newPos[(i + 3) % 4] = corner.getRelativeToCornerPositions()[i];
+                    corner.setRelativeToCornerPositions(newPos, newPosition);
+                }
             }
-
         }
     }
 
@@ -163,12 +164,14 @@ public class Piece {
                 }
             }
             shape= newState;
-            getCornersContacts(this.position.scale(0)); // set the corner to the 0 0 coordinates
-            for(Corner corner:this.corners){ // with right rotation, expected coordinates should be:
-                Vector2d newPosition = new Vector2d(shape[0].length-1-corner.getPosition().get_y(),corner.getPosition().get_x());
-                Vector2d[] newPos = new Vector2d[4];
-                for(int i=0; i<4;i++) newPos[(i+1)%4]=corner.getRelativeToCornerPositions()[i];
-                corner.setRelativeToCornerPositions(newPos, newPosition);
+            if(cornerComputed) {
+                getCornersContacts(this.position.scale(0)); // set the corner to the 0 0 coordinates
+                for (Corner corner : this.corners) { // with right rotation, expected coordinates should be:
+                    Vector2d newPosition = new Vector2d(shape[0].length - 1 - corner.getPosition().get_y(), corner.getPosition().get_x());
+                    Vector2d[] newPos = new Vector2d[4];
+                    for (int i = 0; i < 4; i++) newPos[(i + 1) % 4] = corner.getRelativeToCornerPositions()[i];
+                    corner.setRelativeToCornerPositions(newPos, newPosition);
+                }
             }
         }
     }
@@ -185,18 +188,18 @@ public class Piece {
                 }
             }
             shape=newState;
-            Vector2d temp = null;
-            if(position.get_x()!=0||position.get_y()!=0) temp= this.position.clone();
-            getCornersContacts(this.position.scale(0)); // set the corner to the 0 0 coordinates
-            position=new Vector2d(0,0);
-            for(Corner corner:this.corners){ //rotation
-                Vector2d newPosition = new Vector2d(corner.getPosition().get_x(),shape.length-1-corner.getPosition().get_y());
-                Vector2d[] newPos = new Vector2d[4];
-                for(int i=0; i<4;i++) newPos[3-i]=corner.getRelativeToCornerPositions()[i];
-                corner.setRelativeToCornerPositions(newPos, newPosition);
+         //   Vector2d temp = null;
+        //    if(position.get_x()!=0||position.get_y()!=0) temp= this.position.clone();
+            if(cornerComputed) {
+                getCornersContacts(this.position.scale(0)); // set the corner to the 0 0 coordinates
+                for (Corner corner : this.corners) { //rotation
+                    Vector2d newPosition = new Vector2d(corner.getPosition().get_x(), shape.length - 1 - corner.getPosition().get_y());
+                    Vector2d[] newPos = new Vector2d[4];
+                    for (int i = 0; i < 4; i++) newPos[3 - i] = corner.getRelativeToCornerPositions()[i];
+                    corner.setRelativeToCornerPositions(newPos, newPosition);
+                }
+        //        if (temp != null) getCornersContacts(temp);
             }
-            if(temp!=null) getCornersContacts(temp);
-
         }
     }
 
@@ -405,6 +408,7 @@ public class Piece {
     }
 
     public void printLastC() {
+        if(this.corners!=null)
         for(Corner c:this.corners){
             System.out.println(c);
         }
