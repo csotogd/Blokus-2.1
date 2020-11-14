@@ -32,15 +32,15 @@ public class SimulatedGame {
         String[] playersName= new String[players.length];
         this.players = this.initializePlayers(playersName, dimension, players);
          this.board = new Board(this.players, dimension);
-         state= Game.GameState.AI_MOVE;
+         state = Game.GameState.AI_MOVE;
 
         //game state of human move not considered
     }
 
-public void simulate(){
+    public void simulate(){
         actualPlayer=players[0];
         handleAITurn();
-}
+    }
 
 
     /**

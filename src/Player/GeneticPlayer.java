@@ -12,10 +12,16 @@ import java.util.Map;
 
 
 public class GeneticPlayer extends BotPlayer {
-    public static final int NUMBER_OF_STRATAEGIES=5;
+    public static final int NUMBER_OF_STRATEGIES = 5;
 
-    protected float[] weights=new float[5];
-
+    /*
+    weights[0] = addMostCorners
+    weights[1] = blocksMostCorners
+    weights[2] = closestToMiddle
+    weights[3] = biggestPiece
+    weights[4] = farFromStartingPoint
+     */
+    protected float[] weights = new float[5];
 
 
     public GeneticPlayer(int number) {
@@ -26,7 +32,7 @@ public class GeneticPlayer extends BotPlayer {
      *
      * @param number
      * @param weights needs to be of length 5.
-     *                every entry represents the weight of a strategy in the folowwing order.
+     *                every entry represents the weight of a strategy in the following order.
      *         addsMostCorners
      *         blocksMostCorners
      *         closestToMiddle
@@ -37,6 +43,7 @@ public class GeneticPlayer extends BotPlayer {
         super(number);
         this.weights=weights;
     }
+
     public float[] getWeightsAsArray() {
         return weights;
     }
@@ -48,6 +55,7 @@ public class GeneticPlayer extends BotPlayer {
     public void setWeightAddMostCorners(float weight){
     this.weights[0]=weight;
     }
+
     public float getWeightAddMostCorners(){
         return this.weights[0];
     }
@@ -55,6 +63,7 @@ public class GeneticPlayer extends BotPlayer {
     public void setWeightBlocksMostCorners(float weight){
         this.weights[1]=weight;
     }
+
     public float getWeightBlocksMostCorners(){
         return this.weights[1];
     }
@@ -62,6 +71,7 @@ public class GeneticPlayer extends BotPlayer {
     public void setWeightClosestToMiddle(float weight){
         this.weights[2]=weight;
     }
+
     public float getWeightClosestToMiddle(){
         return this.weights[2];
     }
@@ -69,6 +79,7 @@ public class GeneticPlayer extends BotPlayer {
     public void setWeightBiggestPiece(float weight){
         this.weights[3]=weight;
     }
+
     public float getWeightBiggestPiece(float weight){
         return this.weights[3];
     }
@@ -76,6 +87,7 @@ public class GeneticPlayer extends BotPlayer {
     public void setWeightFarFromStartingPoint(float weight){
         this.weights[4]=weight;
     }
+
     public float getWeightFarFromStartingPoint(float weight){
         return this.weights[4];
     }
@@ -103,11 +115,18 @@ public class GeneticPlayer extends BotPlayer {
             //uncomment to test a strategy
 
             //the weights is what we will calculate in the genetic algorithm
-            score += addsMostCorners(1, move, board);
-            score += blocksMostCorners(10, move, board);
-            score += closestToMiddle(1, move, board);
-            score += biggestPiece(1, move, board);
-            score += farFromStartingCorner(1, move, board);
+            score += addsMostCorners(weights[0], move, board);
+            score += blocksMostCorners(weights[1], move, board);
+            score += closestToMiddle(weights[2], move, board);
+            score += biggestPiece(weights[3], move, board);
+            score += farFromStartingCorner(weights[4], move, board);
+            /*
+            weights[0] = addMostCorners
+            weights[1] = blocksMostCorners
+            weights[2] = closestToMiddle
+            weights[3] = biggestPiece
+            weights[4] = farFromStartingPoint
+             */
 
             if (score == bestScore){
                 bestMoves.add(move);
