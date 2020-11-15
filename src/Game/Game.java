@@ -215,7 +215,9 @@ public class Game extends Application {
             countPoints();
             System.out.println("THE GAME HAS ENDED");
             VBox dialogVbox = new VBox(20);
-            dialogVbox.getChildren().add(new Text("GAME END"));
+            Text end = new Text("GAME END");
+            end.setFill(Color.WHITE);
+            dialogVbox.getChildren().add(end);
             for (Player player:players) {
                 Text score = new Text();
                 score.setFill(player.getColor());
@@ -225,9 +227,19 @@ public class Game extends Application {
             Pane pane = new FlowPane();
             pane.setBackground(Data.createBackGround());
             pane.getChildren().add(dialogVbox);
-            Scene dialogScene = new Scene(pane, 300, 200);
-            //stage.setScene(dialogScene);
-            //stage.show();
+            pane.getChildren().add(boardUI.principal);
+            pane.getChildren().add(boardUI.pieceOfPlayer(0));
+            if(players.length==4){
+                pane.getChildren().add(boardUI.pieceOfPlayer(1));
+                pane.getChildren().add(boardUI.pieceOfPlayer(2));
+                pane.getChildren().add(boardUI.pieceOfPlayer(3));
+            }else{
+                pane.getChildren().add(boardUI.pieceOfPlayer(1));
+            }
+            pane.setDisable(true);
+            Scene dialogScene = new Scene(pane, 1000, 1000);
+            stage.setScene(dialogScene);
+            stage.show();
 
         }
     }
