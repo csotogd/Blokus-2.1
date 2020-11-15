@@ -4,6 +4,7 @@ import Player.Player;
 import Player.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import  java.util.Random;
 
@@ -38,9 +39,13 @@ public class WeightCalculator {
 
         WeightCalculator calculator = new WeightCalculator();
         calculator.calculateWeights();
-        //TODO: Make tournament method where just one or a few individuals remain. They will have the best weights
-        //TODO: Make more reproduction methods (maybe one where the winners occupy a part of the new population and the rest is their offspring
+
+        //TODO: Make tournament method where just one or a few individuals remain. They will have the best weights - It is done
+        //TODO: Make transition method (maybe one where the winners occupy a part of the new population and the rest is their offspring)
+        //TODO: Make more reproduction methods - We now have two
         //TODO: Make mutation methods - One has been made
+
+        //TODO: Comment everything
 
     }
 
@@ -49,19 +54,32 @@ public class WeightCalculator {
     public void calculateWeights(){
         createPopulation();
         for (int i = 0; i < this.generations; i++){
+            System.out.print("\nBegin of generation " + i + ": 0%");
             winners.clear();//Putting this for now so that the winners from gen i produce only the population for gen i+1
+
+            checkForUnevenPopulation();
             playGames();
 
             transitionNextGeneration();
         }
 
         //now we have to transit to a state where only individual survives
+        while (populationSize != 1){
+            System.out.print("\nBegin of tournament: 0%");
+            winners.clear();
 
+            checkForUnevenPopulation();
+            playGames();
 
+            tournament();
+        }
+
+        System.out.println("\nBest weights: ");
+        System.out.println(Arrays.toString(population.get(0).getWeightsAsArray()));
     }
 
     private void playGames(){
-        Random r = new Random();
+        //Random r = new Random();
 
         //shuffle the populations so people at the beginning may face people in the end
         //Collections.shuffle(this.population);
@@ -71,9 +89,23 @@ public class WeightCalculator {
         //the winner will be stored. The winners will later reproduce to fill up the population again.
         //**this winners in real life would be in the population they would reproduce and then die
         //for simplicity sake we are killing them and then reproducing them.
+        String previousPercentage = "0%";
         while(!population.isEmpty()){
+
+            if (!previousPercentage.equals((int) ((1 - (population.size() / (float) populationSize)) * 100) + "%")) {
+                for (int i = 0; i < previousPercentage.length(); i++) {
+                    System.out.print("\b");
+                }
+                System.out.print((int) ((1 - (population.size() / (float) populationSize)) * 100) + "%");
+                previousPercentage = (int) ((1 - (population.size() / (float) populationSize)) * 100) + "%";
+            }
+
             matchUpAndPlay();
         }
+        for (int i = 0; i < previousPercentage.length(); i++) {
+            System.out.print("\b");
+        }
+        System.out.print("100%");
     }
 
     private void matchUpAndPlay(){
@@ -82,14 +114,13 @@ public class WeightCalculator {
         //we match up random players from the population
         for(int i=1; i<=nbrOfPlayers; i++){
             int index = random.nextInt(population.size());//select one individual from the ones that are left
-            GeneticPlayer player = population.get(i);
+            GeneticPlayer player = population.get(index);
             player.setNumber(i);
             players[i-1] = player;
 
             //delete it from the population
-            population.remove(player);
+            population.remove(index);
         }
-
 
         //let those 4 players play against each other
         SimulatedGame simulation = new SimulatedGame(DIMENSION, players);
@@ -111,6 +142,22 @@ public class WeightCalculator {
             individual.setWeightFarFromStartingPoint(random.nextFloat());
 
             population.add(individual);
+        }
+    }
+
+    /**
+     * This method checks whether the population can be evenly divided into x games.
+     * If this is not the case, then it adds as many clones of random individuals in the
+     * population as necessary to make the population "even" again.
+     */
+    private void checkForUnevenPopulation(){
+        if (populationSize % nbrOfPlayers != 0){
+            Random r = new Random();
+
+            for (int i = 0; i < 4 - populationSize % nbrOfPlayers; i++){
+                population.add(population.get(r.nextInt(populationSize)).clone());
+            }
+            populationSize = population.size();
         }
     }
 
@@ -136,6 +183,11 @@ public class WeightCalculator {
 
     }
 
+    private void tournament(){
+        populationSize /= nbrOfPlayers;
+        population.addAll(winners);
+    }
+
 //------------------------------------------Reproduction methods---------------------------------------------------
 
     /**
@@ -149,7 +201,7 @@ public class WeightCalculator {
      * @return A new individual that will be introduce in the population
      */
     private GeneticPlayer reproduceByInterval(GeneticPlayer father, GeneticPlayer mother){
-        Random random= new Random();
+        Random random = new Random();
         float[] weightsFather= father.getWeightsAsArray();
         float[] weightsMother= mother.getWeightsAsArray();
         GeneticPlayer kid = new GeneticPlayer(0); //this number shouldn´t mind
@@ -168,6 +220,25 @@ public class WeightCalculator {
 
     }
 
+    private GeneticPlayer reproduceByChromosomes(GeneticPlayer father, GeneticPlayer mother){
+        Random r = new Random();
+        float[] weightsFather = father.getWeightsAsArray();
+        float[] weightsMother = mother.getWeightsAsArray();
+        GeneticPlayer kid = new GeneticPlayer(0); //this number shouldn´t mind
+        float[] kidsWeights = new float[GeneticPlayer.NUMBER_OF_STRATEGIES];
+        for (int i = 0; i < kidsWeights.length; i++){
+            if (r.nextBoolean()){
+                kidsWeights[i] = weightsFather[i];
+            } else{
+                kidsWeights[i] = weightsMother[i];
+            }
+        }
+
+        kid.setWeightsAsArray(kidsWeights);
+
+        return kid;
+    }
+
 //--------------------------------------------Mutation methods-----------------------------------------------------
 
     private void mutate(GeneticPlayer player){
@@ -175,8 +246,11 @@ public class WeightCalculator {
 
         float[] weights = player.getWeightsAsArray();
 
+        //Every weight has an equal opportunity to be mutated
         for (int mutateWeight = 0; mutateWeight < weights.length; mutateWeight++) {
             if (r.nextDouble() <= mutationChance) {
+                //We mutate by adding or subtracting a value between 0 and 1
+                //We can always change this.
                 weights[mutateWeight] = weights[mutateWeight] + (r.nextFloat() * 2 - 1);
             }
         }

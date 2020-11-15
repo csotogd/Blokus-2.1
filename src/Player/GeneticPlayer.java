@@ -105,7 +105,7 @@ public class GeneticPlayer extends BotPlayer {
 
     public Move calculateMove(Board board){
        //while we code all the different strategies, make this call the one you want to try
-        System.out.println("In calculate move for genetic algorithm");
+        //System.out.println("In calculate move for genetic algorithm");
 
         float bestScore = -1000;
         ArrayList<Move> bestMoves = new ArrayList<Move>();
@@ -139,11 +139,11 @@ public class GeneticPlayer extends BotPlayer {
         }
 
 
-        printBestMove(bestMoves, bestScore);
+        //printBestMove(bestMoves, bestScore);
 
         Move bestMove = null;
         if (bestMoves.size() == 0){
-            System.out.println("There is no best move, or every moves' score is 0");
+            //System.out.println("There is no best move, or every moves' score is 0");
         } else {
             bestMove = bestMoves.get(0);
         }
@@ -252,8 +252,8 @@ public class GeneticPlayer extends BotPlayer {
         } catch (ArrayIndexOutOfBoundsException e){
 
         }
-        int nbrOfBlocks=0;
-        for(int i=0; i<=playerBlocked.length; i++)
+        int nbrOfBlocks = 0;
+        for(int i = 0; i < playerBlocked.length; i++)
             if (playerBlocked[i])
                 nbrOfBlocks++;
         return nbrOfBlocks;
@@ -363,8 +363,8 @@ public class GeneticPlayer extends BotPlayer {
                 }
             }
         }
-        if (move.getPiece().getLabel().equals("X"))
-        System.out.println();
+        //if (move.getPiece().getLabel().equals("X"))
+        //System.out.println();
 
         //the score if weight was one needs to be between [-1, 1]
         //If it is negative it means, we added no new corners and we blocked some we had
@@ -460,5 +460,13 @@ public class GeneticPlayer extends BotPlayer {
             System.out.println();
             System.out.println();
         }
+    }
+
+    @Override
+    public GeneticPlayer clone() {
+        GeneticPlayer player = new GeneticPlayer(number);
+        player.setWeightsAsArray(weights.clone());
+
+        return player;
     }
 }
