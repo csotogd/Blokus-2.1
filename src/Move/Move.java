@@ -286,6 +286,20 @@ public class Move {
         piece.printShape();
     }
 
+    @Override
+    public boolean equals(Object other){
+        if(other == null) return false;
+        if(!(other instanceof Move)) return false;
+        Move o=(Move)other;
+        if(!o.getPiece().equals(piece)||!o.getPosition().equals(position)||!o.getPlayer().equals(player)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode(){
+        return player.getPlayerNumber()+10*position.get_y()+1000*position.get_x()+10000*piece.getLabel().hashCode();
+    }
+
 
     public static void main(String[] args){
         HumanPlayer player1 = new HumanPlayer(1);

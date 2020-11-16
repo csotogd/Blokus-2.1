@@ -142,10 +142,16 @@ public class Vector2d {
 
     @Override
     public boolean equals(Object o){
+        if(o==null) return false;
         if(!(o instanceof Vector2d)) return false;
-        o = (Vector2d) o;
-        if(x!=((Vector2d) o).get_x()||y!=((Vector2d) o).get_y()) return false;
+        Vector2d other = (Vector2d) o;
+        if(x!=other.get_x()||y!=other.get_y()) return false;
         return true;
+    }
+
+    @Override
+    public int hashCode(){
+        return x+10000*y;
     }
 
     public static void main(String[] args) {

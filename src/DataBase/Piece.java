@@ -223,6 +223,10 @@ public abstract class Piece {
         return  this.number;
     }
 
+    public int getCurrentState() {
+        return current_state;
+    }
+
     public void setPosInBoardX(double posInBoardX) {
         this.posInBoardX = posInBoardX;
     }
@@ -285,13 +289,18 @@ public abstract class Piece {
         return s.toString();
     }
 
-    public boolean isCornerComputed() {
-        if(cornerComputed) return true;
-        return false;
+    @Override
+    public boolean equals(Object other){
+        if(!(other instanceof Piece)) return false;
+        Piece o=(Piece)other;
+        if(!o.getLabel().equals(label)) return false;
+        if(o.getCurrentState()!=current_state) return false;
+        return true;
     }
 
-    public void setCornerComputed(boolean cornerComputed) {
-        this.cornerComputed = cornerComputed;
+    @Override
+    public int hashCode(){
+        return current_state+10*label.hashCode();
     }
 
     public static void main(String[]args) {

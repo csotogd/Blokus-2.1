@@ -355,10 +355,11 @@ public abstract class Player {
     }
 
     public boolean equals(Object other){
+        if(other == null) return false;
         if(!(other instanceof Player)) return false;
-        other = (Player) other;
-        if(number!=((Player) other).getNumber()) return false;
-        if(piecesList.size()!=((Player) other).getPiecesList().size()) return false;
+        Player o = (Player) other;
+        if(number!=o.getNumber()) return false;
+        if(piecesList.size()!=o.getPiecesList().size()) return false;
         return true;
     }
 }
