@@ -70,11 +70,11 @@ public class Node {
      * @param player the player for which we want to expand the moves
      * @return true if it was successful, false otherwise
      */
-    public boolean randomExpand(Player player){
+    public boolean randomExpand(Player player, int numMoves){
 
-        for(int i=0;i<10;i++){
-            Move m = player.randomPossibleMoveClone(state, player.getPiecesList());
-            children.add(new Node(this,m));
+        for(int i=0;i<15;i++){
+            Node n = new Node(this,player.randomPossibleMoveClone(state, player.getPiecesList()));
+            if(!children.contains(n)) children.add(n);
         }
         if(children.size()>0) return true;
         return false;

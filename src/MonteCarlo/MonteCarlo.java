@@ -11,6 +11,7 @@ public class MonteCarlo {
     Player[] players;
     Node root;
     Board board;
+    int numMoves;
 
     /**
      * COnstructor
@@ -21,12 +22,13 @@ public class MonteCarlo {
         players= pls;
         board=bo;
         root = new Node(bo, pls);
+        numMoves=10;
     }
 
     public Move simulation(int player, long timeLimit){
         long start = System.currentTimeMillis(); //start of the timer
         root = new Node(board, players);
-        root.randomExpand(this.players[player].clone());// expand will append a children of every possible move to the root
+        root.randomExpand(this.players[player].clone(), numMoves);// expand will append a children of every possible move to the root
         //TODO : not expand every possible move ?
 //        System.out.println("p"+player+" "+root.getChildren().size()); // for debug purpose print the number of possible move
 
@@ -48,6 +50,7 @@ public class MonteCarlo {
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()>res.getScore())||
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()==res.getScore()&&children.getMove().getPiece().getNumberOfBlocks()>res.getMove().getPiece().getNumberOfBlocks())) res=children;
         for(Player p: players) if(p.getPlayerNumber()==res.getMove().getPlayer().getPlayerNumber()) return new Move(p,res.getMove().getPiece(), res.getMove().getPosition());
+        numMoves = root.getVisitedNum()/7;
         return res.getMove();
     }
 
