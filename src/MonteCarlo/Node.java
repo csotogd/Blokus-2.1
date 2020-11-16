@@ -72,7 +72,7 @@ public class Node {
      */
     public boolean randomExpand(Player player, int numMoves){
 
-        for(int i=0;i<15;i++){
+        for(int i=0;i<numMoves;i++){
             Node n = new Node(this,player.randomPossibleMoveClone(state, player.getPiecesList()));
             if(!children.contains(n)) children.add(n);
         }

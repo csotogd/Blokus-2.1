@@ -465,6 +465,7 @@ public class GeneticPlayer extends BotPlayer {
     @Override
     public GeneticPlayer clone() {
         GeneticPlayer player = new GeneticPlayer(number);
+        player.startingCorner=startingCorner;
         player.setWeightsAsArray(weights.clone());
 
         return player;
