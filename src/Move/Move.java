@@ -73,7 +73,7 @@ public class Move {
      * @param board board in which we place want to place the piece
      * @return whether it is possible to place that piece
      */
-    public boolean isAllowed(Board board, boolean skip, Corner pieceCorner, Corner boardCorner){
+    public boolean isAllowed(Board board,  Corner pieceCorner, Corner boardCorner){
 
         if(piece.isUsed()){
             // System.out.println("piece used");
@@ -84,7 +84,7 @@ public class Move {
         }else if(!emptySpace(board)){
             //System.out.println("place occupied");
             return false;
-        }else if(!skip&&!cornerContact(board,pieceCorner, boardCorner)&&!firstLegalMove(board)){
+        }else if(!pieceCorner.isCompatible(boardCorner)&&!firstLegalMove(board)){
             //System.out.println("no corner?");
             return false;
         }else if(!noDirectContact(board)){

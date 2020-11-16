@@ -172,6 +172,7 @@ public class Node {
     }
 
     public double getUCB1(){
+        if(visitedNum>0) return computeUCB();
         return ucbScore;
     }
 

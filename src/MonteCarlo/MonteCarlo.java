@@ -44,7 +44,9 @@ public class MonteCarlo {
         }
         Node res = root.getChildren().get(0);//choose the most visited node move
         for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
-        for(Node children : root.getChildren()) if(children.getVisitedNum()>=res.getVisitedNum()) res=children;
+        for(Node children : root.getChildren()) if(children.getVisitedNum()>res.getVisitedNum()||
+                (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()>res.getScore())||
+                (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()==res.getScore()&&children.getMove().getPiece().getNumberOfBlocks()>res.getMove().getPiece().getNumberOfBlocks())) res=children;
         for(Player p: players) if(p.getPlayerNumber()==res.getMove().getPlayer().getPlayerNumber()) return new Move(p,res.getMove().getPiece(), res.getMove().getPosition());
         return res.getMove();
     }
