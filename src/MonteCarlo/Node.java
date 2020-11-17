@@ -103,25 +103,16 @@ public class Node {
     }
 
 
-
     public List<Piece> getBiggestPieces(Player player){
-        int maxNbrOfBlocks = Integer.MIN_VALUE;
-        for (Piece piece:player.getPiecesList()) {
-            if(piece.getNumberOfBlocks()>maxNbrOfBlocks){
-                maxNbrOfBlocks = piece.getNumberOfBlocks();
-            }
-        }
+        int maxNbrOfBlocks = 5;
         List<Piece> biggestPieces = new ArrayList<>();
-        int diff = 0;
-        while(biggestPieces.size()<10&&diff<=5){
+        while(biggestPieces.size()<10){
             for (Piece piece:player.getPiecesList()) {
-                if(piece.getNumberOfBlocks()==maxNbrOfBlocks-diff){
+                if(piece.getNumberOfBlocks()==maxNbrOfBlocks&&state.fitOnBoard(piece,player)){
                     biggestPieces.add(piece);
                 }
             }
-            if(biggestPieces.size()<10){
-                diff++;
-            }
+            maxNbrOfBlocks--;
         }
         return biggestPieces;
     }

@@ -1,6 +1,8 @@
 package GameBoard;
 
 import DataBase.Data;
+import DataBase.Piece;
+import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
 
@@ -31,6 +33,52 @@ public class Board{
                 boardArray[i][j] = 0;
             }
         }
+    }
+
+    public boolean fitOnBoard(Piece piece,Player player){
+        //TODO for phase 2 we will probably make this move an arraylist with the moves or something similar instead of a boolean
+        ArrayList<Corner> cornersOnBOard = getCorner(player.getStartingCorner());
+
+        Piece pieceCloned = piece.clone(); // we clone it cause we rotate it and we do not want that to affect the real piece displayed
+        for (int i = 0; i < pieceCloned.getTotalConfig(); i++) { //TODO calculate only for permutations of a piece, for instance 1 instead of 4
+            pieceCloned.rotateLeft(); //try all possible rotations
+            //get all the corners for that piece.
+            if (i == pieceCloned.getNbRotation() - 1) pieceCloned.rotateUpsideDown(); //TODO is done, but have to be tested
+            if (player.isFirstMove()) { //if we only need to check the starting corner:
+                Vector2d adjust = new Vector2d(0,0);
+                if(player.getStartingCorner().get_x()!=0) adjust.set_x(piece.getShape()[0].length-1);
+                if(player.getStartingCorner().get_y()!=0) adjust.set_y(piece.getShape().length-1);
+                Move firstMove = new Move(player, piece, player.getStartingCorner().subtract(adjust));
+                if (firstMove.isAllowed(this)) {
+                    return true;
+                }
+            }else {
+                for (Corner pieceCorner : pieceCloned.getCornersContacts(new Vector2d(0, 0))) {
+                    //piece.printShape();
+                    Move firstMove = new Move(player, pieceCloned, player.getStartingCorner());
+                    if (firstMove.isAllowed(this))
+                        return true;
+
+                    for (Corner corner : cornersOnBOard) {
+                        for (Vector2d emptyCorner : corner.getToCornerPositions()) { //for all the possible empty squares that would become corner contact
+                            //System.out.println("in for: ");emptyCorner.printVector();
+                            //move the piece so that it is contact with the corner with the part of it we want
+                            Vector2d positionOfPiece = emptyCorner.subtract(pieceCorner.getPosition());
+
+
+                            Move move = new Move(player, pieceCloned, positionOfPiece);
+                            //move.print();
+                            //board.print();
+                            //System.out.println();
+                            if (move.isAllowed(this))
+                                return true; //if at least one move is allowed
+                        }
+
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
