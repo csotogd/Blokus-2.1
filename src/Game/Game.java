@@ -265,7 +265,7 @@ public class Game extends Application {
                         if(actualPlayer instanceof GeneticPlayer){
                             move = ((GeneticPlayer) actualPlayer).calculateMove(board);
                         }else if(actualPlayer instanceof BotPlayer) {
-                            move = mc.simulation(actualPlayer.getNumber()-1, 3000);
+                            move = mc.simulation(actualPlayer.getNumber()-1, 4000);
                         }
                         return move;
                     }

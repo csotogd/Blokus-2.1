@@ -467,6 +467,8 @@ public class GeneticPlayer extends BotPlayer {
         GeneticPlayer player = new GeneticPlayer(number);
         player.startingCorner=startingCorner;
         player.setWeightsAsArray(weights.clone());
+        for(Piece p:piecesList) player.getPiecesList().add(p.clone());
+        player.setFirstMove(isFirstMove());
 
         return player;
     }

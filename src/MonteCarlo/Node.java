@@ -2,8 +2,10 @@ package MonteCarlo;
 
 import DataBase.Piece;
 import GameBoard.Board;
+import GameBoard.Corner;
 import Move.Move;
 import Player.Player;
+import Tools.Vector2d;
 
 import java.util.*;
 
@@ -87,32 +89,71 @@ public class Node {
      */
     public boolean randomExpandBias(Player player){
         List biggestPieces;
-        if(player.getPiecesList().size()<10){
+        if(player.getPiecesList().size()<5){
             biggestPieces = player.getPiecesList();
         }else{
             biggestPieces = getBiggestPieces(player);
         }
-        for(int i=0;i<10;i++){
-            Move m = player.randomPossibleMoveClone(state, biggestPieces);
-            if(m!=null){
-                children.add(new Node(this,m));
+
+        List<Move> moves = possibleMoveSet(state, player,biggestPieces);
+        if(moves.size()>0) for(Move m: moves) children.add(new Node(this,m));
+        else return false;
+        return true;
+
+    }
+
+    /**
+     * @return ArrayList of current possible moves a player can make.
+     */
+    public ArrayList<Move> possibleMoveSet(Board board,Player player, List<Piece> pieceSet){
+        ArrayList<Corner> cornersOnBoard = board.getCorner(player.getStartingCorner());
+        ArrayList<Move> moveSet=new ArrayList<>();
+
+        for (Piece piecetoClone: pieceSet){
+            if (!piecetoClone.isUsed()) {
+                Piece piece = piecetoClone.clone(); // we clone it cause we rotate it and we do not want that to affect the real piece displayed
+                for (int i = 0; i < piece.getTotalConfig(); i++) {
+                    //get all the corners for that piece.
+                    if(player.isFirstMove()) {
+                        Vector2d adjust = new Vector2d(0,0);
+                        if(player.getStartingCorner().get_x()!=0) adjust.set_x(piece.getShape()[0].length-1);
+                        if(player.getStartingCorner().get_y()!=0) adjust.set_y(piece.getShape().length-1);
+                        Move firstMove = new Move(player, piece.clone(), player.getStartingCorner().subtract(adjust));
+                        if (firstMove.isAllowed(board)) moveSet.add(firstMove);
+                    }else
+                        for (Corner pieceCorner : piece.getCornersContacts(new Vector2d(0, 0))) {
+                            for (Corner corner : cornersOnBoard) {
+                                for (Vector2d emptyCorner : corner.getToCornerPositions()) { //for all the possible empty squares that would become corner contact
+                                    //move the piece so that it is contact with the corner with the part of it we want
+                                    Vector2d positionOfPiece= emptyCorner.subtract(pieceCorner.getPosition());
+                                    Move move = new Move(player, piece.clone(), positionOfPiece);
+                                    if (move.isAllowed(board))
+                                        moveSet.add(move);
+                                }
+
+                            }
+                        }
+                    piece.rotateRight();
+                    if(i==piece.getNbRotation()-1) piece.rotateUpsideDown();
+                }
             }
         }
-        if(children.size()>0) return true;
-        return false;
+        return moveSet;
     }
 
 
     public List<Piece> getBiggestPieces(Player player){
-        int maxNbrOfBlocks = 5;
-        List<Piece> biggestPieces = new ArrayList<>();
-        while(biggestPieces.size()<10){
-            for (Piece piece:player.getPiecesList()) {
-                if(piece.getNumberOfBlocks()==maxNbrOfBlocks&&state.fitOnBoard(piece,player)){
-                    biggestPieces.add(piece);
-                }
+        int maxscore = 0;
+        LinkedList<Piece> temp = new LinkedList<>();
+        for(Piece p:player.getPiecesList()){
+            if(p.getNumberOfBlocks()+p.getCorners().get(0).size()>=maxscore){
+                temp.addFirst(p);
+                maxscore = p.getNumberOfBlocks()+p.getCorners().get(0).size();
             }
-            maxNbrOfBlocks--;
+        }
+        List<Piece> biggestPieces = new ArrayList<>();
+        while(biggestPieces.size()<5&&temp.size()>0){
+            biggestPieces.add(temp.removeFirst());
         }
         return biggestPieces;
     }
