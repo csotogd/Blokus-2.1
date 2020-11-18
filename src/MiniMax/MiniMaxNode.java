@@ -14,7 +14,7 @@ public class MiniMaxNode {
     private List<MiniMaxNode> children;
     private int score;
     private Player[] players;
-    private int turns;
+    private int depth;
 
     /**
      * CONSTRUCTOR for the root (parent point to itself)
@@ -22,7 +22,7 @@ public class MiniMaxNode {
      */
     public MiniMaxNode(Board state, Player[] ps){
         this.state=state;
-        this.turns = 0;
+        this.depth = 0;
         parent = this;
         move = null;
         children = new ArrayList<>();
@@ -39,19 +39,29 @@ public class MiniMaxNode {
         this.children = new ArrayList<>();
         this.parent = parent;
         this.move = move;
-        this.turns = depth;
+        this.depth = depth;
         this.state = parent.state;
         this.players = parent.players;
         score = 0;
     }
-
+/*
     public void expand(Player player){
         for (Move move: player.possibleMoveSet(state)) {
             System.out.println(player.getPlayerNumber());
-            MiniMaxNode node = new MiniMaxNode(this,move,this.turns+1);
+            MiniMaxNode node = new MiniMaxNode(this,move);
             this.children.add(node);
-            if(player.getNumber()-1<players.length)node.expand(players[player.getNumber()-1]);
+            node.expand(players[player.getNumber()%players.length]);
         }
+    }
+
+ */
+
+    public int getDepth() {
+        return depth;
+    }
+
+    public int getScore() {
+        return score;
     }
 
     public List<MiniMaxNode> getChildren(){

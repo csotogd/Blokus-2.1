@@ -11,6 +11,8 @@ public class MiniMax {
     Player[] players;
     Board board;
     private final int MAX_DEPTH = 2;
+    int currentDepth;
+    int rootPlayerNbr;
 
     public MiniMax(Player[] players, Board board){
         this.players = players;
@@ -18,30 +20,56 @@ public class MiniMax {
     }
 
     public void simulate(int playerNbr){
-        Player[] newPlayers = new Player[players.length-1];
-        int counter =0;
-        for (Player player:players) {
-            if(player.getNumber()-1!=playerNbr){
-                newPlayers[counter++]=player;
-            }
-        }
-        MiniMaxNode root = new MiniMaxNode(board,newPlayers);
+        this.rootPlayerNbr = playerNbr;
+        currentDepth=0;
+        MiniMaxNode root = new MiniMaxNode(board,players);
         //create first nodes of that player
-        createNodes(root,playerNbr);
+        alphaBeta(root,root.getDepth(),playerNbr,0,0);
     }
 
+    /*
     //MAX
     public void createNodes(MiniMaxNode rootNode,int playerNbr){
         int turnCounter = 0;
         while(turnCounter<MAX_DEPTH){
             for (Move move:players[playerNbr].possibleMoveSet(board)){
-                MiniMaxNode newNode = new MiniMaxNode(rootNode,move,turnCounter);
+                MiniMaxNode newNode = new MiniMaxNode(rootNode,move);
                 rootNode.getChildren().add(newNode);
                 newNode.expand(players[playerNbr+1]);
             }
             //System.out.println("next turn");
             turnCounter++;
         }
+    }
+
+     */
+
+    private float alphaBeta(MiniMaxNode node,int depth, int playerNbr,float alpha, float beta) {
+        if(node.getDepth()==MAX_DEPTH){
+            if(playerNbr==rootPlayerNbr) return node.getScore();
+            else return -node.getScore();
+        }else{
+            for (Move possibleMove : players[playerNbr-1].possibleMoveSet(board)){
+                MiniMaxNode newNode = new MiniMaxNode(node,possibleMove,depth-1);
+                int nextPlayerNbr = 0;
+                if(playerNbr>=players.length){
+                    currentDepth++;
+                    nextPlayerNbr = 1;
+                }else{
+                    nextPlayerNbr++;
+                }
+                if(playerNbr==rootPlayerNbr || nextPlayerNbr==rootPlayerNbr){
+                    alpha = Math.max(alpha,alphaBeta(newNode,depth-1,playerNbr,-alpha,-beta));
+                }else {
+                    alpha = Math.max(alpha,alphaBeta(newNode,depth-1,playerNbr,alpha,beta));
+                }
+                if(alpha>=beta){
+                    return beta;
+                }
+            }
+            return alpha;
+        }
+
     }
 
     public static void main(String[] args) {
@@ -59,7 +87,7 @@ public class MiniMax {
         p4.setPiecesList(PieceFactory.get().getAllPieces());
         Board b = new Board(new Player[]{p1, p2});
         MiniMax m = new MiniMax(new Player[]{p1,p2},b);
-        m.simulate(p1.getPlayerNumber()-1);
+        m.simulate(p1.getPlayerNumber());
     }
 
 
