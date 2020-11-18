@@ -78,7 +78,11 @@ public class Game extends Application {
      * initialization of the game parameters
      */
     public void initializeGame(){
-        DIMENSION = Data.getDIMENSION();
+        if(players.length==2){
+            DIMENSION = 16;
+        }else{
+            DIMENSION = Data.getDIMENSION();
+        }
         players=initializePlayers(Data.getPlayersName(), DIMENSION, players);
         actualPlayer = players[0];
         for(Player player:players)
