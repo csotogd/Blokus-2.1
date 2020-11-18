@@ -21,7 +21,7 @@ public class GeneticPlayer extends BotPlayer {
     weights[3] = biggestPiece
     weights[4] = farFromStartingPoint
      */
-    protected float[] weights = new float[5];
+    protected float[] weights = {0.4533498f, 0.073048696f, 0.51042575f, 1.0362283f, 0.8176211f};//new float[5];
 
 
     public GeneticPlayer(int number) {

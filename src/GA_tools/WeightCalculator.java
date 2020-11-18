@@ -36,21 +36,26 @@ public class WeightCalculator {
     private final int DIMENSION = 20;
 
     public static void main(String[] args) {
+        //Found this weight set:
+        //[0.4533498, 0.073048696, 0.51042575, 1.0362283, 0.8176211]
 
         WeightCalculator calculator = new WeightCalculator();
         calculator.calculateWeights();
 
-        //TODO: Make tournament method where just one or a few individuals remain. They will have the best weights - It is done
         //TODO: Make transition method (maybe one where the winners occupy a part of the new population and the rest is their offspring)
         //TODO: Make more reproduction methods - We now have two
         //TODO: Make mutation methods - One has been made
 
-        //TODO: Comment everything
 
     }
 
 //-------------------------------------------General methods-------------------------------------------------------
 
+    /**
+     * This is the method that puts all components together and calculates the weights.
+     * First, this method calculates all generations and then holds a tournament where only one
+     * player will remain. This player will have the best weights.
+     */
     public void calculateWeights(){
         createPopulation();
         for (int i = 0; i < this.generations; i++){
@@ -78,6 +83,11 @@ public class WeightCalculator {
         System.out.println(Arrays.toString(population.get(0).getWeightsAsArray()));
     }
 
+    /**
+     * This method plays all games for one generation or tournament round.
+     * It also provides a nice interface to see how far into the generation
+     * or round it is.
+     */
     private void playGames(){
         //Random r = new Random();
 
@@ -108,6 +118,10 @@ public class WeightCalculator {
         System.out.print("100%");
     }
 
+    /**
+     * This method picks {@code nbrOfPlayers} players randomly and lets them play against
+     * each other. Then, it puts the winner in {@code winners}
+     */
     private void matchUpAndPlay(){
         Player[] players = new Player[nbrOfPlayers];
         Random random = new Random();
@@ -130,6 +144,9 @@ public class WeightCalculator {
         winners.add((GeneticPlayer) simulation.getWinner());
     }
 
+    /**
+     * Creates the initial population, filled with random weights.
+     */
     private void createPopulation(){
         Random random = new Random();
         //will assign random weights between 0 and 1 to the strategies of every player
@@ -163,6 +180,11 @@ public class WeightCalculator {
 
 //---------------------------------Transition to next generation methods-------------------------------------------
 
+    /**
+     * Fills the population again with the offspring of the winners.
+     * Offspring gets weights determined by two random parents. Then, the
+     * offspring may or may not be randomly mutated.
+     */
     private void transitionNextGeneration(){
         Random r = new Random();
         //fill up the population with winners
@@ -183,6 +205,9 @@ public class WeightCalculator {
 
     }
 
+    /**
+     * Advances to the next round of a tournament.
+     */
     private void tournament(){
         populationSize /= nbrOfPlayers;
         population.addAll(winners);
@@ -196,9 +221,9 @@ public class WeightCalculator {
      * for every strategy  construct an interval in with the parents weights:
      * [min(weightFather, weightMother), max(weightFather, weightMother),]
      * then the kid´s weight will be a random  point in that interval
-     * @param father
-     * @param mother
-     * @return A new individual that will be introduce in the population
+     * @param father One randomly picked father of the kid
+     * @param mother One randomly picked mother of the kid
+     * @return A new individual that will be introduced in the population
      */
     private GeneticPlayer reproduceByInterval(GeneticPlayer father, GeneticPlayer mother){
         Random random = new Random();
@@ -220,6 +245,16 @@ public class WeightCalculator {
 
     }
 
+    /**
+     * A reproduction strategy
+     * Reproduce by chromosomes:
+     * Randomly divides the parents' weights to the kid's weights.
+     * There is a 50% chance for a kid's weight to come from the father
+     * and a 50% chance for it to come from the mother
+     * @param father One randomly picked father of the kid
+     * @param mother One randomly picked mother of the kid
+     * @return A new individual that will be introduced in the population
+     */
     private GeneticPlayer reproduceByChromosomes(GeneticPlayer father, GeneticPlayer mother){
         Random r = new Random();
         float[] weightsFather = father.getWeightsAsArray();
@@ -241,6 +276,12 @@ public class WeightCalculator {
 
 //--------------------------------------------Mutation methods-----------------------------------------------------
 
+    /**
+     * Randomly mutates the weights of a given player. The chance that a weight will be mutated
+     * is denoted by {@code mutationChance}. If a weight gets mutated, then a random number between
+     * -1 and 1 will be added to this weight.
+     * @param player The player that will potentially be mutated
+     */
     private void mutate(GeneticPlayer player){
         Random r = new Random();
 
