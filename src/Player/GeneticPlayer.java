@@ -42,57 +42,65 @@ public class GeneticPlayer extends BotPlayer {
      *         biggestPiece
      *         farFromStartingCorner
      */
-    public GeneticPlayer(int number, float[] weights) {
+    public GeneticPlayer(int number, float[][] weights) {
         super(number);
         this.weights=weights;
     }
 
-    public float[] getWeightsAsArray() {
+    public float[] getCurrentWeightsAsArray() {
+        return currentWeights;
+    }
+
+    public float[][] getWeightsAsArray(){
         return weights;
     }
 
-    public void setWeightsAsArray(float[] weights){
-        this.weights=weights;
+    public void setCurrentWeightsAsArray(float[] weights, int phase){
+        this.weights[phase]=weights;
     }
 
-    public void setWeightAddMostCorners(float weight){
-    this.weights[0]=weight;
+    public void setWeightsAsArray(float[][] weights){
+        this.weights = weights;
     }
 
-    public float getWeightAddMostCorners(){
-        return this.weights[0];
+    public void setWeightAddMostCorners(float weight, int phase){
+        this.weights[phase][0]=weight;
     }
 
-    public void setWeightBlocksMostCorners(float weight){
-        this.weights[1]=weight;
+    public float getWeightAddMostCorners(int phase){
+        return this.weights[phase][0];
     }
 
-    public float getWeightBlocksMostCorners(){
-        return this.weights[1];
+    public void setWeightBlocksMostCorners(float weight, int phase){
+        this.weights[phase][1]=weight;
     }
 
-    public void setWeightClosestToMiddle(float weight){
-        this.weights[2]=weight;
+    public float getWeightBlocksMostCorners(int phase){
+        return this.weights[phase][1];
     }
 
-    public float getWeightClosestToMiddle(){
-        return this.weights[2];
+    public void setWeightClosestToMiddle(float weight, int phase){
+        this.weights[phase][2]=weight;
     }
 
-    public void setWeightBiggestPiece(float weight){
-        this.weights[3]=weight;
+    public float getWeightClosestToMiddle(int phase){
+        return this.weights[phase][2];
     }
 
-    public float getWeightBiggestPiece(float weight){
-        return this.weights[3];
+    public void setWeightBiggestPiece(float weight, int phase){
+        this.weights[phase][3]=weight;
     }
 
-    public void setWeightFarFromStartingPoint(float weight){
-        this.weights[4]=weight;
+    public float getWeightBiggestPiece(float weight, int phase){
+        return this.weights[phase][3];
     }
 
-    public float getWeightFarFromStartingPoint(float weight){
-        return this.weights[4];
+    public void setWeightFarFromStartingPoint(float weight, int phase){
+        this.weights[phase][4]=weight;
+    }
+
+    public float getWeightFarFromStartingPoint(float weight, int phase){
+        return this.weights[phase][4];
     }
 
     public void addTurn(){
@@ -113,11 +121,12 @@ public class GeneticPlayer extends BotPlayer {
 
 
     public Move calculateMove(Board board){
-        if (turn == phasesStartTurns[0]){
+        if (turn >= phasesStartTurns[0] && turn < phasesStartTurns[1]){
             currentWeights = weights[1];
-        }
-        if (turn == phasesStartTurns[1]){
+        }else if (turn >= phasesStartTurns[1]){
             currentWeights = weights[2];
+        }else {
+            currentWeights = weights[0];
         }
 
        //while we code all the different strategies, make this call the one you want to try
@@ -131,11 +140,11 @@ public class GeneticPlayer extends BotPlayer {
             //uncomment to test a strategy
 
             //the weights is what we will calculate in the genetic algorithm
-            score += addsMostCorners(weights[0], move, board);
-            score += blocksMostCorners(weights[1], move, board);
-            score += closestToMiddle(weights[2], move, board);
-            score += biggestPiece(weights[3], move, board);
-            score += farFromStartingCorner(weights[4], move, board);
+            score += addsMostCorners(currentWeights[0], move, board);
+            score += blocksMostCorners(currentWeights[1], move, board);
+            score += closestToMiddle(currentWeights[2], move, board);
+            score += biggestPiece(currentWeights[3], move, board);
+            score += farFromStartingCorner(currentWeights[4], move, board);
             /*
             weights[0] = addMostCorners
             weights[1] = blocksMostCorners

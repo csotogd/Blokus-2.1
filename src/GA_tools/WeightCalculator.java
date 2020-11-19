@@ -5,7 +5,6 @@ import Player.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import  java.util.Random;
 
 /**
@@ -83,7 +82,7 @@ public class WeightCalculator {
         }
 
         System.out.println("\nBest weights: ");
-        System.out.println(Arrays.toString(population.get(0).getWeightsAsArray()));
+        System.out.println(Arrays.toString(population.get(0).getCurrentWeightsAsArray()));
     }
 
     /**
@@ -230,8 +229,8 @@ public class WeightCalculator {
      */
     private GeneticPlayer reproduceByInterval(GeneticPlayer father, GeneticPlayer mother){
         Random random = new Random();
-        float[] weightsFather= father.getWeightsAsArray();
-        float[] weightsMother= mother.getWeightsAsArray();
+        float[] weightsFather= father.getCurrentWeightsAsArray();
+        float[] weightsMother= mother.getCurrentWeightsAsArray();
         GeneticPlayer kid = new GeneticPlayer(0); //this number shouldn´t mind
         float[] kidsWeights= new float[GeneticPlayer.NUMBER_OF_STRATEGIES];
         for (int i = 0; i<GeneticPlayer.NUMBER_OF_STRATEGIES; i++){
@@ -260,8 +259,8 @@ public class WeightCalculator {
      */
     private GeneticPlayer reproduceByChromosomes(GeneticPlayer father, GeneticPlayer mother){
         Random r = new Random();
-        float[] weightsFather = father.getWeightsAsArray();
-        float[] weightsMother = mother.getWeightsAsArray();
+        float[] weightsFather = father.getCurrentWeightsAsArray();
+        float[] weightsMother = mother.getCurrentWeightsAsArray();
         GeneticPlayer kid = new GeneticPlayer(0); //this number shouldn´t mind
         float[] kidsWeights = new float[GeneticPlayer.NUMBER_OF_STRATEGIES];
         for (int i = 0; i < kidsWeights.length; i++){
@@ -288,7 +287,7 @@ public class WeightCalculator {
     private void mutate(GeneticPlayer player){
         Random r = new Random();
 
-        float[] weights = player.getWeightsAsArray();
+        float[] weights = player.getCurrentWeightsAsArray();
 
         //Every weight has an equal opportunity to be mutated
         for (int mutateWeight = 0; mutateWeight < weights.length; mutateWeight++) {
