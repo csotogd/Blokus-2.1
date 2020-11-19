@@ -153,10 +153,15 @@ public class WeightCalculator {
         winners.add((GeneticPlayer) simulation.getWinner());
     }
 
+    private void createPopulation(){
+        //createPopulationDifferentPhases();
+        createPopulationCollapsePhases();
+    }
+
     /**
      * Creates the initial population, filled with random weights.
      */
-    private void createPopulation(){
+    private void createPopulationDifferentPhases(){
         Random random = new Random();
         //will assign random weights between 0 and 1 to the strategies of every player
         for (int i = 0; i < populationSize; i++) {
@@ -171,6 +176,39 @@ public class WeightCalculator {
             population.add(individual);
         }
     }
+
+    /**
+     * Every individual is assigned weights in the following way:
+     * For every strategy, its weight will be the same in all phases
+     *
+     * for instance:
+     * [0.3 0.9, 0.1, 0.7, 0.2] phase 1
+     * [0.3 0.9, 0.1, 0.7, 0.2] phase 2
+     * [0.3 0.9, 0.1, 0.7, 0.2] phase 3
+     */
+    private void createPopulationCollapsePhases(){
+        Random random = new Random();
+        //will assign random weights between 0 and 1 to the strategies of every player
+        for (int i = 0; i < populationSize; i++) {
+            GeneticPlayer individual = new GeneticPlayer(i);
+
+            float w0=random.nextFloat();
+            float w1=random.nextFloat();
+            float w2=random.nextFloat();
+            float w3=random.nextFloat();
+            float w4=random.nextFloat();
+
+            for (int phase = 0; phase < 3; phase++) {
+                individual.setWeightAddMostCorners(w0, phase);
+                individual.setWeightBiggestPiece(w1, phase);
+                individual.setWeightBlocksMostCorners(w2, phase);
+                individual.setWeightClosestToMiddle(w3, phase);
+                individual.setWeightFarFromStartingPoint(w4, phase);
+            }
+            population.add(individual);
+        }
+    }
+
 
     /**
      * This method checks whether the population can be evenly divided into x games.
