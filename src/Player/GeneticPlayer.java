@@ -13,6 +13,7 @@ import java.util.Map;
 
 public class GeneticPlayer extends BotPlayer {
     public static final int NUMBER_OF_STRATEGIES = 5;
+    private int turn = 0;
 
     /*
     weights[0] = addMostCorners
@@ -21,7 +22,9 @@ public class GeneticPlayer extends BotPlayer {
     weights[3] = biggestPiece
     weights[4] = farFromStartingPoint
      */
-    protected float[] weights = {0.4533498f, 0.073048696f, 0.51042575f, 1.0362283f, 0.8176211f};//new float[5];
+    protected float[][] weights = new float[3][5];
+    protected int[] phasesStartTurns = new int[2];
+    protected float[] currentWeights = weights[0];
 
 
     public GeneticPlayer(int number) {
@@ -92,7 +95,13 @@ public class GeneticPlayer extends BotPlayer {
         return this.weights[4];
     }
 
+    public void addTurn(){
+        turn++;
+    }
 
+    public void resetTurn(){
+        turn = 0;
+    }
 
 
 
@@ -104,6 +113,13 @@ public class GeneticPlayer extends BotPlayer {
 
 
     public Move calculateMove(Board board){
+        if (turn == phasesStartTurns[0]){
+            currentWeights = weights[1];
+        }
+        if (turn == phasesStartTurns[1]){
+            currentWeights = weights[2];
+        }
+
        //while we code all the different strategies, make this call the one you want to try
         //System.out.println("In calculate move for genetic algorithm");
 

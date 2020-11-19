@@ -27,8 +27,8 @@ import  java.util.Random;
  *
  */
 public class WeightCalculator {
-    private int populationSize = 800; //must be multiple of 4
-    private final int generations = 10;
+    private int populationSize = 200; //must be multiple of 4
+    private final int generations = 100;
     private final double mutationChance = 0.1;
     private ArrayList<GeneticPlayer> winners = new ArrayList<>();//could also be a population of weights... we´ll see
     private  ArrayList<GeneticPlayer> population = new ArrayList<>();
@@ -38,6 +38,7 @@ public class WeightCalculator {
     public static void main(String[] args) {
         //Found this weight set:
         //[0.4533498, 0.073048696, 0.51042575, 1.0362283, 0.8176211]
+        //[0.39246097, 0.51849484, 0.5114118, 0.9967747, 0.24054877]
 
         WeightCalculator calculator = new WeightCalculator();
         calculator.calculateWeights();
@@ -47,6 +48,8 @@ public class WeightCalculator {
         //TODO: Make mutation methods - One has been made
 
 
+        //TODO: Try finding weights for each phase one at a time
+        //TODO: Try finding weights for every phase at once
     }
 
 //-------------------------------------------General methods-------------------------------------------------------
