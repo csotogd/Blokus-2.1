@@ -26,14 +26,15 @@ import  java.util.Random;
  *
  */
 public class WeightCalculator {
-    private int populationSize = 500; //must be multiple of 4
-    private final int generations = 70;
-    private final double mutationChance = 0.02;
+    private int populationSize = 800; //must be multiple of 4
+    private final int generations = 10;
+    private final double mutationChance = 0.1;
     private ArrayList<GeneticPlayer> winners = new ArrayList<>();//could also be a population of weights... we´ll see
     private  ArrayList<GeneticPlayer> population = new ArrayList<>();
     private final int nbrOfPlayers = 4;
     private final int DIMENSION = 20;
     private final float[] targetWeights={ 0.3924f, 0.522f, 0.49f, 0.98038f, 0.863f} ;//this arre the weights that won´t change for 2 of the 3 phases
+    private int alteredPhase=0;   // the phase for which we will alter the weights in case we do
 
     public static void main(String[] args) {
         //Found these weight sets:
@@ -155,13 +156,14 @@ public class WeightCalculator {
 
     private void createPopulation(){
         //createPopulationDifferentPhases();
-        createPopulationCollapsePhases();
+       // createPopulationCollapsePhases();
+        createPopulationOneRandomTwoFixed(alteredPhase);
     }
 
     /**
      * Creates the initial population, filled with random weights.
      */
-    private void createPopulationDifferentPhases(){
+    private void createPopulationDifferentPhasesRandom(){
         Random random = new Random();
         //will assign random weights between 0 and 1 to the strategies of every player
         for (int i = 0; i < populationSize; i++) {
@@ -172,6 +174,36 @@ public class WeightCalculator {
                 individual.setWeightBlocksMostCorners(random.nextFloat(), phase);
                 individual.setWeightClosestToMiddle(random.nextFloat(), phase);
                 individual.setWeightFarFromStartingPoint(random.nextFloat(), phase);
+            }
+            population.add(individual);
+        }
+    }
+
+    /**
+     * creates a population where the weights of 2 phases equal the target ones, they are fixed,
+     * the only random one is the phase we tell the method. SO it really will be the only phase affecting the final output
+     *
+     * @param randomPhase the phase that will have random weights
+     */
+    private void createPopulationOneRandomTwoFixed(int randomPhase){
+        Random random = new Random();
+        //will assign random weights between 0 and 1 to the strategies of every player
+        for (int i = 0; i < populationSize; i++) {
+            GeneticPlayer individual = new GeneticPlayer(i);
+            for (int phase = 0; phase < 3; phase++) {
+                if (phase == randomPhase) {
+                    individual.setWeightAddMostCorners(random.nextFloat(), phase);
+                    individual.setWeightBiggestPiece(random.nextFloat(), phase);
+                    individual.setWeightBlocksMostCorners(random.nextFloat(), phase);
+                    individual.setWeightClosestToMiddle(random.nextFloat(), phase);
+                    individual.setWeightFarFromStartingPoint(random.nextFloat(), phase);
+                } else {
+                    individual.setWeightAddMostCorners(targetWeights[0], phase);
+                    individual.setWeightBlocksMostCorners(targetWeights[1], phase);
+                    individual.setWeightClosestToMiddle(targetWeights[2], phase);
+                    individual.setWeightBiggestPiece(targetWeights[3], phase);
+                    individual.setWeightFarFromStartingPoint(targetWeights[4], phase);
+                }
             }
             population.add(individual);
         }
@@ -252,7 +284,7 @@ public class WeightCalculator {
             GeneticPlayer mother = winners.get(momIndex);
 
             //Reproduction method
-            GeneticPlayer kid = reproduceByIntervalCollapsePhases(father, mother);
+            GeneticPlayer kid = reproduce(father, mother);
 
             //Mutation method
             mutate(kid);
@@ -271,6 +303,11 @@ public class WeightCalculator {
     }
 
 //------------------------------------------Reproduction methods---------------------------------------------------
+
+    private GeneticPlayer reproduce(GeneticPlayer father, GeneticPlayer mother){
+        //return this.reproduceByIntervalCollapsePhases(father,mother);
+       return this.reproduceByIntervalDifferentPhases(father,mother, alteredPhase);
+    }
 
     /**
      * one reproducing strategy
@@ -292,8 +329,8 @@ public class WeightCalculator {
 
         for (int i = 0; i<GeneticPlayer.NUMBER_OF_STRATEGIES; i++){
             //since all weights will be the same for every phase awhen this is used, it is ok to index with either 0 1 or 2
-            float max=Math.max(weightsFather[i][0], weightsMother[i][0]);
-            float min=Math.min(weightsFather[i][0], weightsMother[i][0]);
+            float max=Math.max(weightsFather[0][i], weightsMother[0][i]);
+            float min=Math.min(weightsFather[0][i], weightsMother[0][i]);
             float kidWeight = min + random.nextFloat() * (max - min);
             kidsWeights[0][i]=kidWeight;
             kidsWeights[1][i]=kidWeight;
@@ -440,8 +477,9 @@ public class WeightCalculator {
 //--------------------------------------------Mutation methods-----------------------------------------------------
 
     private void mutate(GeneticPlayer player){
-        this.mutateWeightsCollapsePhases(player);
-        //this.mutateWeightsDifferentPhases(player);
+        //this.mutateWeightsCollapsePhases(player);
+       // this.mutateWeightsDifferentPhases(player);
+        this.mutateWeightsOnlyDesiredPhase(player, alteredPhase);
         //this.mutatePhases(player);
 
         //do not use mutateWeightCollapsePhases with mutateWeightsDifferentPhases at the same time!
@@ -470,6 +508,30 @@ public class WeightCalculator {
                     weights[phase][mutateWeight] += r.nextFloat() * 2 - 1;
                 }
             }
+        }
+    }
+
+    /**
+     * Randomly mutates the weights of a given player. The chance that a weight will be mutated
+     * is denoted by {@code mutationChance}. If a weight gets mutated, then a random number between
+     * -1 and 1 will be added to this weight.
+     * It can mutate any of the 5x3 weights that are there, for every of the 15, utation is considered individually
+     * @param player The player that will potentially be mutated
+     */
+    private void mutateWeightsOnlyDesiredPhase(GeneticPlayer player, int alteredPhase){
+        Random r = new Random();
+
+        float[][] weights = player.getWeightsAsArray();
+
+        //Every weight has an equal opportunity to be mutated
+
+            for (int mutateWeight = 0; mutateWeight < weights[0].length; mutateWeight++) {
+                if (r.nextDouble() <= mutationChance) {
+                    //We mutate by adding or subtracting a value between 0 and 1
+                    //We can always change this.
+                    weights[alteredPhase][mutateWeight] += r.nextFloat() * 2 - 1;
+                }
+
         }
     }
 
