@@ -259,6 +259,7 @@ public class Game extends Application {
                         Move move = null;
                         if(actualPlayer instanceof GeneticPlayer){
                             move = ((GeneticPlayer) actualPlayer).calculateMove(board);
+                            ((GeneticPlayer) actualPlayer).addTurn();
                         }else if(actualPlayer instanceof BotPlayer) {
                             move = mc.simulation(actualPlayer.getNumber()-1, 4000);
                         }
