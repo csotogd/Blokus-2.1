@@ -33,6 +33,7 @@ public class WeightCalculator {
     private  ArrayList<GeneticPlayer> population = new ArrayList<>();
     private final int nbrOfPlayers = 4;
     private final int DIMENSION = 20;
+    private final float[] targetWeights={ 0.3924f, 0.522f, 0.49f, 0.98038f, 0.863f} ;//this arre the weights that won´t change for 2 of the 3 phases
 
     public static void main(String[] args) {
         //Found these weight sets:
@@ -232,19 +233,23 @@ public class WeightCalculator {
      */
     private GeneticPlayer reproduceByInterval(GeneticPlayer father, GeneticPlayer mother){
         Random random = new Random();
-        float[] weightsFather= father.getCurrentWeightsAsArray();
-        float[] weightsMother= mother.getCurrentWeightsAsArray();
+        float[][] weightsFather= father.getWeightsAsArray();
+        float[][] weightsMother= mother.getWeightsAsArray();
         GeneticPlayer kid = new GeneticPlayer(0); //this number shouldn´t mind
-        float[] kidsWeights= new float[GeneticPlayer.NUMBER_OF_STRATEGIES];
-        for (int i = 0; i<GeneticPlayer.NUMBER_OF_STRATEGIES; i++){
+        float[][] kidsWeights= new float[3][GeneticPlayer.NUMBER_OF_STRATEGIES];
 
-            float max=Math.max(weightsFather[i], weightsMother[i]);
-            float min=Math.min(weightsFather[i], weightsMother[i]);
+
+        for (int i = 0; i<GeneticPlayer.NUMBER_OF_STRATEGIES; i++){
+            //since all weights will be the same for every phase awhen this is used, it is ok to index with either 0 1 or 2
+            float max=Math.max(weightsFather[i][0], weightsMother[i][0]);
+            float min=Math.min(weightsFather[i][0], weightsMother[i][0]);
             float kidWeight = min + random.nextFloat() * (max - min);
-            kidsWeights[i]=kidWeight;
+            kidsWeights[0][i]=kidsWeight;
+            kidsWeights[1][i]=kidsWeight;
+            kidsWeights[2][i]=kidsWeight;
         }
 
-        kid.setCurrentWeightsAsArray(kidsWeights, 0);
+        kid.setWeightsAsArray(kidsWeights);
 
         return kid;
 
@@ -278,6 +283,67 @@ public class WeightCalculator {
 
         return kid;
     }
+
+
+    //----------------------------------Reproduction methods for PHASES SEPARATELY----------------------------------//
+    /**
+     * one reproducing strategy
+     * Reproducing strategy by interval:
+     * for every strategy  construct an interval in with the parents weights:
+     * [min(weightFather, weightMother), max(weightFather, weightMother),]
+     * then the kid´s weight will be a random  point in that interval
+     *
+     * will only change the weights of ONE SELECTED phase.
+     *
+     * phase can  be 0, 1 or 2
+     *
+     * @param father One randomly picked father of the kid
+     * @param mother One randomly picked mother of the kid
+     * @return A new individual that will be introduced in the population
+     */
+    private GeneticPlayer reproduceByIntervalPhases(GeneticPlayer father, GeneticPlayer mother, int phase){
+        Random random = new Random();
+        float[][] weightsFather = father.getWeightsAsArray();
+        float[][] weightsMother= mother.getWeightsAsArray();
+        GeneticPlayer kid = new GeneticPlayer(0); //this number shouldn´t mind
+
+        //weights of 2 phases will be the same as the parent one
+        float[] kidsWeightsforDesiredPhase= new float[GeneticPlayer.NUMBER_OF_STRATEGIES];
+        float [][] kidsWeights= new float[3][GeneticPlayer.NUMBER_OF_STRATEGIES];
+
+        //update weights for that phase.
+
+        //else keep it the same as it was
+        for (int i = 0; i<GeneticPlayer.NUMBER_OF_STRATEGIES; i++){
+            //get weights only for one desired phase
+            float max=Math.max(weightsFather[phase][i], weightsMother[phase][i]);
+            float min=Math.min(weightsFather[phase][i], weightsMother[phase][i]);
+            float kidWeight = min + random.nextFloat() * (max - min);
+
+            kidsWeightsforDesiredPhase[i]=kidWeight;
+        }
+
+        for (int i=0; i<3; i++) {//set every weight of kid
+            if(i==phase)
+            //kid gets reproduced weights for one phase
+            kidsWeights[phase] = kidsWeightsforDesiredPhase;
+
+            else{
+                kidsWeights[i]== this.targetWeights;
+                //for the other two phases weights are kept constant
+
+            }
+        }
+
+        kid.setWeightsAsArray(kidsWeights);
+
+        return kid;
+
+    }
+
+
+
+
 
 //--------------------------------------------Mutation methods-----------------------------------------------------
 

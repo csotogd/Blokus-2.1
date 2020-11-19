@@ -12,6 +12,7 @@ import java.util.Map;
 
 
 public class GeneticPlayer extends BotPlayer {
+
     public static final int NUMBER_OF_STRATEGIES = 5;
     private int turn = 0;
     private int phase = 0;
