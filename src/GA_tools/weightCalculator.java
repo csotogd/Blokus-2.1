@@ -6,7 +6,6 @@ import GameBoard.BoardUI;
 import Player.Player;
 import Game.Game;
 import Tools.Vector2d;
-import com.sun.javafx.scene.traversal.WeightedClosestCorner;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Background;

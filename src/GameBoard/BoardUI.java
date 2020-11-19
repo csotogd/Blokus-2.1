@@ -20,6 +20,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 /*
 * It´s a ui class but many logic operations happen here too, take a look
 *
@@ -44,7 +48,8 @@ public class BoardUI{
     Pane bottom;
     Pane left;
     Pane top;
-    public FlowPane allPieces[];
+    public FlowPane[] allPieces;
+    public List<HashMap<String, Pane>> playerPieces;
     int actualSelectedPieceNbr;
     public Text turnOfPlayerText;
     public boolean beginning = true;
@@ -61,6 +66,10 @@ public class BoardUI{
         this.game = game;
         players = game.getPlayers();
         allPieces = new FlowPane[players.length];
+        playerPieces = new ArrayList<>();
+        for (int i = 0; i < players.length; i++) {
+            playerPieces.add(new HashMap<>());
+        }
         this.background = Data.createBackGround();
         this.principal = new Pane();
         paint();
@@ -312,6 +321,8 @@ public class BoardUI{
         principal.setHeight(RECTANGLE_SIZE.get_x()*2.3f);
         principal.setWidth(RECTANGLE_SIZE.get_y()*1.5f);
 
+        int playerIdx = game.getActualPlayer().getNumber() - 1;
+
         actualSelectedPieceNbr = 1;
         rightRotate = new Button("Right rotation");
         rightRotate.setTranslateX(105); rightRotate.setTranslateY(-20);
@@ -326,8 +337,10 @@ public class BoardUI{
                     isPiece++;
                     if((isPiece==pieceNbr)){
                         int index = allPieces[game.getActualPlayer().getNumber()-1].getChildren().indexOf(object);
-                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().remove(index);
-                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().add(index,drawPiece(game.getActualPlayer().getColor(),piece,allPieces[game.getActualPlayer().getNumber()-1]));
+                        allPieces[playerIdx].getChildren().remove(index);
+                        Pane piecePane = drawPiece(game.getActualPlayer().getColor(),piece,allPieces[playerIdx]);
+                        allPieces[playerIdx].getChildren().add(index,piecePane);
+                        playerPieces.get(playerIdx).put(piece.getLabel(), piecePane);
                         break;
                     }
                 }
@@ -347,8 +360,10 @@ public class BoardUI{
                     isPiece++;
                     if((isPiece==pieceNbr)){
                         int index = allPieces[game.getActualPlayer().getNumber()-1].getChildren().indexOf(object);
-                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().remove(index);
-                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().add(index,drawPiece(game.getActualPlayer().getColor(),piece,allPieces[game.getActualPlayer().getNumber()-1]));
+                        allPieces[playerIdx].getChildren().remove(index);
+                        Pane piecePane = drawPiece(game.getActualPlayer().getColor(),piece,allPieces[playerIdx]);
+                        allPieces[playerIdx].getChildren().add(index,piecePane);
+                        playerPieces.get(playerIdx).put(piece.getLabel(), piecePane);
                         break;
                     }
                 }
@@ -368,9 +383,10 @@ public class BoardUI{
                     isPiece++;
                     if((isPiece==pieceNbr)){
                         int index = allPieces[game.getActualPlayer().getNumber()-1].getChildren().indexOf(object);
-                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().remove(index);
-                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().add(index,drawPiece(game.getActualPlayer().getColor(),piece,allPieces[game.getActualPlayer().getNumber()-1]));
-
+                        allPieces[playerIdx].getChildren().remove(index);
+                        Pane piecePane = drawPiece(game.getActualPlayer().getColor(),piece,allPieces[playerIdx]);
+                        allPieces[playerIdx].getChildren().add(index,piecePane);
+                        playerPieces.get(playerIdx).put(piece.getLabel(), piecePane);
                         break;
                     }
                 }
@@ -406,6 +422,7 @@ public class BoardUI{
      */
     public FlowPane pieceOfPlayer(int playerNbr){
         allPieces[playerNbr] = new FlowPane();
+        playerPieces.set(playerNbr, new HashMap<>());
         Text text = new Text(players[playerNbr].getName());
         text.setFont(Font.font("Verdana", 20));
         text.setFill(players[playerNbr].getColor());
@@ -417,14 +434,32 @@ public class BoardUI{
         for (Piece pieceLeft:players[playerNbr].getPiecesList()) {
             if(!pieceLeft.isUsed()){
                 allPieces[playerNbr].getChildren().add(new Text(Integer.toString(++pieceCounter)));
-                Node piece = drawPiece(players[playerNbr].getColor(),pieceLeft,allPieces[playerNbr]);
+                Pane piece = drawPiece(players[playerNbr].getColor(),pieceLeft,allPieces[playerNbr]);
                 pieceLeft.setPosInBoardX(piece.getTranslateX());
                 pieceLeft.setPosInBoardY(piece.getTranslateY());
                 allPieces[playerNbr].getChildren().add(piece);
+                playerPieces.get(playerNbr).put(pieceLeft.getLabel(), piece);
             }
         }
         allPieces[playerNbr].setMinSize(allPieces[playerNbr].getWidth(),allPieces[playerNbr].getHeight());
         return allPieces[playerNbr];
+    }
+
+    public void animateAIMove(Move move) {
+//        FlowPane playerPieces = allPieces[move.getPlayer().getNumber() - 1];
+        HashMap<String, Pane> map = playerPieces.get(move.getPlayer().getNumber() - 1);
+        for (String key : map.keySet()) {
+            System.out.println(">>>>>>>>>>>> " + key);
+            map.get(key).setScaleX(10);
+        }
+//        List<Node> x = playerPieces.getChildren();
+//        for (Node n : x) {
+//            System.out.println(">>> " + n);
+//            if (n.getClass().equals(GridPane.class)) {
+//                System.out.println("====================================");
+//                n.setScaleX(10);
+//            }
+//        }
     }
 
     /**
@@ -451,6 +486,7 @@ public class BoardUI{
 
             }
         }
+
         final double[] xPos = new double[1];
         final double[] yPos = new double[1];
         piece.setOnMousePressed(new EventHandler<MouseEvent>() {

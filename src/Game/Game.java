@@ -54,6 +54,11 @@ public class Game extends Application {
 
     }
 
+    // required by javafx
+    public Game() {
+        initializeGame();
+    }
+
     public Game(Stage stage){
         this.stage = stage;
         initializeGame();
@@ -265,6 +270,7 @@ public class Game extends Application {
 
             Move move = calculateMove.getValue();
             if (move!=null&&move.makeMove(board)) {
+                boardUI.animateAIMove(move);
                 moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]);
             }
         });
