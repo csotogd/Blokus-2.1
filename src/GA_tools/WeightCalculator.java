@@ -252,7 +252,10 @@ public class WeightCalculator {
             GeneticPlayer individual = population.get(i);
 
             int[] phasesStartTurns = new int[2];
-            //phasesStartTurns[0] =
+            phasesStartTurns[0] = r.nextInt(5) + 4;
+            phasesStartTurns[1] = r.nextInt(5) + 9;
+
+            individual.setPhasesStartTurns(phasesStartTurns);
         }
     }
 
