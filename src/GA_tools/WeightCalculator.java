@@ -62,6 +62,8 @@ public class WeightCalculator {
      * player will remain. This player will have the best weights.
      */
     public void calculateWeights(){
+
+        //ALL THE COLLAPSE PHASES METHODS ASSUME THAT AT THE START THE WEIGHTS FOR ALL THE PHASES WILL BE IDENTICAL
         createPopulation();
         for (int i = 0; i < this.generations; i++){
             System.out.print("\nBegin of generation " + i + ": 0%");
@@ -85,7 +87,9 @@ public class WeightCalculator {
         }
 
         System.out.println("\nBest weights: ");
-        System.out.println(Arrays.toString(population.get(0).getCurrentWeightsAsArray()));
+        for (int i=0; i<3; i++){
+            System.out.print("Phase "+i+" : ");
+            System.out.println(Arrays.toString(population.get(0).getWeightsAsArray()[i]));}
     }
 
     /**
@@ -201,7 +205,7 @@ public class WeightCalculator {
             GeneticPlayer mother = winners.get(momIndex);
 
             //Reproduction method
-            GeneticPlayer kid = reproduceByInterval(father, mother);
+            GeneticPlayer kid = reproduceByIntervalCollapsePhases(father, mother);
 
             //Mutation method
             mutate(kid);
@@ -231,7 +235,7 @@ public class WeightCalculator {
      * @param mother One randomly picked mother of the kid
      * @return A new individual that will be introduced in the population
      */
-    private GeneticPlayer reproduceByInterval(GeneticPlayer father, GeneticPlayer mother){
+    private GeneticPlayer reproduceByIntervalCollapsePhases(GeneticPlayer father, GeneticPlayer mother){
         Random random = new Random();
         float[][] weightsFather= father.getWeightsAsArray();
         float[][] weightsMother= mother.getWeightsAsArray();
@@ -314,7 +318,7 @@ public class WeightCalculator {
      * @param mother One randomly picked mother of the kid
      * @return A new individual that will be introduced in the population
      */
-    private GeneticPlayer reproduceByIntervalPhases(GeneticPlayer father, GeneticPlayer mother, int phase){
+    private GeneticPlayer reproduceByIntervalDifferentPhases(GeneticPlayer father, GeneticPlayer mother, int phase){
         Random random = new Random();
         float[][] weightsFather = father.getWeightsAsArray();
         float[][] weightsMother= mother.getWeightsAsArray();
@@ -361,26 +365,82 @@ public class WeightCalculator {
 
 //--------------------------------------------Mutation methods-----------------------------------------------------
 
+    private void mutate(GeneticPlayer player){
+        this.mutateWeightsCollapsePhases(player);
+        //this.mutateWeightsDifferentPhases(player);
+        //this.mutatePhases(player);
+
+        //do not use mutateWeightCollapsePhases with mutateWeightsDifferentPhases at the same time!
+
+    }
+
+
     /**
      * Randomly mutates the weights of a given player. The chance that a weight will be mutated
      * is denoted by {@code mutationChance}. If a weight gets mutated, then a random number between
      * -1 and 1 will be added to this weight.
+     * It can mutate any of the 5x3 weights that are there, for every of the 15, utation is considered individually
      * @param player The player that will potentially be mutated
      */
-    private void mutate(GeneticPlayer player){
+    private void mutateWeightsDifferentPhases(GeneticPlayer player){
         Random r = new Random();
 
-        float[] weights = player.getCurrentWeightsAsArray();
+        float[][] weights = player.getWeightsAsArray();
 
         //Every weight has an equal opportunity to be mutated
-        for (int mutateWeight = 0; mutateWeight < weights.length; mutateWeight++) {
-            if (r.nextDouble() <= mutationChance) {
-                //We mutate by adding or subtracting a value between 0 and 1
-                //We can always change this.
-                weights[mutateWeight] += r.nextFloat() * 2 - 1;
+        for(int phase=0; phase<3; phase++) {
+            for (int mutateWeight = 0; mutateWeight < weights[0].length; mutateWeight++) {
+                if (r.nextDouble() <= mutationChance) {
+                    //We mutate by adding or subtracting a value between 0 and 1
+                    //We can always change this.
+                    weights[phase][mutateWeight] += r.nextFloat() * 2 - 1;
+                }
             }
         }
+    }
 
+
+    /**
+     * Randomly mutates the weights of a given player. The chance that a weight will be mutated
+     * is denoted by {@code mutationChance}. If a weight gets mutated, then a random number between
+     * -1 and 1 will be added to this weight.
+     * It can mutate any of the 5 weights that are there, so if a certain weight is mutated
+     * it will be mutated for all phases.
+     *
+     * This will be used when we are trying to reproduce the old functionality where we have no phases.
+     * @param player The player that will potentially be mutated
+     */
+    private void mutateWeightsCollapsePhases(GeneticPlayer player){
+        Random r = new Random();
+
+        float[][] weights = player.getWeightsAsArray();
+
+        //Every weight has an equal opportunity to be mutated
+
+            for (int mutateWeight = 0; mutateWeight < weights[0].length; mutateWeight++) {
+                if (r.nextDouble() <= mutationChance) {
+                    //We mutate by adding or subtracting a value between 0 and 1
+                    //We can always change this.
+                    float mutationChange=r.nextFloat() * 2 - 1;
+                    weights[0][mutateWeight] += mutationChange;
+                    weights[1][mutateWeight] += mutationChange;
+                    weights[2][mutateWeight] += mutationChange;
+                    //weight changed for the 3 phases
+
+                }
+            }
+
+
+    }
+
+
+
+    /**
+     * mutates the starting turn for strategies
+     * @param player
+     */
+    private void mutatePhases(GeneticPlayer player){
+        Random r = new Random();
         int[] phasesStartTurns = player.getPhasesStartTurns();
 
         for (int mutateTurn = 0; mutateTurn < phasesStartTurns.length; mutateTurn++){
@@ -397,5 +457,12 @@ public class WeightCalculator {
         }
 
     }
+
+
+
+
+
+
+
 
 }
