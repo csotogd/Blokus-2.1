@@ -74,6 +74,8 @@ public class WeightCalculator {
             playGames();
 
             transitionNextGeneration();
+
+            printPartOfPopulation(20);
         }
 
         //now we have to transit to a state where only individual survives
@@ -158,6 +160,8 @@ public class WeightCalculator {
         //createPopulationDifferentPhases();
        // createPopulationCollapsePhases();
         createPopulationOneRandomTwoFixed(alteredPhase);
+
+        randomizePhasesStartTurns();
     }
 
     /**
@@ -241,6 +245,16 @@ public class WeightCalculator {
         }
     }
 
+    private void randomizePhasesStartTurns(){
+        Random r = new Random();
+
+        for (int i = 0; i < populationSize; i++){
+            GeneticPlayer individual = population.get(i);
+
+            int[] phasesStartTurns = new int[2];
+            //phasesStartTurns[0] =
+        }
+    }
 
     /**
      * This method checks whether the population can be evenly divided into x games.
@@ -267,6 +281,18 @@ public class WeightCalculator {
         }
     }
 
+    private void printPartOfPopulation(int partSize){
+        for (int i = 0; i < partSize; i++){
+            System.out.println("player " + i + ": ");
+            for (int phase=0; phase<3; phase++){
+                System.out.print("Phase "+phase+": ");
+                System.out.println(Arrays.toString(population.get(i).getWeightsAsArray()[phase]));
+            }
+            System.out.println("phasesStartTurns: " + Arrays.toString(population.get(i).getPhasesStartTurns()));
+            System.out.println();
+        }
+    }
+
 //---------------------------------Transition to next generation methods-------------------------------------------
 
     /**
@@ -285,6 +311,8 @@ public class WeightCalculator {
 
             //Reproduction method
             GeneticPlayer kid = reproduce(father, mother);
+            phasesReproduceByInterval(father, mother, kid);
+            //phasesReproduceByChromosomes(father, mother, kid);
 
             //Mutation method
             mutate(kid);
@@ -406,6 +434,7 @@ public class WeightCalculator {
         for (int i = 0; i < kidsPhasesTurns.length; i++){
             int max = Math.max(fatherPhasesTurns[i], motherPhasesTurns[i]);
             int min = Math.min(fatherPhasesTurns[i], motherPhasesTurns[i]);
+            kidsPhasesTurns[i] = min + r.nextInt(max - min);
         }
 
         checkPhasesOrder(kidsPhasesTurns);
