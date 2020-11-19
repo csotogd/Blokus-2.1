@@ -244,9 +244,9 @@ public class WeightCalculator {
             float max=Math.max(weightsFather[i][0], weightsMother[i][0]);
             float min=Math.min(weightsFather[i][0], weightsMother[i][0]);
             float kidWeight = min + random.nextFloat() * (max - min);
-            kidsWeights[0][i]=kidsWeight;
-            kidsWeights[1][i]=kidsWeight;
-            kidsWeights[2][i]=kidsWeight;
+            kidsWeights[0][i]=kidWeight;
+            kidsWeights[1][i]=kidWeight;
+            kidsWeights[2][i]=kidWeight;
         }
 
         kid.setWeightsAsArray(kidsWeights);
@@ -323,13 +323,14 @@ public class WeightCalculator {
             kidsWeightsforDesiredPhase[i]=kidWeight;
         }
 
+
         for (int i=0; i<3; i++) {//set every weight of kid
             if(i==phase)
             //kid gets reproduced weights for one phase
             kidsWeights[phase] = kidsWeightsforDesiredPhase;
 
             else{
-                kidsWeights[i]== this.targetWeights;
+                kidsWeights[i]= this.targetWeights;
                 //for the other two phases weights are kept constant
 
             }
