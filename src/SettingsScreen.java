@@ -154,13 +154,11 @@ public class SettingsScreen extends Application {
             @Override
             public void handle(ActionEvent event) {
                 try {
-
                     if(opt6X.getText().equals("")){
                         Data.setDIMENSION(20);
                     }else{
                         Data.setDIMENSION(Integer.parseInt(opt6X.getText()));
                     }
-
                     if(c1.getSelectionModel().getSelectedItem().equals("2 Players")) {
                         playersName = new String[2];
 
@@ -175,6 +173,7 @@ public class SettingsScreen extends Application {
                         }else{
                             playersName[1] = opt3TextField.getText();
                         }
+                        Data.setDIMENSION(16);
 
                     }else{
                         playersName = new String[4];
