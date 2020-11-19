@@ -14,6 +14,7 @@ import java.util.Map;
 public class GeneticPlayer extends BotPlayer {
 
     public static final int NUMBER_OF_STRATEGIES = 5;
+    public static final int NUMBER_OF_PHASES = 2;
     private int turn = 0;
     private int phase = 0;
 
@@ -50,16 +51,7 @@ public class GeneticPlayer extends BotPlayer {
     }
 
     public int getPhase(){
-        if (turn >= phasesStartTurns[0] && turn < phasesStartTurns[1]){
-            currentWeights = weights[1];
-            phase = 1;
-        }else if (turn >= phasesStartTurns[1]){
-            currentWeights = weights[2];
-            phase = 2;
-        }else {
-            currentWeights = weights[0];
-            phase = 0;
-        }
+        determinePhase();
         return phase;
     }
 

@@ -281,6 +281,19 @@ public class WeightCalculator {
 
         kid.setCurrentWeightsAsArray(kidsWeights, 0);
 
+        int[] fatherPhasesTurns = father.getPhasesStartTurns();
+        int[] motherPhasesTurns = mother.getPhasesStartTurns();
+        int[] kidsPhasesTurns = new int[GeneticPlayer.NUMBER_OF_PHASES];
+        for (int i = 0; i < kidsPhasesTurns.length; i++){
+            if (r.nextBoolean()){
+                kidsPhasesTurns[i] = fatherPhasesTurns[i];
+            } else{
+                kidsPhasesTurns[i] = motherPhasesTurns[i];
+            }
+        }
+
+        kid.setPhasesStartTurns(kidsPhasesTurns);
+
         return kid;
     }
 
@@ -364,8 +377,23 @@ public class WeightCalculator {
             if (r.nextDouble() <= mutationChance) {
                 //We mutate by adding or subtracting a value between 0 and 1
                 //We can always change this.
-                weights[mutateWeight] = weights[mutateWeight] + (r.nextFloat() * 2 - 1);
+                weights[mutateWeight] += r.nextFloat() * 2 - 1;
             }
+        }
+
+        int[] phasesStartTurns = player.getPhasesStartTurns();
+
+        for (int mutateTurn = 0; mutateTurn < phasesStartTurns.length; mutateTurn++){
+            if (r.nextDouble() <= mutationChance) {
+                phasesStartTurns[mutateTurn] += r.nextInt(2) - 1;
+            }
+        }
+
+        //If phase 1 starts after phase 2, it doesn't make sense. So if that happens, just swap them.
+        if (phasesStartTurns[0] > phasesStartTurns[1]){
+            int temp = phasesStartTurns[0];
+            phasesStartTurns[0] = phasesStartTurns[1];
+            phasesStartTurns[1] = temp;
         }
 
     }
