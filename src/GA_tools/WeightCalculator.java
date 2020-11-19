@@ -88,7 +88,7 @@ public class WeightCalculator {
 
         System.out.println("\nBest weights: ");
         for (int i=0; i<3; i++){
-            System.out.print("Phase "+i+" : ");
+            System.out.print("Phase "+i+": ");
             System.out.println(Arrays.toString(population.get(0).getWeightsAsArray()[i]));}
     }
 
@@ -226,6 +226,15 @@ public class WeightCalculator {
         }
     }
 
+    private void checkPhasesOrder(int[] phasesStartTurns){
+        //If phase 1 starts after phase 2, it doesn't make sense. So if that happens, just swap them.
+        if (phasesStartTurns[0] > phasesStartTurns[1]){
+            int temp = phasesStartTurns[0];
+            phasesStartTurns[0] = phasesStartTurns[1];
+            phasesStartTurns[1] = temp;
+        }
+    }
+
 //---------------------------------Transition to next generation methods-------------------------------------------
 
     /**
@@ -323,6 +332,18 @@ public class WeightCalculator {
 
         kid.setCurrentWeightsAsArray(kidsWeights, 0);
 
+        return kid;
+    }
+
+    /**
+     * Reproduction strategy for the variable {@code phasesStartTurns}. Same concept as {@code reproduceByChromosomes}
+     * @param father
+     * @param mother
+     * @param kid
+     */
+    private void phasesReproduceByChromosomes(GeneticPlayer father, GeneticPlayer mother, GeneticPlayer kid){
+        Random r = new Random();
+
         int[] fatherPhasesTurns = father.getPhasesStartTurns();
         int[] motherPhasesTurns = mother.getPhasesStartTurns();
         int[] kidsPhasesTurns = new int[GeneticPlayer.NUMBER_OF_PHASES];
@@ -334,11 +355,26 @@ public class WeightCalculator {
             }
         }
 
-        kid.setPhasesStartTurns(kidsPhasesTurns);
+        checkPhasesOrder(kidsPhasesTurns);
 
-        return kid;
+        kid.setPhasesStartTurns(kidsPhasesTurns);
     }
 
+    private void phasesReproduceByInterval(GeneticPlayer father, GeneticPlayer mother, GeneticPlayer kid){
+        Random r = new Random();
+
+        int[] fatherPhasesTurns = father.getPhasesStartTurns();
+        int[] motherPhasesTurns = mother.getPhasesStartTurns();
+        int[] kidsPhasesTurns = new int[GeneticPlayer.NUMBER_OF_PHASES];
+        for (int i = 0; i < kidsPhasesTurns.length; i++){
+            int max = Math.max(fatherPhasesTurns[i], motherPhasesTurns[i]);
+            int min = Math.min(fatherPhasesTurns[i], motherPhasesTurns[i]);
+        }
+
+        checkPhasesOrder(kidsPhasesTurns);
+
+        kid.setPhasesStartTurns(kidsPhasesTurns);
+    }
 
     //----------------------------------Reproduction methods for PHASES SEPARATELY----------------------------------//
     /**
@@ -417,7 +453,7 @@ public class WeightCalculator {
      * Randomly mutates the weights of a given player. The chance that a weight will be mutated
      * is denoted by {@code mutationChance}. If a weight gets mutated, then a random number between
      * -1 and 1 will be added to this weight.
-     * It can mutate any of the 5x3 weights that are there, for every of the 15, utation is considered individually
+     * It can mutate any of the 5x3 weights that are there, for every of the 15, mutation is considered individually
      * @param player The player that will potentially be mutated
      */
     private void mutateWeightsDifferentPhases(GeneticPlayer player){
@@ -487,13 +523,7 @@ public class WeightCalculator {
             }
         }
 
-        //If phase 1 starts after phase 2, it doesn't make sense. So if that happens, just swap them.
-        if (phasesStartTurns[0] > phasesStartTurns[1]){
-            int temp = phasesStartTurns[0];
-            phasesStartTurns[0] = phasesStartTurns[1];
-            phasesStartTurns[1] = temp;
-        }
-
+        checkPhasesOrder(phasesStartTurns);
     }
 
 

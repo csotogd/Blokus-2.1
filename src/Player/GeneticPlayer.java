@@ -150,7 +150,6 @@ public class GeneticPlayer extends BotPlayer {
 
     public Move calculateMove(Board board){
         determinePhase();
-        currentWeights = weights[0];//TODO: remove this line
 
        //while we code all the different strategies, make this call the one you want to try
         //System.out.println("In calculate move for genetic algorithm");
