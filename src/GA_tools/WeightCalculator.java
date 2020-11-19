@@ -154,17 +154,16 @@ public class WeightCalculator {
     private void createPopulation(){
         Random random = new Random();
         //will assign random weights between 0 and 1 to the strategies of every player
-        for (int phase = 0; phase < 3; phase++) {
-            for (int i = 0; i < populationSize; i++) {
-                GeneticPlayer individual = new GeneticPlayer(i);
+        for (int i = 0; i < populationSize; i++) {
+            GeneticPlayer individual = new GeneticPlayer(i);
+            for (int phase = 0; phase < 3; phase++) {
                 individual.setWeightAddMostCorners(random.nextFloat(), phase);
                 individual.setWeightBiggestPiece(random.nextFloat(), phase);
                 individual.setWeightBlocksMostCorners(random.nextFloat(), phase);
                 individual.setWeightClosestToMiddle(random.nextFloat(), phase);
                 individual.setWeightFarFromStartingPoint(random.nextFloat(), phase);
-
-                population.add(individual);
             }
+            population.add(individual);
         }
     }
 
