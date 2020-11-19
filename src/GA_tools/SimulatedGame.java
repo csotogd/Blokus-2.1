@@ -94,6 +94,7 @@ public class SimulatedGame {
                 //board.print();
 
                 move = ((GeneticPlayer) actualPlayer).calculateMove(board);
+                ((GeneticPlayer) actualPlayer).addTurn();
                 if(move !=null) {
                     makeMove(move);
                     moveAllowed(move.getPiece());
