@@ -14,6 +14,7 @@ import java.util.Map;
 public class GeneticPlayer extends BotPlayer {
     public static final int NUMBER_OF_STRATEGIES = 5;
     private int turn = 0;
+    private int phase = 0;
 
     /*
     weights[0] = addMostCorners
@@ -45,6 +46,28 @@ public class GeneticPlayer extends BotPlayer {
     public GeneticPlayer(int number, float[][] weights) {
         super(number);
         this.weights=weights;
+    }
+
+    public int getPhase(){
+        if (turn >= phasesStartTurns[0] && turn < phasesStartTurns[1]){
+            currentWeights = weights[1];
+            phase = 1;
+        }else if (turn >= phasesStartTurns[1]){
+            currentWeights = weights[2];
+            phase = 2;
+        }else {
+            currentWeights = weights[0];
+            phase = 0;
+        }
+        return phase;
+    }
+
+    public int[] getPhasesStartTurns(){
+        return phasesStartTurns;
+    }
+
+    public void setPhasesStartTurns(int[] phasesStartTurns){
+        this.phasesStartTurns = phasesStartTurns;
     }
 
     public float[] getCurrentWeightsAsArray() {
@@ -111,6 +134,18 @@ public class GeneticPlayer extends BotPlayer {
         turn = 0;
     }
 
+    private void determinePhase(){
+        if (turn >= phasesStartTurns[0] && turn < phasesStartTurns[1]){
+            currentWeights = weights[1];
+            phase = 1;
+        }else if (turn >= phasesStartTurns[1]){
+            currentWeights = weights[2];
+            phase = 2;
+        }else {
+            currentWeights = weights[0];
+            phase = 0;
+        }
+    }
 
 
 
@@ -121,13 +156,8 @@ public class GeneticPlayer extends BotPlayer {
 
 
     public Move calculateMove(Board board){
-        if (turn >= phasesStartTurns[0] && turn < phasesStartTurns[1]){
-            currentWeights = weights[1];
-        }else if (turn >= phasesStartTurns[1]){
-            currentWeights = weights[2];
-        }else {
-            currentWeights = weights[0];
-        }
+        determinePhase();
+        currentWeights = weights[0];//TODO: remove this line
 
        //while we code all the different strategies, make this call the one you want to try
         //System.out.println("In calculate move for genetic algorithm");

@@ -26,18 +26,20 @@ import  java.util.Random;
  *
  */
 public class WeightCalculator {
-    private int populationSize = 200; //must be multiple of 4
-    private final int generations = 100;
-    private final double mutationChance = 0.1;
+    private int populationSize = 500; //must be multiple of 4
+    private final int generations = 70;
+    private final double mutationChance = 0.02;
     private ArrayList<GeneticPlayer> winners = new ArrayList<>();//could also be a population of weights... we´ll see
     private  ArrayList<GeneticPlayer> population = new ArrayList<>();
     private final int nbrOfPlayers = 4;
     private final int DIMENSION = 20;
 
     public static void main(String[] args) {
-        //Found this weight set:
+        //Found these weight sets:
         //[0.4533498, 0.073048696, 0.51042575, 1.0362283, 0.8176211]
         //[0.39246097, 0.51849484, 0.5114118, 0.9967747, 0.24054877]
+        //[0.88642323, 0.9891394, 0.27855617, 1.9546838, 0.60788333]
+        //[0.75693494, 0.7551954, 1.0880454, 1.3939637, 0.81373096]
 
         WeightCalculator calculator = new WeightCalculator();
         calculator.calculateWeights();
@@ -152,15 +154,17 @@ public class WeightCalculator {
     private void createPopulation(){
         Random random = new Random();
         //will assign random weights between 0 and 1 to the strategies of every player
-        for (int i = 0; i < populationSize; i++){
-            GeneticPlayer individual = new GeneticPlayer(i);
-            individual.setWeightAddMostCorners(random.nextFloat());
-            individual.setWeightBiggestPiece(random.nextFloat());
-            individual.setWeightBlocksMostCorners(random.nextFloat());
-            individual.setWeightClosestToMiddle(random.nextFloat());
-            individual.setWeightFarFromStartingPoint(random.nextFloat());
+        for (int phase = 0; phase < 3; phase++) {
+            for (int i = 0; i < populationSize; i++) {
+                GeneticPlayer individual = new GeneticPlayer(i);
+                individual.setWeightAddMostCorners(random.nextFloat(), phase);
+                individual.setWeightBiggestPiece(random.nextFloat(), phase);
+                individual.setWeightBlocksMostCorners(random.nextFloat(), phase);
+                individual.setWeightClosestToMiddle(random.nextFloat(), phase);
+                individual.setWeightFarFromStartingPoint(random.nextFloat(), phase);
 
-            population.add(individual);
+                population.add(individual);
+            }
         }
     }
 
@@ -241,7 +245,7 @@ public class WeightCalculator {
             kidsWeights[i]=kidWeight;
         }
 
-        kid.setWeightsAsArray(kidsWeights);
+        kid.setCurrentWeightsAsArray(kidsWeights, 0);
 
         return kid;
 
@@ -271,7 +275,7 @@ public class WeightCalculator {
             }
         }
 
-        kid.setWeightsAsArray(kidsWeights);
+        kid.setCurrentWeightsAsArray(kidsWeights, 0);
 
         return kid;
     }
