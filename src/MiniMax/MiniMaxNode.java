@@ -12,7 +12,7 @@ public class MiniMaxNode {
     private Board state;
     private Move move;
     private List<MiniMaxNode> children;
-    private int score;
+    private Score score;
     private Player[] players;
     private int depth;
 
@@ -26,7 +26,7 @@ public class MiniMaxNode {
         parent = this;
         move = null;
         children = new ArrayList<>();
-        score = 0;
+        score = new Score(0,this);
         players = ps;
     }
 
@@ -42,25 +42,22 @@ public class MiniMaxNode {
         this.depth = depth;
         this.state = parent.state;
         this.players = parent.players;
-        score = 0;
-    }
-/*
-    public void expand(Player player){
-        for (Move move: player.possibleMoveSet(state)) {
-            System.out.println(player.getPlayerNumber());
-            MiniMaxNode node = new MiniMaxNode(this,move);
-            this.children.add(node);
-            node.expand(players[player.getNumber()%players.length]);
-        }
+        score = new Score(heuristics(),this);
     }
 
- */
+    public float heuristics(){
+        return move.getPiece().getNumberOfBlocks();
+    }
+
+    public Move getMove() {
+        return move;
+    }
 
     public int getDepth() {
         return depth;
     }
 
-    public int getScore() {
+    public Score getScore() {
         return score;
     }
 

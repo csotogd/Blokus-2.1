@@ -10,58 +10,41 @@ import Player.*;
 public class MiniMax {
     Player[] players;
     Board board;
-    private final int MAX_DEPTH = 2;
-    int currentDepth;
+    private final int NBR_OF_TURNS = 1;
+    private int maxDepth;
     int rootPlayerNbr;
 
     public MiniMax(Player[] players, Board board){
         this.players = players;
         this.board = board;
+        maxDepth = players.length*NBR_OF_TURNS;
     }
 
     public void simulate(int playerNbr){
         this.rootPlayerNbr = playerNbr;
-        currentDepth=0;
         MiniMaxNode root = new MiniMaxNode(board,players);
         //create first nodes of that player
-        alphaBeta(root,root.getDepth(),playerNbr,0,0);
+        System.out.println(alphaBeta(root,root.getDepth(),playerNbr,-Float.MAX_VALUE,Float.MAX_VALUE));
     }
-
-    /*
-    //MAX
-    public void createNodes(MiniMaxNode rootNode,int playerNbr){
-        int turnCounter = 0;
-        while(turnCounter<MAX_DEPTH){
-            for (Move move:players[playerNbr].possibleMoveSet(board)){
-                MiniMaxNode newNode = new MiniMaxNode(rootNode,move);
-                rootNode.getChildren().add(newNode);
-                newNode.expand(players[playerNbr+1]);
-            }
-            //System.out.println("next turn");
-            turnCounter++;
-        }
-    }
-
-     */
 
     private float alphaBeta(MiniMaxNode node,int depth, int playerNbr,float alpha, float beta) {
-        if(node.getDepth()==MAX_DEPTH){
-            if(playerNbr==rootPlayerNbr) return node.getScore();
-            else return -node.getScore();
+        //System.out.println(playerNbr);
+        if(depth== maxDepth){
+            if(playerNbr==rootPlayerNbr) return node.getScore().getScore();
+            else return -node.getScore().getScore();
         }else{
             for (Move possibleMove : players[playerNbr-1].possibleMoveSet(board)){
-                MiniMaxNode newNode = new MiniMaxNode(node,possibleMove,depth-1);
+                MiniMaxNode newNode = new MiniMaxNode(node,possibleMove,depth+1);
                 int nextPlayerNbr = 0;
                 if(playerNbr>=players.length){
-                    currentDepth++;
                     nextPlayerNbr = 1;
                 }else{
-                    nextPlayerNbr++;
+                    nextPlayerNbr = playerNbr+1;
                 }
                 if(playerNbr==rootPlayerNbr || nextPlayerNbr==rootPlayerNbr){
-                    alpha = Math.max(alpha,alphaBeta(newNode,depth-1,playerNbr,-alpha,-beta));
+                    alpha = Math.max(alpha,alphaBeta(newNode,depth+1,nextPlayerNbr,-beta,-alpha));
                 }else {
-                    alpha = Math.max(alpha,alphaBeta(newNode,depth-1,playerNbr,alpha,beta));
+                    alpha = Math.max(alpha,alphaBeta(newNode,depth+1,nextPlayerNbr,alpha,beta));
                 }
                 if(alpha>=beta){
                     return beta;
@@ -85,9 +68,21 @@ public class MiniMax {
         p2.setPiecesList(PieceFactory.get().getAllPieces());
         p3.setPiecesList(PieceFactory.get().getAllPieces());
         p4.setPiecesList(PieceFactory.get().getAllPieces());
-        Board b = new Board(new Player[]{p1, p2});
-        MiniMax m = new MiniMax(new Player[]{p1,p2},b);
-        m.simulate(p1.getPlayerNumber());
+        Board b = new Board(new Player[]{p1, p2,p3,p4});
+        MiniMax m = new MiniMax(new Player[]{p1,p2,p3,p4},b);
+
+        int i= 0;
+        while(i<15){
+            m.simulate(p1.getPlayerNumber());
+
+            m.simulate(p2.getPlayerNumber());
+
+            m.simulate(p3.getPlayerNumber());
+
+            m.simulate(p4.getPlayerNumber());
+
+            i++;
+        }
     }
 
 
