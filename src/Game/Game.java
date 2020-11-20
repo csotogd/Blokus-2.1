@@ -1,15 +1,13 @@
 package Game;
 
+import MiniMax.MiniMax;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import GameBoard.Board;
 import GameBoard.BoardUI;
 import MonteCarlo.MonteCarlo;
 import Move.Move;
-import Player.BotPlayer;
-import Player.GeneticPlayer;
-import Player.HumanPlayer;
-import Player.Player;
+import Player.*;
 import Tools.Vector2d;
 import javafx.application.Application;
 import javafx.scene.Parent;
@@ -29,7 +27,7 @@ import java.util.List;
 public class Game extends Application {
 
     private Player[] players;
-    private int DIMENSION;
+    private int DIMENSION = Data.getDIMENSION();
     private BoardUI boardUI;
 
     private Player actualPlayer;
@@ -40,6 +38,8 @@ public class Game extends Application {
     private Stage stage;
 
     MonteCarlo mc;
+
+    MiniMax miniMax;
 
     public Board board;
 
@@ -85,6 +85,7 @@ public class Game extends Application {
         board = new Board(players);
         boardUI = new BoardUI(this);
         mc = new MonteCarlo(players,board);
+        miniMax = new MiniMax(players,board);
         if (actualPlayer instanceof HumanPlayer)
             state = GameState.HUMAN_MOVE;
         else {
@@ -111,6 +112,8 @@ public class Game extends Application {
                 players[i-1]=new BotPlayer(i,playersName[i-1]);
             }else if(playerType.equals("Genetic Player")){
                 players[i-1]=new GeneticPlayer(i);
+            }else if(playerType.equals("MiniMax Player")){
+                players[i-1]=new MiniMaxPlayer(i);
             }
             players[i-1].setColor(colors[i-1]);
             players[i-1].setName(playersName[i-1]);
@@ -262,6 +265,8 @@ public class Game extends Application {
                             ((GeneticPlayer) actualPlayer).addTurn();
                         }else if(actualPlayer instanceof BotPlayer) {
                             move = mc.simulation(actualPlayer.getNumber()-1, 4000);
+                        }else if(actualPlayer instanceof MiniMaxPlayer){
+                            move = miniMax.getMove(actualPlayer.getPlayerNumber());
                         }
                         return move;
                     }

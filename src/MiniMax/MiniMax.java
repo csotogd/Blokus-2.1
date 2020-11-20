@@ -54,7 +54,6 @@ public class MiniMax {
             node.setScore(alpha);
             return node;
         }
-
     }
 
     public static void main(String[] args) {
