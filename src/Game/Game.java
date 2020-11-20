@@ -107,9 +107,7 @@ public class Game extends Application {
             if(playerType.equals("Human Player")){
                 players[i-1]=new HumanPlayer(i);
             }else if(playerType.equals("Monte Carlo Player")){
-                System.out.println("Bot");
-                //TODO add the Monte Carlo Player class
-                players[i-1]=new BotPlayer(i,playersName[i-1]);
+                players[i-1]=new MCPlayer(i,playersName[i-1]);
             }else if(playerType.equals("Genetic Player")){
                 players[i-1]=new GeneticPlayer(i);
             }else if(playerType.equals("MiniMax Player")){
@@ -263,7 +261,7 @@ public class Game extends Application {
                         if(actualPlayer instanceof GeneticPlayer){
                             move = ((GeneticPlayer) actualPlayer).calculateMove(board);
                             ((GeneticPlayer) actualPlayer).addTurn();
-                        }else if(actualPlayer instanceof BotPlayer) {
+                        }else if(actualPlayer instanceof MCPlayer) {
                             move = mc.simulation(actualPlayer.getNumber()-1, 4000);
                         }else if(actualPlayer instanceof MiniMaxPlayer){
                             move = miniMax.getMove(actualPlayer.getPlayerNumber());
