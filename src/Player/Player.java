@@ -8,10 +8,7 @@ import Move.Move;
 import Tools.Vector2d;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Stack;
+import java.util.*;
 
 public abstract class Player {
     protected int number;
@@ -112,6 +109,42 @@ public abstract class Player {
         piecesList.remove(pieceToRemove);
     }
 
+    public void reOrderPieceList(){
+        //sort pieces depending on their nbr of blocks
+        int[] nbrOfBlocksPerPieces = new int[piecesList.size()];
+        int counter = 0;
+        for (Piece piece:piecesList){
+            nbrOfBlocksPerPieces[counter] = piece.getNumberOfBlocks();
+            counter++;
+        }
+
+        List<List<Piece>> allPiecesPerNbrOfBlocks= new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            allPiecesPerNbrOfBlocks.add(i,new ArrayList<Piece>());
+        }
+        for (int i = 0; i < nbrOfBlocksPerPieces.length; i++) {
+            if(nbrOfBlocksPerPieces[i]==5){
+                allPiecesPerNbrOfBlocks.get(0).add(piecesList.get(i));
+            }else if(nbrOfBlocksPerPieces[i]==4){
+                allPiecesPerNbrOfBlocks.get(1).add(piecesList.get(i));
+            }else if(nbrOfBlocksPerPieces[i]==3){
+                allPiecesPerNbrOfBlocks.get(2).add(piecesList.get(i));
+            }else if(nbrOfBlocksPerPieces[i]==2){
+                allPiecesPerNbrOfBlocks.get(3).add(piecesList.get(i));
+            }else if(nbrOfBlocksPerPieces[i]==1){
+                allPiecesPerNbrOfBlocks.get(4).add(piecesList.get(i));
+            }
+        }
+
+        List<Piece> newPiecesList = new ArrayList<Piece>();
+        for (int i = 0; i < allPiecesPerNbrOfBlocks.size(); i++) {
+            if(!allPiecesPerNbrOfBlocks.get(i).isEmpty()){
+                newPiecesList.addAll(allPiecesPerNbrOfBlocks.get(i));
+            }
+        }
+        piecesList = newPiecesList;
+    }
+
     /**
      * For every possible corner, checks if any of the piece unused pieces of a player can be placed.
      * @return true if the actual can do at least one move with the pieces he has left in the current situation of the board.
@@ -170,9 +203,48 @@ public abstract class Player {
      * @return ArrayList of current possible moves a player can make.
      */
     public ArrayList<Move> possibleMoveSet(Board board){
-        ArrayList<Corner> cornersOnBoard = board.getCorner(this.getStartingCorner());
         ArrayList<Move> moveSet=new ArrayList<>();
 
+        ArrayList<Corner> cornersOnBoard = board.getCorner(this.getStartingCorner());
+        for (Piece piecetoClone: this.getPiecesList()){
+            if (!piecetoClone.isUsed()) {
+                Piece piece = piecetoClone.clone(); // we clone it cause we rotate it and we do not want that to affect the real piece displayed
+                for (int i = 0; i < piece.getTotalConfig(); i++) {
+                    //get all the corners for that piece.
+                    if(this.isFirstMove()) {
+                        Vector2d adjust = new Vector2d(0,0);
+                        if(startingCorner.get_x()!=0) adjust.set_x(piece.getShape()[0].length-1);
+                        if(startingCorner.get_y()!=0) adjust.set_y(piece.getShape().length-1);
+                        Move firstMove = new Move(this, piece.clone(), startingCorner.subtract(adjust));
+                        if (firstMove.isAllowed(board)) moveSet.add(firstMove);
+                    }else
+                        for (Corner pieceCorner : piece.getCornersContacts(new Vector2d(0, 0))) {
+                            for (Corner corner : cornersOnBoard) {
+                                for (Vector2d emptyCorner : corner.getToCornerPositions()) { //for all the possible empty squares that would become corner contact
+                                    //move the piece so that it is contact with the corner with the part of it we want
+                                    Vector2d positionOfPiece= emptyCorner.subtract(pieceCorner.getPosition());
+                                    Move move = new Move(this, piece.clone(), positionOfPiece);
+                                    if (move.isAllowed(board))
+                                        moveSet.add(move);
+                                }
+
+                            }
+                        }
+                    piece.rotateRight();
+                    if(i==piece.getNbRotation()-1) piece.rotateUpsideDown();
+                }
+            }
+        }
+        return moveSet;
+    }
+
+    /**
+     * @return ArrayList of current possible moves a player can make.
+     */
+    public ArrayList<Move> possibleMoveSetBoosted(Board board){
+        ArrayList<Move> moveSet=new ArrayList<>();
+
+        ArrayList<Corner> cornersOnBoard = board.getCorner(this.getStartingCorner());
         for (Piece piecetoClone: this.getPiecesList()){
             if (!piecetoClone.isUsed()) {
                 Piece piece = piecetoClone.clone(); // we clone it cause we rotate it and we do not want that to affect the real piece displayed

@@ -16,6 +16,12 @@ public class MiniMax {
 
     public MiniMax(Player[] players, Board board){
         this.players = players;
+        /*
+        for(Player player:players){
+            player.reOrderPieceList();
+        }
+
+         */
         this.board = board;
         maxDepth = players.length*NBR_OF_TURNS;
     }
@@ -33,7 +39,8 @@ public class MiniMax {
             if(playerNbr==rootPlayerNbr) return node;
             else node.setNegative(); return node;
         }else{
-            for (Move possibleMove : players[playerNbr-1].possibleMoveSet(board)){
+            //TODO order the move so that the worst ones are at the end and are pruned faster
+            for (Move possibleMove : players[playerNbr-1].possibleMoveSetBoosted(board)){
                 node = new MiniMaxNode(node,possibleMove,depth+1,players[playerNbr-1]);
                 int nextPlayerNbr = 0;
                 if(playerNbr>=players.length){
@@ -92,6 +99,8 @@ public class MiniMax {
 
             i++;
         }
+
+
     }
 
     /*
