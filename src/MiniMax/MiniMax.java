@@ -10,7 +10,7 @@ import Player.*;
 public class MiniMax {
     Player[] players;
     Board board;
-    private final int NBR_OF_TURNS = 1;
+    private final int NBR_OF_TURNS = 4;
     private int maxDepth;
     int rootPlayerNbr;
     Move currentBestMove;
@@ -26,7 +26,7 @@ public class MiniMax {
         this.currentBestMove = null;
         MiniMaxNode root = new MiniMaxNode(board,players);
         //create first nodes of that player
-        System.out.println(alphaBeta_Pruning(root,root.getDepth(),playerNbr,-Float.MAX_VALUE,Float.MAX_VALUE));
+        alphaBeta_Pruning(root,root.getDepth(),playerNbr,Float.MIN_VALUE,Float.MAX_VALUE);
         return currentBestMove;
     }
 
