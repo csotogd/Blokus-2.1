@@ -12,7 +12,7 @@ public class MiniMaxNode {
     private Board state;
     private Move move;
     private List<MiniMaxNode> children;
-    private Score score;
+    private float score;
     private Player[] players;
     private int depth;
 
@@ -26,7 +26,7 @@ public class MiniMaxNode {
         parent = this;
         move = null;
         children = new ArrayList<>();
-        score = new Score(0,this);
+        score = 0;
         players = ps;
     }
 
@@ -42,7 +42,7 @@ public class MiniMaxNode {
         this.depth = depth;
         this.state = parent.state;
         this.players = parent.players;
-        score = new Score(heuristics(),this);
+        score = heuristics();
     }
 
     public float heuristics(){
@@ -57,11 +57,16 @@ public class MiniMaxNode {
         return depth;
     }
 
-    public Score getScore() {
+    public float getScore() {
         return score;
+    }
+
+    public void setScore(float score) {
+        this.score = score;
     }
 
     public List<MiniMaxNode> getChildren(){
         return children;
     }
+
 }
