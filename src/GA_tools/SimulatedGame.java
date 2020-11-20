@@ -248,14 +248,46 @@ public class SimulatedGame {
 
     public static void main(String[] args) {
         //testing
+        //I let the program run for cromosome reproduction population of 800
+        //and 400 hundred iterations, mutation 0.1 for equal weights in every phase.
+        //when I try to test which one is better!
+        float weightsCromosome[][]= {
+                {0.41936195f, 7.441067f, 1.3479153f, 3.7524276f, 0.56057155f},
+                {0.41936195f, 7.441067f, 1.3479153f, 3.7524276f, 0.56057155f},
+                {0.41936195f, 7.441067f, 1.3479153f, 3.7524276f, 0.56057155f}
+        };
 
-        int dimension= 8;
-        Player [] players = new Player[4];
-        for (int i=0; i<4; i++){
-            players[i]=new GeneticPlayer(i+1);
-        }
+        float[][] weightsInterval= {
+                {0.8084111f, 0.51127887f, 0.5905434f, 1.3287934f, 0.53154033f},
+                {0.8084111f, 0.51127887f, 0.5905434f, 1.3287934f, 0.53154033f},
+                {0.8084111f, 0.51127887f, 0.5905434f, 1.3287934f, 0.53154033f}
+        };
+        int dimension= 20;
+        GeneticPlayer g1= new GeneticPlayer(1, weightsInterval);
+        GeneticPlayer g2= new GeneticPlayer(2, weightsCromosome);
+        GeneticPlayer g3= new GeneticPlayer(3, weightsCromosome);
+        GeneticPlayer g4= new GeneticPlayer(4, weightsInterval);
+
+        //if we do this we get a different winner (of different weights!)
+        /*
+        GeneticPlayer g1= new GeneticPlayer(1, weightsCromosome);
+        GeneticPlayer g2= new GeneticPlayer(2, weightsCromosome);
+        GeneticPlayer g3= new GeneticPlayer(3, weightsInterval);
+        GeneticPlayer g4= new GeneticPlayer(4, weightsInterval);
+*/
+        //that´s weird why do you think this happens??????
+
+        Player[] players= new Player[4];
+        players[0]=g1;
+        players[1]=g2;
+        players[2]=g3;
+        players[3]=g4;
+
         SimulatedGame simulation= new SimulatedGame(dimension, players);
         simulation.simulate();
+        GeneticPlayer winner=(GeneticPlayer) simulation.getWinner();
+        System.out.println(winner.getNumber());
+
 
     }
 
@@ -269,6 +301,7 @@ public class SimulatedGame {
                 winner= player;
             }
         }
+
         return winner;
     }
 

@@ -14,7 +14,7 @@ import java.util.Map;
 public class GeneticPlayer extends BotPlayer {
 
     public static final int NUMBER_OF_STRATEGIES = 5;
-    public static final int NUMBER_OF_PHASES = 2;
+    public static final int NUMBER_OF_PHASES = 3 ;
     private int turn = 0;
     private int phase = 0;
 
@@ -26,7 +26,7 @@ public class GeneticPlayer extends BotPlayer {
     weights[4] = farFromStartingPoint
      */
     protected float[][] weights = new float[3][5];
-    protected int[] phasesStartTurns = new int[2];
+    protected int[] phasesStartTurns = { 5,12};
     protected float[] currentWeights = weights[0];
 
 

@@ -26,8 +26,8 @@ import  java.util.Random;
  *
  */
 public class WeightCalculator {
-    private int populationSize = 800; //must be multiple of 4
-    private final int generations = 10;
+    private int populationSize = 1000; //must be multiple of 4
+    private final int generations = 200;
     private final double mutationChance = 0.1;
     private ArrayList<GeneticPlayer> winners = new ArrayList<>();//could also be a population of weights... we´ll see
     private  ArrayList<GeneticPlayer> population = new ArrayList<>();
@@ -75,7 +75,7 @@ public class WeightCalculator {
 
             transitionNextGeneration();
 
-            printPartOfPopulation(20);
+            printPartOfPopulation(5);
         }
 
         //now we have to transit to a state where only individual survives
@@ -158,10 +158,10 @@ public class WeightCalculator {
 
     private void createPopulation(){
         //createPopulationDifferentPhases();
-       // createPopulationCollapsePhases();
-        createPopulationOneRandomTwoFixed(alteredPhase);
+        createPopulationCollapsePhases();
+        //createPopulationOneRandomTwoFixed(alteredPhase);
 
-        randomizePhasesStartTurns();
+        //randomizePhasesStartTurns();
     }
 
     /**
@@ -311,7 +311,7 @@ public class WeightCalculator {
 
             //Reproduction method
             GeneticPlayer kid = reproduce(father, mother);
-            phasesReproduceByInterval(father, mother, kid);
+           // phasesReproduceByInterval(father, mother, kid);
             //phasesReproduceByChromosomes(father, mother, kid);
 
             //Mutation method
@@ -334,7 +334,8 @@ public class WeightCalculator {
 
     private GeneticPlayer reproduce(GeneticPlayer father, GeneticPlayer mother){
         //return this.reproduceByIntervalCollapsePhases(father,mother);
-       return this.reproduceByIntervalDifferentPhases(father,mother, alteredPhase);
+       //return this.reproduceByIntervalDifferentPhases(father,mother, alteredPhase);
+        return this.reproduceByChromosomesColapsePhases(father,mother);
     }
 
     /**
@@ -399,6 +400,46 @@ public class WeightCalculator {
 
         return kid;
     }
+
+
+
+    /**
+     * A reproduction strategy
+     * Reproduce by chromosomes:
+     * Randomly divides the parents' weights to the kid's weights.
+     * There is a 50% chance for a kid's weight to come from the father
+     * and a 50% chance for it to come from the mother
+     * @param father One randomly picked father of the kid
+     * @param mother One randomly picked mother of the kid
+     * @return A new individual that will be introduced in the population
+     */
+    private GeneticPlayer reproduceByChromosomesColapsePhases(GeneticPlayer father, GeneticPlayer mother){
+        Random r = new Random();
+        float[][] weightsFather = father.getWeightsAsArray();
+        float[][] weightsMother = mother.getWeightsAsArray();
+
+        GeneticPlayer kid = new GeneticPlayer(0); //this number shouldn´t mind
+        float[][] kidsWeights = new float[3][GeneticPlayer.NUMBER_OF_STRATEGIES];
+        for (int i = 0; i < GeneticPlayer.NUMBER_OF_STRATEGIES; i++){
+            if (r.nextBoolean()){
+                kidsWeights[0][i] = weightsFather[0][i];
+                kidsWeights[1][i] = weightsFather[0][i];
+                kidsWeights[2][i] = weightsFather[0][i];
+            } else{
+                kidsWeights[0][i] = weightsMother[0][i];
+                kidsWeights[1][i] = weightsMother[0][i];
+                kidsWeights[2][i] = weightsMother[0][i];
+            }
+        }
+
+        kid.setWeightsAsArray(kidsWeights);
+
+        return kid;
+    }
+
+
+
+
 
     /**
      * Reproduction strategy for the variable {@code phasesStartTurns}. Same concept as {@code reproduceByChromosomes}
@@ -506,9 +547,9 @@ public class WeightCalculator {
 //--------------------------------------------Mutation methods-----------------------------------------------------
 
     private void mutate(GeneticPlayer player){
-        //this.mutateWeightsCollapsePhases(player);
+        this.mutateWeightsCollapsePhases(player);
        // this.mutateWeightsDifferentPhases(player);
-        this.mutateWeightsOnlyDesiredPhase(player, alteredPhase);
+       // this.mutateWeightsOnlyDesiredPhase(player, alteredPhase);
         //this.mutatePhases(player);
 
         //do not use mutateWeightCollapsePhases with mutateWeightsDifferentPhases at the same time!
