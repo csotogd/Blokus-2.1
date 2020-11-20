@@ -1,5 +1,7 @@
 package Game;
 
+import javafx.animation.Transition;
+import javafx.animation.TranslateTransition;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import GameBoard.Board;
@@ -270,8 +272,13 @@ public class Game extends Application {
 
             Move move = calculateMove.getValue();
             if (move!=null&&move.makeMove(board)) {
-                boardUI.animateAIMove(move);
-                moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]);
+                Transition tt = boardUI.animateAIMove(move);
+                tt.setOnFinished(f -> {
+                    System.out.println("done");
+                    moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]);
+                });
+                System.out.println("animating...");
+                tt.play();
             }
         });
     }

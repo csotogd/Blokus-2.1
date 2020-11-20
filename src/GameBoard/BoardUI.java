@@ -6,6 +6,7 @@ import Game.Game;
 import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
+import javafx.animation.*;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
@@ -20,6 +21,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +51,7 @@ public class BoardUI{
     Pane left;
     Pane top;
     public FlowPane[] allPieces;
-    public List<HashMap<String, Pane>> playerPieces;
+    public HashMap<Integer, HashMap<String, GridPane>> playerPieces;
     int actualSelectedPieceNbr;
     public Text turnOfPlayerText;
     public boolean beginning = true;
@@ -66,9 +68,9 @@ public class BoardUI{
         this.game = game;
         players = game.getPlayers();
         allPieces = new FlowPane[players.length];
-        playerPieces = new ArrayList<>();
+        playerPieces = new HashMap<>();
         for (int i = 0; i < players.length; i++) {
-            playerPieces.add(new HashMap<>());
+            playerPieces.put(i, new HashMap<>());
         }
         this.background = Data.createBackGround();
         this.principal = new Pane();
@@ -336,11 +338,10 @@ public class BoardUI{
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
                     if((isPiece==pieceNbr)){
-                        int index = allPieces[game.getActualPlayer().getNumber()-1].getChildren().indexOf(object);
+                        int index = allPieces[playerIdx].getChildren().indexOf(object);
                         allPieces[playerIdx].getChildren().remove(index);
-                        Pane piecePane = drawPiece(game.getActualPlayer().getColor(),piece,allPieces[playerIdx]);
+                        Pane piecePane = drawPiece(playerIdx,game.getActualPlayer().getColor(),piece,allPieces[playerIdx]);
                         allPieces[playerIdx].getChildren().add(index,piecePane);
-                        playerPieces.get(playerIdx).put(piece.getLabel(), piecePane);
                         break;
                     }
                 }
@@ -359,11 +360,10 @@ public class BoardUI{
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
                     if((isPiece==pieceNbr)){
-                        int index = allPieces[game.getActualPlayer().getNumber()-1].getChildren().indexOf(object);
+                        int index = allPieces[playerIdx].getChildren().indexOf(object);
                         allPieces[playerIdx].getChildren().remove(index);
-                        Pane piecePane = drawPiece(game.getActualPlayer().getColor(),piece,allPieces[playerIdx]);
+                        Pane piecePane = drawPiece(playerIdx,game.getActualPlayer().getColor(),piece,allPieces[playerIdx]);
                         allPieces[playerIdx].getChildren().add(index,piecePane);
-                        playerPieces.get(playerIdx).put(piece.getLabel(), piecePane);
                         break;
                     }
                 }
@@ -382,11 +382,10 @@ public class BoardUI{
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
                     if((isPiece==pieceNbr)){
-                        int index = allPieces[game.getActualPlayer().getNumber()-1].getChildren().indexOf(object);
+                        int index = allPieces[playerIdx].getChildren().indexOf(object);
                         allPieces[playerIdx].getChildren().remove(index);
-                        Pane piecePane = drawPiece(game.getActualPlayer().getColor(),piece,allPieces[playerIdx]);
+                        Pane piecePane = drawPiece(playerIdx,game.getActualPlayer().getColor(),piece,allPieces[playerIdx]);
                         allPieces[playerIdx].getChildren().add(index,piecePane);
-                        playerPieces.get(playerIdx).put(piece.getLabel(), piecePane);
                         break;
                     }
                 }
@@ -422,7 +421,6 @@ public class BoardUI{
      */
     public FlowPane pieceOfPlayer(int playerNbr){
         allPieces[playerNbr] = new FlowPane();
-        playerPieces.set(playerNbr, new HashMap<>());
         Text text = new Text(players[playerNbr].getName());
         text.setFont(Font.font("Verdana", 20));
         text.setFill(players[playerNbr].getColor());
@@ -434,32 +432,55 @@ public class BoardUI{
         for (Piece pieceLeft:players[playerNbr].getPiecesList()) {
             if(!pieceLeft.isUsed()){
                 allPieces[playerNbr].getChildren().add(new Text(Integer.toString(++pieceCounter)));
-                Pane piece = drawPiece(players[playerNbr].getColor(),pieceLeft,allPieces[playerNbr]);
+                Pane piece = drawPiece(playerNbr,players[playerNbr].getColor(),pieceLeft,allPieces[playerNbr]);
                 pieceLeft.setPosInBoardX(piece.getTranslateX());
                 pieceLeft.setPosInBoardY(piece.getTranslateY());
                 allPieces[playerNbr].getChildren().add(piece);
-                playerPieces.get(playerNbr).put(pieceLeft.getLabel(), piece);
             }
         }
         allPieces[playerNbr].setMinSize(allPieces[playerNbr].getWidth(),allPieces[playerNbr].getHeight());
         return allPieces[playerNbr];
     }
 
-    public void animateAIMove(Move move) {
-//        FlowPane playerPieces = allPieces[move.getPlayer().getNumber() - 1];
-        HashMap<String, Pane> map = playerPieces.get(move.getPlayer().getNumber() - 1);
-        for (String key : map.keySet()) {
-            System.out.println(">>>>>>>>>>>> " + key);
-            map.get(key).setScaleX(10);
-        }
-//        List<Node> x = playerPieces.getChildren();
-//        for (Node n : x) {
-//            System.out.println(">>> " + n);
-//            if (n.getClass().equals(GridPane.class)) {
-//                System.out.println("====================================");
-//                n.setScaleX(10);
-//            }
-//        }
+    public Transition animateAIMove(Move move) {
+        int playerIdx = move.getPlayer().getNumber() - 1;
+        GridPane piece = playerPieces.get(playerIdx).get(move.getPiece().getLabel());
+
+        System.out.println("ANIMATING");
+        System.out.println("player (0-i): " + playerIdx);
+        System.out.println("piece: " + move.getPiece().getLabel());
+
+        System.out.println("pos: " + move.getPosition());
+        Vector2d position = move.getPosition();
+
+        Bounds boardBounds = gameBoardRep.getLayoutBounds();
+        Point2D boardTopLeft = gameBoardRep.localToScene(boardBounds.getMinX(), boardBounds.getMinY());
+        double destinationX = boardTopLeft.getX() + 27 * position.get_x();
+        double destinationY = boardTopLeft.getY() + 27 * position.get_y();
+
+        Bounds pieceBounds = piece.getLayoutBounds();
+        Point2D pieceTopLeft = piece.localToScene(pieceBounds.getMinX(), pieceBounds.getMinY());
+
+        double deltaX = destinationX - pieceTopLeft.getX() + pieceBounds.getWidth() * 0.5;
+        double deltaY = destinationY - pieceTopLeft.getY() + pieceBounds.getHeight() * 0.5;
+
+        TranslateTransition translate = new TranslateTransition();
+        translate.setByX(deltaX);
+        translate.setByY(deltaY);
+        translate.setDuration(Duration.millis(1000));
+
+        FadeTransition fade = new FadeTransition();
+        fade.setToValue(1);
+        fade.setDuration(Duration.millis(500));
+
+        ScaleTransition scale = new ScaleTransition();
+        scale.setToX(2);
+        scale.setToY(2);
+        scale.setDuration(Duration.millis(1000));
+
+        ParallelTransition transition = new ParallelTransition(translate, fade, scale);
+        transition.setNode(piece);
+        return transition;
     }
 
     /**
@@ -469,7 +490,7 @@ public class BoardUI{
      * @param allPieces
      * @return the node of that specific piece
      */
-    public Pane drawPiece(Color playerColor,Piece pieceRoot,Pane allPieces){
+    public Pane drawPiece(int playerIdx,Color playerColor,Piece pieceRoot,Pane allPieces){
         GridPane piece = new GridPane();
         for (int i = 0; i < pieceRoot.getShape().length; i++) {
             for (int j = 0; j < pieceRoot.getShape()[i].length; j++) {
@@ -483,7 +504,6 @@ public class BoardUI{
                     tile.setFill(Color.TRANSPARENT);
                     piece.add(new StackPane(tile),j,i);
                 }
-
             }
         }
 
@@ -551,6 +571,8 @@ public class BoardUI{
                 event.consume();
             }
         });
+
+        playerPieces.get(playerIdx).put(pieceRoot.getLabel(), piece);
 
         return piece;
     }
