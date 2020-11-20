@@ -22,7 +22,7 @@ public class MiniMax {
 
     public Move getMove(int playerNbr){
         this.rootPlayerNbr = playerNbr;
-        MiniMaxNode root = new MiniMaxNode(board,players);
+        MiniMaxNode root = new MiniMaxNode(board,players[playerNbr-1]);
         //create first nodes of that player
         return alphaBeta_Pruning(root,root.getDepth(),playerNbr,Float.MIN_VALUE,Float.MAX_VALUE).getMove();
     }
@@ -34,7 +34,7 @@ public class MiniMax {
             else node.setNegative(); return node;
         }else{
             for (Move possibleMove : players[playerNbr-1].possibleMoveSet(board)){
-                node = new MiniMaxNode(node,possibleMove,depth+1);
+                node = new MiniMaxNode(node,possibleMove,depth+1,players[playerNbr-1]);
                 int nextPlayerNbr = 0;
                 if(playerNbr>=players.length){
                     nextPlayerNbr = 1;

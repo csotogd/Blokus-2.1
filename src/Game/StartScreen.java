@@ -1,3 +1,5 @@
+package Game;
+
 import DataBase.Data;
 import Game.Game;
 import javafx.animation.*;

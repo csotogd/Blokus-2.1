@@ -10,8 +10,11 @@ import Move.Move;
 import Player.*;
 import Tools.Vector2d;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -224,8 +227,19 @@ public class Game extends Application {
                 score.setText(player.getName() + " score: " + player.getPoints());
                 dialogVbox.getChildren().add(score);
             }
+            Button restartButton = new Button("Back to Menu");
+            restartButton.setOnAction(new EventHandler<ActionEvent>() {
+
+                @Override
+                public void handle(ActionEvent event) {
+                    try {
+                        new StartScreen().start(stage);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
             Pane pane = new FlowPane();
-            pane.setBackground(Data.createBackGround());
             pane.getChildren().add(dialogVbox);
             pane.getChildren().add(boardUI.principal);
             pane.getChildren().add(boardUI.pieceOfPlayer(0));
@@ -237,7 +251,11 @@ public class Game extends Application {
                 pane.getChildren().add(boardUI.pieceOfPlayer(1));
             }
             pane.setDisable(true);
-            Scene dialogScene = new Scene(pane, 1000, 1000);
+            Pane pane1 = new FlowPane();
+            pane1.setBackground(Data.createBackGround());
+            pane1.getChildren().add(pane);
+            pane1.getChildren().add(restartButton);
+            Scene dialogScene = new Scene(pane1, 1000, 1000);
             stage.setScene(dialogScene);
             stage.show();
 
