@@ -41,6 +41,5 @@ public class Score {
             return negScore;
         }
         return score;
-
     }
 }

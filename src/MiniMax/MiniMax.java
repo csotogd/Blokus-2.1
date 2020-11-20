@@ -10,10 +10,9 @@ import Player.*;
 public class MiniMax {
     Player[] players;
     Board board;
-    private final int NBR_OF_TURNS = 4;
+    private final int NBR_OF_TURNS = 1;
     private int maxDepth;
     int rootPlayerNbr;
-    Move currentBestMove;
 
     public MiniMax(Player[] players, Board board){
         this.players = players;
@@ -21,23 +20,21 @@ public class MiniMax {
         maxDepth = players.length*NBR_OF_TURNS;
     }
 
-    public Move simulate(int playerNbr){
+    public Move getMove(int playerNbr){
         this.rootPlayerNbr = playerNbr;
-        this.currentBestMove = null;
         MiniMaxNode root = new MiniMaxNode(board,players);
         //create first nodes of that player
-        alphaBeta_Pruning(root,root.getDepth(),playerNbr,Float.MIN_VALUE,Float.MAX_VALUE);
-        return currentBestMove;
+        return alphaBeta_Pruning(root,root.getDepth(),playerNbr,Float.MIN_VALUE,Float.MAX_VALUE).getMove();
     }
 
-    private float alphaBeta_Pruning(MiniMaxNode node, int depth, int playerNbr, float alpha, float beta) {
+    private MiniMaxNode alphaBeta_Pruning(MiniMaxNode node, int depth, int playerNbr, float alpha, float beta) {
         //System.out.println(playerNbr);
         if(depth==maxDepth){
-            if(playerNbr==rootPlayerNbr) return node.getScore();
-            else return -node.getScore();
+            if(playerNbr==rootPlayerNbr) return node;
+            else node.setNegative(); return node;
         }else{
             for (Move possibleMove : players[playerNbr-1].possibleMoveSet(board)){
-                MiniMaxNode newNode = new MiniMaxNode(node,possibleMove,depth+1);
+                node = new MiniMaxNode(node,possibleMove,depth+1);
                 int nextPlayerNbr = 0;
                 if(playerNbr>=players.length){
                     nextPlayerNbr = 1;
@@ -45,16 +42,17 @@ public class MiniMax {
                     nextPlayerNbr = playerNbr+1;
                 }
                 if(playerNbr==rootPlayerNbr || nextPlayerNbr==rootPlayerNbr){
-                    alpha = Math.max(alpha, alphaBeta_Pruning(newNode,depth+1,nextPlayerNbr,-beta,-alpha));
-                    currentBestMove=newNode.getMove();
+                    alpha = Math.max(alpha, alphaBeta_Pruning(node.getParent(),depth+1,nextPlayerNbr,-beta,-alpha).getScore());
                 }else {
-                    alpha = Math.max(alpha, alphaBeta_Pruning(newNode,depth+1,nextPlayerNbr,alpha,beta));
+                    alpha = Math.max(alpha, alphaBeta_Pruning(node.getParent(),depth+1,nextPlayerNbr,alpha,beta).getScore());
                 }
                 if(alpha>=beta){
-                    return beta;
+                    node.setScore(beta);
+                    return node;
                 }
             }
-            return alpha;
+            node.setScore(alpha);
+            return node;
         }
 
     }
@@ -77,19 +75,19 @@ public class MiniMax {
 
         int i= 0;
         while(i<15){
-            Move move1 = m.simulate(p1.getPlayerNumber());
+            Move move1 = m.getMove(p1.getPlayerNumber());
             if(move1.makeMove(b)) p1.removePiece(move1.getPiece().getLabel());
             b.print();
 
-            Move move2 = m.simulate(p2.getPlayerNumber());
+            Move move2 = m.getMove(p2.getPlayerNumber());
             if(move2.makeMove(b)) p2.removePiece(move1.getPiece().getLabel());
             b.print();
 
-            Move move3 = m.simulate(p3.getPlayerNumber());
+            Move move3 = m.getMove(p3.getPlayerNumber());
             if(move3.makeMove(b)) p3.removePiece(move1.getPiece().getLabel());
             b.print();
 
-            Move move4 = m.simulate(p4.getPlayerNumber());
+            Move move4 = m.getMove(p4.getPlayerNumber());
             if(move4.makeMove(b)) p4.removePiece(move1.getPiece().getLabel());
             b.print();
 

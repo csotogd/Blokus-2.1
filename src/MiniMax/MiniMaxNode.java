@@ -15,6 +15,7 @@ public class MiniMaxNode {
     private float score;
     private Player[] players;
     private int depth;
+    private boolean wasSetToNegative;
 
     /**
      * CONSTRUCTOR for the root (parent point to itself)
@@ -28,6 +29,7 @@ public class MiniMaxNode {
         children = new ArrayList<>();
         score = 0;
         players = ps;
+        this.wasSetToNegative = false;
     }
 
     /**
@@ -43,10 +45,16 @@ public class MiniMaxNode {
         this.state = parent.state;
         this.players = parent.players;
         score = heuristics();
+        this.wasSetToNegative = false;
     }
 
     public float heuristics(){
         return move.getPiece().getNumberOfBlocks();
+    }
+
+    public void setNegative(){
+        this.score = -score;
+        this.wasSetToNegative = true;
     }
 
     public Move getMove() {
@@ -58,15 +66,20 @@ public class MiniMaxNode {
     }
 
     public float getScore() {
+        if(this.wasSetToNegative){
+            float negScore = this.score;
+            this.score = -score;
+            this.wasSetToNegative = false;
+            return negScore;
+        }
         return score;
     }
-
     public void setScore(float score) {
         this.score = score;
     }
 
-    public List<MiniMaxNode> getChildren(){
-        return children;
+    public MiniMaxNode getParent(){
+        return parent;
     }
 
 }
