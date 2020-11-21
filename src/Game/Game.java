@@ -272,13 +272,9 @@ public class Game extends Application {
 
             Move move = calculateMove.getValue();
             if (move!=null&&move.makeMove(board)) {
-                Transition tt = boardUI.animateAIMove(move);
-                tt.setOnFinished(f -> {
-                    System.out.println("done");
-                    moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]);
-                });
-                System.out.println("animating...");
-                tt.play();
+                Transition transition = boardUI.animateAIMove(move);
+                transition.setOnFinished(f -> moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]));
+                transition.play();
             }
         });
     }

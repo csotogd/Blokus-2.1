@@ -51,7 +51,8 @@ public class BoardUI{
     Pane left;
     Pane top;
     public FlowPane[] allPieces;
-    public HashMap<Integer, HashMap<String, GridPane>> playerPieces;
+    // track the piece GridPanes by player and label
+    public List<HashMap<String, GridPane>> playerPieces;
     int actualSelectedPieceNbr;
     public Text turnOfPlayerText;
     public boolean beginning = true;
@@ -68,9 +69,9 @@ public class BoardUI{
         this.game = game;
         players = game.getPlayers();
         allPieces = new FlowPane[players.length];
-        playerPieces = new HashMap<>();
+        playerPieces = new ArrayList<>();
         for (int i = 0; i < players.length; i++) {
-            playerPieces.put(i, new HashMap<>());
+            playerPieces.add(new HashMap<>());
         }
         this.background = Data.createBackGround();
         this.principal = new Pane();
@@ -446,11 +447,6 @@ public class BoardUI{
         int playerIdx = move.getPlayer().getNumber() - 1;
         GridPane piece = playerPieces.get(playerIdx).get(move.getPiece().getLabel());
 
-        System.out.println("ANIMATING");
-        System.out.println("player (0-i): " + playerIdx);
-        System.out.println("piece: " + move.getPiece().getLabel());
-
-        System.out.println("pos: " + move.getPosition());
         Vector2d position = move.getPosition();
 
         Bounds boardBounds = gameBoardRep.getLayoutBounds();
@@ -461,13 +457,62 @@ public class BoardUI{
         Bounds pieceBounds = piece.getLayoutBounds();
         Point2D pieceTopLeft = piece.localToScene(pieceBounds.getMinX(), pieceBounds.getMinY());
 
-        double deltaX = destinationX - pieceTopLeft.getX() + pieceBounds.getWidth() * 0.5;
-        double deltaY = destinationY - pieceTopLeft.getY() + pieceBounds.getHeight() * 0.5;
+        // start with scaling adjustment
+        double adjustmentX = pieceBounds.getWidth() * 0.5;
+        double adjustmentY = pieceBounds.getHeight() * 0.5;
+
+        int currentState = move.getPiece().getCurrentState();
+        int nbRotation = move.getPiece().getNbRotation();
+
+        int blockWidth = (int) (pieceBounds.getWidth() - 2) / 14;
+        int blockHeight = (int) (pieceBounds.getHeight() - 2) / 14;
+
+        int expectedBlockWidth = move.getPiece().getShape()[0].length;
+        int expectedBlockHeight = move.getPiece().getShape().length;
+
+        // swap if the piece is rotated 90deg
+        if (currentState % 2 == 1) {
+            int tmp = expectedBlockWidth;
+            expectedBlockWidth = expectedBlockHeight;
+            expectedBlockHeight = tmp;
+        }
+
+        // rotation adjustment
+        if (currentState % 2 == 1) {
+            adjustmentX += pieceBounds.getHeight() - pieceBounds.getWidth();
+            adjustmentY += pieceBounds.getWidth() - pieceBounds.getHeight();
+        }
+
+        // bounds adjustment (the bounds can be bigger than the piece)
+        if (currentState == 1) {
+            adjustmentX -= (blockHeight - expectedBlockHeight) * 27;
+        } else if (currentState == nbRotation) {
+            adjustmentY -= (blockHeight - expectedBlockHeight) * 27;
+        } else if (currentState - nbRotation == 3) {
+            adjustmentY -= (blockHeight - expectedBlockHeight) * 27;
+        } else if (currentState == 2 && nbRotation == 4) {
+            adjustmentY -= (blockHeight - expectedBlockHeight) * 27;
+        }
+
+        double deltaX = destinationX - pieceTopLeft.getX() + adjustmentX;
+        double deltaY = destinationY - pieceTopLeft.getY() + adjustmentY;
 
         TranslateTransition translate = new TranslateTransition();
         translate.setByX(deltaX);
         translate.setByY(deltaY);
         translate.setDuration(Duration.millis(1000));
+
+
+        double rotation = (currentState % nbRotation) * 90;
+        if (rotation > 180)
+            rotation = 180 - rotation;
+
+        RotateTransition rotate = new RotateTransition();
+        rotate.setByAngle(rotation);
+        rotate.setDuration(Duration.millis(1000));
+
+        boolean isFlipped = currentState >= nbRotation;
+
 
         FadeTransition fade = new FadeTransition();
         fade.setToValue(1);
@@ -475,10 +520,13 @@ public class BoardUI{
 
         ScaleTransition scale = new ScaleTransition();
         scale.setToX(2);
-        scale.setToY(2);
+        if (isFlipped)
+            scale.setToY(-2);
+        else
+            scale.setToY(2);
         scale.setDuration(Duration.millis(1000));
 
-        ParallelTransition transition = new ParallelTransition(translate, fade, scale);
+        ParallelTransition transition = new ParallelTransition(translate, rotate, fade, scale);
         transition.setNode(piece);
         return transition;
     }
@@ -572,6 +620,7 @@ public class BoardUI{
             }
         });
 
+//        piece.setStyle("-fx-border-color: red"); // useful for debug
         playerPieces.get(playerIdx).put(pieceRoot.getLabel(), piece);
 
         return piece;

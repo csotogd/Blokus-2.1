@@ -96,6 +96,10 @@ public abstract class Piece {
         }
     }
 
+    public int getCurrentState() {
+        return current_state;
+    }
+
     /**
      * Getter
      * @return current state of the piece
