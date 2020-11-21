@@ -280,7 +280,7 @@ public class Game extends Application {
                             move = ((GeneticPlayer) actualPlayer).calculateMove(board);
                             ((GeneticPlayer) actualPlayer).addTurn();
                         }else if(actualPlayer instanceof MCPlayer) {
-                            move = mc.simulation(actualPlayer.getNumber()-1, 4000);
+                            move = mc.simulation(actualPlayer.getNumber()-1, 3500);
                         }else if(actualPlayer instanceof MiniMaxPlayer){
                             move = miniMax.getMove(actualPlayer.getPlayerNumber());
                         }

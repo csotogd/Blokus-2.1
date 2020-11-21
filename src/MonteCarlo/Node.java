@@ -87,17 +87,25 @@ public class Node {
      * @param player the player for which we want to expand the moves
      * @return true if it was successful, false otherwise
      */
-    public boolean randomExpandBias(Player player){
+    public boolean randomExpandBias(Player player,int numMoves){
         List biggestPieces;
         if(player.getPiecesList().size()<5){
             biggestPieces = player.getPiecesList();
         }else{
             biggestPieces = getBiggestPieces(player);
         }
-
-        List<Move> moves = possibleMoveSet(state, player,biggestPieces);
-        if(moves.size()>0) for(Move m: moves) children.add(new Node(this,m));
-        else return false;
+        int count=0;
+        for(int i=0;i<numMoves;i++){
+            Node n = new Node(this,player.randomPossibleMoveClone(state, biggestPieces));
+            if(!children.contains(n)) {
+                children.add(n);
+                count=0;
+            }else{
+                count++;
+                if(count>3) break;
+            }
+        }
+        if(children.size()==0) return false;
         return true;
 
     }
@@ -152,7 +160,7 @@ public class Node {
             }
         }
         List<Piece> biggestPieces = new ArrayList<>();
-        while(biggestPieces.size()<5&&temp.size()>0){
+        while(biggestPieces.size()<3&&temp.size()>0){
             biggestPieces.add(temp.removeFirst());
         }
         return biggestPieces;
