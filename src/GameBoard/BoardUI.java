@@ -6,6 +6,7 @@ import Game.Game;
 import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
+import javafx.animation.*;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
@@ -20,6 +21,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 /*
 * It´s a ui class but many logic operations happen here too, take a look
 *
@@ -38,13 +44,14 @@ public class BoardUI{
     private final Vector2d RECTANGLE_SIZE = new Vector2d(100,280);
     private final int CELL_SIZE = 25;
 
-
     Pane center;
     Pane right;
     Pane bottom;
     Pane left;
     Pane top;
-    public FlowPane allPieces[];
+    public FlowPane[] allPieces;
+    // track the piece GridPanes by player and label
+    public List<HashMap<String, GridPane>> playerPieces;
     int actualSelectedPieceNbr;
     public Text turnOfPlayerText;
     public boolean beginning = true;
@@ -61,6 +68,10 @@ public class BoardUI{
         this.game = game;
         players = game.getPlayers();
         allPieces = new FlowPane[players.length];
+        playerPieces = new ArrayList<>();
+        for (int i = 0; i < players.length; i++) {
+            playerPieces.add(new HashMap<>());
+        }
         this.background = Data.createBackGround();
         this.principal = new Pane();
         paint();
@@ -312,6 +323,8 @@ public class BoardUI{
         principal.setHeight(RECTANGLE_SIZE.get_x()*2.3f);
         principal.setWidth(RECTANGLE_SIZE.get_y()*1.5f);
 
+        int playerIdx = game.getActualPlayer().getNumber() - 1;
+
         actualSelectedPieceNbr = 1;
         rightRotate = new Button("Right rotation");
         rightRotate.setTranslateX(105); rightRotate.setTranslateY(-20);
@@ -325,9 +338,10 @@ public class BoardUI{
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
                     if((isPiece==pieceNbr)){
-                        int index = allPieces[game.getActualPlayer().getNumber()-1].getChildren().indexOf(object);
-                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().remove(index);
-                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().add(index,drawPiece(game.getActualPlayer().getColor(),piece,allPieces[game.getActualPlayer().getNumber()-1]));
+                        int index = allPieces[playerIdx].getChildren().indexOf(object);
+                        allPieces[playerIdx].getChildren().remove(index);
+                        Pane piecePane = drawPiece(playerIdx,game.getActualPlayer().getColor(),piece,allPieces[playerIdx]);
+                        allPieces[playerIdx].getChildren().add(index,piecePane);
                         break;
                     }
                 }
@@ -346,9 +360,10 @@ public class BoardUI{
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
                     if((isPiece==pieceNbr)){
-                        int index = allPieces[game.getActualPlayer().getNumber()-1].getChildren().indexOf(object);
-                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().remove(index);
-                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().add(index,drawPiece(game.getActualPlayer().getColor(),piece,allPieces[game.getActualPlayer().getNumber()-1]));
+                        int index = allPieces[playerIdx].getChildren().indexOf(object);
+                        allPieces[playerIdx].getChildren().remove(index);
+                        Pane piecePane = drawPiece(playerIdx,game.getActualPlayer().getColor(),piece,allPieces[playerIdx]);
+                        allPieces[playerIdx].getChildren().add(index,piecePane);
                         break;
                     }
                 }
@@ -367,10 +382,10 @@ public class BoardUI{
                 if(object.getClass().equals(GridPane.class)){
                     isPiece++;
                     if((isPiece==pieceNbr)){
-                        int index = allPieces[game.getActualPlayer().getNumber()-1].getChildren().indexOf(object);
-                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().remove(index);
-                        allPieces[game.getActualPlayer().getNumber()-1].getChildren().add(index,drawPiece(game.getActualPlayer().getColor(),piece,allPieces[game.getActualPlayer().getNumber()-1]));
-
+                        int index = allPieces[playerIdx].getChildren().indexOf(object);
+                        allPieces[playerIdx].getChildren().remove(index);
+                        Pane piecePane = drawPiece(playerIdx,game.getActualPlayer().getColor(),piece,allPieces[playerIdx]);
+                        allPieces[playerIdx].getChildren().add(index,piecePane);
                         break;
                     }
                 }
@@ -417,7 +432,7 @@ public class BoardUI{
         for (Piece pieceLeft:players[playerNbr].getPiecesList()) {
             if(!pieceLeft.isUsed()){
                 allPieces[playerNbr].getChildren().add(new Text(Integer.toString(++pieceCounter)));
-                Node piece = drawPiece(players[playerNbr].getColor(),pieceLeft,allPieces[playerNbr]);
+                Pane piece = drawPiece(playerNbr,players[playerNbr].getColor(),pieceLeft,allPieces[playerNbr]);
                 pieceLeft.setPosInBoardX(piece.getTranslateX());
                 pieceLeft.setPosInBoardY(piece.getTranslateY());
                 allPieces[playerNbr].getChildren().add(piece);
@@ -427,6 +442,101 @@ public class BoardUI{
         return allPieces[playerNbr];
     }
 
+    public Transition animateAIMove(Move move) {
+        int playerIdx = move.getPlayer().getNumber() - 1;
+        GridPane piece = playerPieces.get(playerIdx).get(move.getPiece().getLabel());
+
+        Vector2d position = move.getPosition();
+
+        Bounds boardBounds = gameBoardRep.getLayoutBounds();
+        Point2D boardTopLeft = gameBoardRep.localToScene(boardBounds.getMinX(), boardBounds.getMinY());
+        double destinationX = boardTopLeft.getX() + 27 * position.get_x();
+        double destinationY = boardTopLeft.getY() + 27 * position.get_y();
+
+        Bounds pieceBounds = piece.getLayoutBounds();
+        Point2D pieceTopLeft = piece.localToScene(pieceBounds.getMinX(), pieceBounds.getMinY());
+
+        // start with scaling adjustment
+        double adjustmentX = pieceBounds.getWidth() * 0.5;
+        double adjustmentY = pieceBounds.getHeight() * 0.5;
+
+        int currentState = move.getPiece().getCurrentState();
+        int nbRotation = move.getPiece().getNbRotation();
+
+        int blockHeight = (int) (pieceBounds.getHeight() - 2) / 14;
+
+        int expectedBlockHeight;
+        if (currentState % 2 == 1) {
+            // actually width if piece is rotated 90
+            expectedBlockHeight = move.getPiece().getShape()[0].length;;
+        } else {
+            expectedBlockHeight = move.getPiece().getShape().length;
+        }
+
+        System.out.println("animation current state == " + currentState + " (nbR: " + nbRotation + ")");
+
+        // rotation adjustment
+        if (currentState % 2 == 1) {
+            adjustmentX += pieceBounds.getHeight() - pieceBounds.getWidth();
+            adjustmentY += pieceBounds.getWidth() - pieceBounds.getHeight();
+        }
+
+        // bounds adjustment (the bounds can be bigger than the piece)
+        if (currentState == 1) {
+            System.out.println("case 1");
+            System.out.println((blockHeight - expectedBlockHeight) + " left");
+            adjustmentX -= (blockHeight - expectedBlockHeight) * 27;
+        } else if (currentState == nbRotation) {
+            System.out.println("case 2");
+            System.out.println((blockHeight - expectedBlockHeight) + " up");
+            adjustmentY -= (blockHeight - expectedBlockHeight) * 27;
+        } else if (currentState - nbRotation == 3) {
+            System.out.println("case3");
+            System.out.println((blockHeight - expectedBlockHeight) + " left");
+            adjustmentX -= (blockHeight - expectedBlockHeight) * 27;
+        } else if (currentState == 2 && nbRotation == 4) {
+            System.out.println("case 4");
+            System.out.println((blockHeight - expectedBlockHeight) + " up");
+            adjustmentY -= (blockHeight - expectedBlockHeight) * 27;
+        }
+
+        double deltaX = destinationX - pieceTopLeft.getX() + adjustmentX;
+        double deltaY = destinationY - pieceTopLeft.getY() + adjustmentY;
+
+        TranslateTransition translate = new TranslateTransition();
+        translate.setByX(deltaX);
+        translate.setByY(deltaY);
+        translate.setDuration(Duration.millis(1000));
+
+
+        double rotation = (currentState % nbRotation) * 90;
+        if (rotation > 180)
+            rotation = 180 - rotation;
+
+        RotateTransition rotate = new RotateTransition();
+        rotate.setByAngle(rotation);
+        rotate.setDuration(Duration.millis(1000));
+
+        boolean isFlipped = currentState >= nbRotation;
+
+
+        FadeTransition fade = new FadeTransition();
+        fade.setToValue(1);
+        fade.setDuration(Duration.millis(500));
+
+        ScaleTransition scale = new ScaleTransition();
+        scale.setToX(2);
+        if (isFlipped)
+            scale.setToY(-2);
+        else
+            scale.setToY(2);
+        scale.setDuration(Duration.millis(1000));
+
+        ParallelTransition transition = new ParallelTransition(translate, rotate, fade, scale);
+        transition.setNode(piece);
+        return transition;
+    }
+
     /**
      * method used to draw a specific piece and also contains the action listener of the drag and drop
      * @param playerColor gives info on the actual player color
@@ -434,7 +544,7 @@ public class BoardUI{
      * @param allPieces
      * @return the node of that specific piece
      */
-    public Pane drawPiece(Color playerColor,Piece pieceRoot,Pane allPieces){
+    public Pane drawPiece(int playerIdx,Color playerColor,Piece pieceRoot,Pane allPieces){
         GridPane piece = new GridPane();
         for (int i = 0; i < pieceRoot.getShape().length; i++) {
             for (int j = 0; j < pieceRoot.getShape()[i].length; j++) {
@@ -448,9 +558,9 @@ public class BoardUI{
                     tile.setFill(Color.TRANSPARENT);
                     piece.add(new StackPane(tile),j,i);
                 }
-
             }
         }
+
         final double[] xPos = new double[1];
         final double[] yPos = new double[1];
         piece.setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -515,6 +625,9 @@ public class BoardUI{
                 event.consume();
             }
         });
+
+//        piece.setStyle("-fx-border-color: red"); //for debug
+        playerPieces.get(playerIdx).put(pieceRoot.getLabel(), piece);
 
         return piece;
     }

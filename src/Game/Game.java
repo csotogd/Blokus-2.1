@@ -1,6 +1,7 @@
 package Game;
 
 import MiniMax.MiniMax;
+import javafx.animation.Transition;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import GameBoard.Board;
@@ -298,7 +299,9 @@ public class Game extends Application {
 
             Move move = calculateMove.getValue();
             if (move!=null&&move.makeMove(board)) {
-                moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]);
+                Transition transition = boardUI.animateAIMove(move);
+                transition.setOnFinished(f -> moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]));
+                transition.play();
             }
         });
     }
