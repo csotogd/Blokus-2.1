@@ -15,8 +15,8 @@ public class Node {
     private Move move;
     private List<Node> children;
     private int visitedNum;
-    private int score;
-    private static double c=3;
+    private double score;
+    private static double c=8;
     private Player[] players;
     private double ucbScore;
 
@@ -54,7 +54,7 @@ public class Node {
         //children = new ArrayList<>();
         visitedNum = 0;
         score = 0;
-        ucbScore = (double)move.getPiece().getNumberOfBlocks();
+        ucbScore = move.getPiece().getNumberOfBlocks()+move.getPiece().getCorners().get(0).size();
     }
 
     /**
@@ -170,7 +170,7 @@ public class Node {
      * Simulate a play until it can't find a move for any player
      * @return the final score for the playerOfInterest (1 for a win)
      */
-    public int simulation(int playerturn, int playerOfInterest){
+    public double simulation(int playerturn, int playerOfInterest){
         initializeNode();// make the move, copy players
         int countPass=0; //number of time a player has passed during a simulation
         Board board = state.clone(); //clone the board
@@ -191,9 +191,13 @@ public class Node {
         //board.print();
         int[] playerScores=new int[players.length];
         for(Player p: players) for(Piece piece: p.getPiecesList()) playerScores[p.getPlayerNumber()-1]+=piece.getNumberOfBlocks();
-
+        int same=0;
        // System.out.println(move.getPiece().getLabel()+" "+playerScores[0]+" "+playerScores[1]+" "+playerScores[2]+" "+playerScores[3]);
-        for(int score:playerScores) if(playerScores[playerOfInterest]>score) return 0;//loss
+        for(int score:playerScores) {
+            if(playerScores[playerOfInterest]>score) return 0;//loss
+            else if(playerScores[playerOfInterest]>score) same++;
+        }
+        if(same>1) return 0.5;//draw
         return 1;//win
     }
 
@@ -212,12 +216,13 @@ public class Node {
     }
 
     public double getUCB1(){
-        if(visitedNum>0) return computeUCB();
+        if(parent.getVisitedNum()>0) return computeUCB();
         return ucbScore;
     }
 
     public double computeUCB(){
-        ucbScore= (double)score/(double) visitedNum + Node.c*Math.sqrt(Math.log(2*parent.getVisitedNum())/(double) visitedNum);
+        if(visitedNum!=0) ucbScore= score/(double) visitedNum + Node.c*Math.sqrt(Math.log(2*parent.getVisitedNum())/(double) visitedNum);
+        else ucbScore= Node.c*Math.sqrt(Math.log(2*parent.getVisitedNum())/(double) visitedNum);
         return ucbScore;
     }
 
@@ -257,16 +262,15 @@ public class Node {
         this.visitedNum++;
         if(parent!=this) {
             parent.addVisitiedNum();
-            computeUCB();
         }
     }
 
-    public int getScore() {
+    public double getScore() {
         return score;
     }
 
-    public void addScore() {
-        this.score ++;
-        if(parent!=this) parent.addScore();
+    public void addScore(double s) {
+        this.score +=s;
+        if(parent!=this) parent.addScore(s);
     }
 }

@@ -43,7 +43,7 @@ public class MonteCarlo {
             //System.out.println("ucbscore: "+choosen.getUCB1()+" / " +choosen.getMove().getPiece().getLabel());
             //simulate turn by turn until the end -> back propagate score
             choosen.addVisitiedNum(); // update the count of the visited number
-            if(choosen.simulation((player+1)%players.length,player)>0) choosen.addScore();//if we get a win update the score as well
+            choosen.addScore(choosen.simulation((player+1)%players.length,player));//if we get a win update the score as well
         }
         Node res = root.getChildren().get(0);//choose the most visited node move
         for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
