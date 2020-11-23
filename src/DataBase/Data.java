@@ -6,7 +6,7 @@ import javafx.scene.layout.*;
 public class Data {
     private static String[] playersName = {"PLAYER 1","PLAYER 2","PLAYER 3","PLAYER 4"};
 
-    private static String[] playerTypes = {"Human Player","Human Player","Human Player","Human Player"};
+    private static String[] playerTypes = {"Human Player","Monte Carlo Player","Monte Carlo Player","Monte Carlo Player"};
 
     private static String algo = "";
 

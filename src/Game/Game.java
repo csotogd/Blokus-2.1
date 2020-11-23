@@ -1,6 +1,7 @@
 package Game;
 
 import MiniMax.MiniMax;
+import javafx.animation.Transition;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import GameBoard.Board;
@@ -281,7 +282,7 @@ public class Game extends Application {
                             move = ((GeneticPlayer) actualPlayer).calculateMove(board);
                             ((GeneticPlayer) actualPlayer).addTurn();
                         }else if(actualPlayer instanceof MCPlayer) {
-                            move = mc.simulation(actualPlayer.getNumber()-1, 4000);
+                            move = mc.simulation(actualPlayer.getNumber()-1, 3500);
                         }else if(actualPlayer instanceof MiniMaxPlayer){
                             move = miniMax.getMove(actualPlayer.getPlayerNumber());
                         }
@@ -299,7 +300,9 @@ public class Game extends Application {
 
             Move move = calculateMove.getValue();
             if (move!=null&&move.makeMove(board)) {
-                moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]);
+                Transition transition = boardUI.animateAIMove(move);
+                transition.setOnFinished(f -> moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]));
+                transition.play();
             }
         });
     }
