@@ -37,7 +37,6 @@ public class MiniMax {
         MiniMaxNode root = new MiniMaxNode(board,players[playerNbr-1]);
         //create first nodes of that player
         Move move = alphaBeta_Pruning(root,root.getDepth(),playerNbr,Float.MIN_VALUE,Float.MAX_VALUE).getMove();
-        System.out.println(cutOffMoveOccurence.keySet());
         //System.out.println(System.currentTimeMillis()-start);
         return move;
     }

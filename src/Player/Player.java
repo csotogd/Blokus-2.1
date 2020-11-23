@@ -171,6 +171,7 @@ public abstract class Player {
             }
         }
         piecesList = newPiecesList;
+        System.out.println(piecesList.toString());
     }
 
     /**

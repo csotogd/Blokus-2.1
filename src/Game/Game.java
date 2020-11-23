@@ -172,8 +172,6 @@ public class Game extends Application {
      after the last player, we go back to the first one
      */
     public void nextTurn(){
-        System.out.println(actualPlayer.getArea(board));
-
         if (actualPlayer.getPlayerNumber()<players.length)
             actualPlayer=players[actualPlayer.getPlayerNumber()]; //player 2 occupies index 1 in array of players
         else
