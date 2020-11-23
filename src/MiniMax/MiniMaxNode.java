@@ -17,6 +17,7 @@ public class MiniMaxNode {
     private Player player;
     private int depth;
     private boolean wasSetToNegative;
+    private boolean visited;
 
     /**
      * CONSTRUCTOR for the root (parent point to itself)
@@ -31,6 +32,7 @@ public class MiniMaxNode {
         this.score = 0;
         this.player = player;
         this.wasSetToNegative = false;
+        this.visited = false;
     }
 
     /**
@@ -38,15 +40,17 @@ public class MiniMaxNode {
      * @param parent parent node
      * @param move move to make to arrive from parent to this node
      */
-    public MiniMaxNode(MiniMaxNode parent, Move move, int depth,Player player){
+    public MiniMaxNode(MiniMaxNode parent, Move move, int depth,Player player,Board board){
         this.children = new ArrayList<>();
         this.parent = parent;
+        this.parent.getChildren().add(this);
         this.move = move;
         this.depth = depth;
-        this.board = parent.board;
+        this.board = board;
         this.player = player;
         this.score = heuristics();
         this.wasSetToNegative = false;
+        this.visited = false;
     }
 
     public float heuristics(){
@@ -111,8 +115,15 @@ public class MiniMaxNode {
         this.score = score;
     }
 
-    public MiniMaxNode getParent(){
-        return parent;
+    public boolean isVisited() {
+        return visited;
     }
 
+    public void setVisited(boolean visited) {
+        this.visited = visited;
+    }
+
+    public List<MiniMaxNode> getChildren() {
+        return children;
+    }
 }

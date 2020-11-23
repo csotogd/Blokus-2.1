@@ -16,14 +16,6 @@ public class Score {
         this.wasSetToNegative = false;
     }
 
-    /**
-     * constructor for alpha or beta value
-     * @param score
-     */
-    public Score(float score){
-        this.score = score;
-    }
-
     public void setNegative(){
         this.score = -score;
         this.wasSetToNegative = true;
