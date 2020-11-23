@@ -1,5 +1,6 @@
 package Player;
 
+import DataBase.Data;
 import DataBase.Piece;
 import DataBase.PieceFactory;
 import GameBoard.Board;
@@ -107,6 +108,33 @@ public abstract class Player {
             break;
         }
         piecesList.remove(pieceToRemove);
+    }
+
+    public int getArea(Board board){
+        int farestX = Integer.MIN_VALUE;
+        int farestY = Integer.MIN_VALUE;
+        for (Corner corner:board.getCorner(this.getStartingCorner())) {
+            if(corner.getPosition().get_x()>farestX)farestX = corner.getPosition().get_x();
+            if(corner.getPosition().get_y()>farestY)farestY = corner.getPosition().get_y();
+        }
+        return (int) Math.sqrt((Math.pow(farestX-this.startingCorner.get_x(),2)+Math.pow(farestY-this.startingCorner.get_y(),2)));
+        /*
+        if(this.getNumber()==1){
+            return (int) (Math.pow(Data.getDIMENSION(),2)-(farestX*farestY));
+        }
+        if(Data.getPlayerTypes().length==4){
+            if(this.getNumber()==2){
+                return farestX*(Data.getDIMENSION()-farestY);
+            }else if(this.getNumber()==3){
+                return farestX*farestY;
+            }else{
+                return (Data.getDIMENSION()-farestX)*farestY;
+            }
+        }else{
+            return farestX*farestY;
+        }
+
+         */
     }
 
     public void reOrderPieceList(){

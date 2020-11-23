@@ -31,15 +31,18 @@ public class MiniMax {
     }
 
     public Move getMove(int playerNbr){
+        //long start = System.currentTimeMillis(); //start of the timer
         this.rootPlayerNbr = playerNbr;
         this.cutOffMoveOccurence = new HashMap<>();
         MiniMaxNode root = new MiniMaxNode(board,players[playerNbr-1]);
         //create first nodes of that player
-        return alphaBeta_Pruning(root,root.getDepth(),playerNbr,Float.MIN_VALUE,Float.MAX_VALUE).getMove();
+        Move move = alphaBeta_Pruning(root,root.getDepth(),playerNbr,Float.MIN_VALUE,Float.MAX_VALUE).getMove();
+        System.out.println(cutOffMoveOccurence.keySet());
+        //System.out.println(System.currentTimeMillis()-start);
+        return move;
     }
 
     private MiniMaxNode alphaBeta_Pruning(MiniMaxNode node, int depth, int playerNbr, float alpha, float beta) {
-        //System.out.println(playerNbr);
         if(depth==maxDepth){
             if(playerNbr==rootPlayerNbr) return node;
             else node.setNegative(); return node;
@@ -66,7 +69,7 @@ public class MiniMax {
                     return node;
                 }
             }
-            updateOcc();
+            //updateOcc();
             node.setScore(alpha);
             return node;
         }
@@ -82,7 +85,7 @@ public class MiniMax {
     }
 
     public void checkToAddToCutOff(Move move){
-        if(cutOffMoveOccurence.isEmpty()){
+        if(cutOffMoveOccurence.isEmpty()||cutOffMoveOccurence.size()<5){
             cutOffMoveOccurence.put(1,move);
         }else{
             if(cutOffMoveOccurence.containsValue(move)){

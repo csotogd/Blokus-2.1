@@ -171,6 +171,7 @@ public class Game extends Application {
      after the last player, we go back to the first one
      */
     public void nextTurn(){
+        System.out.println(actualPlayer.getArea(board));
 
         if (actualPlayer.getPlayerNumber()<players.length)
             actualPlayer=players[actualPlayer.getPlayerNumber()]; //player 2 occupies index 1 in array of players
@@ -376,9 +377,9 @@ public class Game extends Application {
      * @return true if the move is allowed on the board, false otherwise
      */
     public boolean makeMove(Move move){
+
         if(move.makeMove(board)) {
             movesLog.add(move);
-            //updateState();
             return true;
         }
         return false;
