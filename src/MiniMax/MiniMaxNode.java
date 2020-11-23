@@ -22,9 +22,9 @@ public class MiniMaxNode {
      * CONSTRUCTOR for the root (parent point to itself)
      * @param state current state of the game
      */
-    public MiniMaxNode(Board state, Player player){
+    public MiniMaxNode(Board state, Player player,int depth){
         this.board =state;
-        this.depth = 0;
+        this.depth = depth;
         this.parent = this;
         this.move = null;
         this.children = new ArrayList<>();
@@ -34,7 +34,7 @@ public class MiniMaxNode {
     }
 
     /**
-     * Regular constructor
+     * Regular node constructor
      * @param parent parent node
      * @param move move to make to arrive from parent to this node
      */
@@ -87,13 +87,12 @@ public class MiniMaxNode {
 
     public void setNegative(){
         this.score = -this.score;
-        this.wasSetToNegative = true;
     }
 
     public float getScore() {
         if(this.wasSetToNegative){
             float negScore = this.score;
-            this.score = -this.score;
+            this.score = -negScore;
             this.wasSetToNegative = false;
             return negScore;
         }

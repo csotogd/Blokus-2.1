@@ -34,22 +34,35 @@ public class MiniMax {
         //long start = System.currentTimeMillis(); //start of the timer
         this.rootPlayerNbr = playerNbr;
         this.cutOffMoveOccurence = new HashMap<>();
-        MiniMaxNode root = new MiniMaxNode(board,players[playerNbr-1]);
+        MiniMaxNode root = new MiniMaxNode(board,players[playerNbr-1],maxDepth);
         //create first nodes of that player
         Move move = alphaBeta_Pruning(root,root.getDepth(),playerNbr,Float.MIN_VALUE,Float.MAX_VALUE).getMove();
         //System.out.println(System.currentTimeMillis()-start);
         return move;
     }
 
-    private MiniMaxNode alphaBeta_Pruning(MiniMaxNode node, int depth, int playerNbr, float alpha, float beta) {
+    private MiniMaxNode MaxN(MiniMaxNode node, int depth, int playerNbr,float aplha){
         if(depth==maxDepth){
             if(playerNbr==rootPlayerNbr) return node;
             else node.setNegative(); return node;
+        }
+        return null;
+    }
+
+    private MiniMaxNode alphaBeta_Pruning(MiniMaxNode node, int depth, int playerNbr, float alpha, float beta) {
+        //System.out.println(playerNbr);
+        if(depth<=0){
+            if(playerNbr==rootPlayerNbr) {
+                return node;
+            }else {
+                node.setNegative();
+                return node;
+            }
         }else{
             //TODO order the move so that the worst ones are at the end and are pruned faster
             for (Move possibleMove : players[playerNbr-1].possibleMoveSetBoosted(board)){
                 //TODO compute first the moves that have been cutoff earlier
-                node = new MiniMaxNode(node,possibleMove,depth+1,players[playerNbr-1]);
+                MiniMaxNode newNode = new MiniMaxNode(node,possibleMove,depth-1,players[playerNbr-1]);
                 int nextPlayerNbr = 0;
                 if(playerNbr>=players.length){
                     nextPlayerNbr = 1;
@@ -57,13 +70,13 @@ public class MiniMax {
                     nextPlayerNbr = playerNbr+1;
                 }
                 if(playerNbr==rootPlayerNbr || nextPlayerNbr==rootPlayerNbr){
-                    alpha = Math.max(alpha, alphaBeta_Pruning(node.getParent(),depth+1,nextPlayerNbr,-beta,-alpha).getScore());
+                    alpha = Math.max(alpha, -alphaBeta_Pruning(newNode,depth-1,nextPlayerNbr,-beta,-alpha).getScore());
                 }else {
-                    alpha = Math.max(alpha, alphaBeta_Pruning(node.getParent(),depth+1,nextPlayerNbr,alpha,beta).getScore());
+                    alpha = Math.max(alpha, alphaBeta_Pruning(newNode,depth-1,nextPlayerNbr,alpha,beta).getScore());
                 }
                 if(alpha>=beta){
                     //cutoff
-                    checkToAddToCutOff(node.getMove());
+                    //checkToAddToCutOff(node.getMove());
                     node.setScore(beta);
                     return node;
                 }
