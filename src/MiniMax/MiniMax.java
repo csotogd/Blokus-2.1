@@ -129,7 +129,7 @@ public class MiniMax {
         }
 
     }
-
+/*
     private MiniMaxNode maxN(MiniMaxNode node, int depth, int playerNbr, float alpha){
         if(depth<=0) {
             u = node.getScore();
@@ -139,6 +139,8 @@ public class MiniMax {
         best.add(Float.MIN_VALUE);
 
     }
+    
+ */
 
 
     private float alphaBeta_Pruning(MiniMaxNode node, int depth, int playerNbr, float alpha, float beta) {
@@ -252,29 +254,29 @@ public class MiniMax {
         float[] score = new float[Data.getPlayersName().length];
         //biggest piece heuristic
         int[] nbrOfBlocks = new int[players.length];
-
+        nbrOfBlocks=getBlocksScore(node.getBoard());
         //closest to middle heuristic
         int[] area = getArea(node.getBoard());
         //Adds most corners heuristic
 
-        int nbrOfCorner = board.getCorner(player.getStartingCorner()).size();
+        int[] nbrOfCorner = new int[players.length];
+        for(int i=0; i<players.length;i++) nbrOfCorner[i]=board.getCorner(players[i].getStartingCorner()).size();
         //the current state of the game
-        int state = player.getPiecesUsed().size();
-        List<Integer> heuristics = new ArrayList<>();
-        heuristics.add(nbrOfBlocks);heuristics.add(area);heuristics.add(nbrOfCorner);
-        //normalize the heuristics (to be able to use weight percentage)
-        heuristics = normalize(heuristics);
-        if(state<7){
-            //beginning of the game
-            return (0.4f*heuristics.get(0)+0.4f*heuristics.get(1)+0.2f*heuristics.get(2));
-        }else if(state>=7&&state<12){
-            //middle game
-            return (0.1f*heuristics.get(0)+0.6f*heuristics.get(1)+0.3f*heuristics.get(2));
-        }else{
-            //end game
-            return (0.2f*heuristics.get(0)+0.2f*heuristics.get(1)+0.6f*heuristics.get(2));
+
+
+        for (int i = 0; i < score.length; i++) {
+            score[i]=nbrOfBlocks[i]+nbrOfCorner[i]+area[i];
         }
         return score;
+    }
+
+    public int[] getBlocksScore(Board board){
+        int[] res = new int[players.length];
+        for (int i = 0; i < players.length; i++) {
+            res[i] = 0;
+        }
+        for(int[] line:board.boardArray) for(int i:line) if(i!=0) res[i-1]++;
+        return res;
     }
 
 
