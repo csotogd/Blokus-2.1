@@ -68,13 +68,13 @@ public class MiniMaxNode {
         heuristics = normalize(heuristics);
         if(state<7){
             //beginning of the game
-            return (0.1f*heuristics.get(0)+0.6f*heuristics.get(1)+0.3f*heuristics.get(2));
+            return (0.4f*heuristics.get(0)+0.4f*heuristics.get(1)+0.2f*heuristics.get(2));
         }else if(state>=7&&state<12){
             //middle game
             return (0.1f*heuristics.get(0)+0.6f*heuristics.get(1)+0.3f*heuristics.get(2));
         }else{
             //end game
-            return (0.1f*heuristics.get(0)+0.6f*heuristics.get(1)+0.3f*heuristics.get(2));
+            return (0.2f*heuristics.get(0)+0.2f*heuristics.get(1)+0.6f*heuristics.get(2));
         }
     }
 
