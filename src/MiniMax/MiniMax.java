@@ -261,24 +261,13 @@ public class MiniMax {
         return res;
     }
 
-
-    public List<Integer> normalize(List<Integer>heuristics){
-        int max = Integer.MIN_VALUE;
-        for (Integer i:heuristics) {
-            if(i>=max)max = i;
-        }
-        for (int i = 0;i<heuristics.size();i++) {
-            heuristics.set(i,heuristics.get(i)/max);
-        }
-        return heuristics;
-    }
+    
 
 
     public float[] getScore(MiniMaxNode node) {
         float[] score = new float[players.length];
         //biggest piece heuristic
-        int[] nbrOfBlocks = new int[players.length];
-        nbrOfBlocks=getBlocksScore(node.getBoard());
+        int[] nbrOfBlocks = getBlocksScore(node.getBoard());
         //closest to middle heuristic
         int[] area = getArea(node.getBoard());
         //Adds most corners heuristic
@@ -303,7 +292,6 @@ public class MiniMax {
         for(int[] line:board.boardArray) for(int i:line) if(i!=0) res[i-1]++;
         return res;
     }
-
 
     public static void main(String[] args) {
         Player p1 = new HumanPlayer(1, "jo");
