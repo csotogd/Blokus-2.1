@@ -27,11 +27,13 @@ public class MiniMax {
     }
 
     public Move getMove(int playerNbr){
+        u = 0;
         //long start = System.currentTimeMillis(); //start of the timer
         this.rootPlayerNbr = playerNbr;
         this.cutOffMoveOccurence = new HashMap<>();
-        MiniMaxNode root = new MiniMaxNode(board,players[playerNbr-1],maxDepth);
+        MiniMaxNode root = new MiniMaxNode(board,players[playerNbr-1],maxDepth,players.length);
         MiniMaxNode bestNode = maxN(root,maxDepth,playerNbr,Float.MIN_VALUE);
+        System.out.println("Best node score = " + Arrays.toString(bestNode.getScore()));
         //return findBestMove(root);
         return bestNode.getMove();
     }
@@ -156,7 +158,7 @@ public class MiniMax {
                 best = result;
                 bestNode = resultNode;
             }
-            if(result[playerNbr-1]>=this.u-alpha) return resultNode;
+            if(result[playerNbr-1]>=u-alpha) return resultNode;
         }
         return bestNode;
 
@@ -306,34 +308,29 @@ public class MiniMax {
         p2.setPiecesList(PieceFactory.get().getAllPieces());
         p3.setPiecesList(PieceFactory.get().getAllPieces());
         p4.setPiecesList(PieceFactory.get().getAllPieces());
-        Board b = new Board(new Player[]{p1, p2, p3,p4});
-        MiniMax m = new MiniMax(new Player[]{p1,p2,p3,p4},b);
+        Board b = new Board(new Player[]{p1, p2});
+        MiniMax m = new MiniMax(new Player[]{p1,p2},b);
 
         int i= 0;
         while(i<15){
             Move move1 = m.getMove(p1.getPlayerNumber());
             if(move1.makeMove(b)) p1.removePiece(move1.getPiece().getLabel());
-            b.print();
 
             Move move2 = m.getMove(p2.getPlayerNumber());
             if(move2.makeMove(b)) p2.removePiece(move1.getPiece().getLabel());
-            b.print();
 
-
-
+            /*
             Move move3 = m.getMove(p3.getPlayerNumber());
             if(move3.makeMove(b)) p3.removePiece(move1.getPiece().getLabel());
-            b.print();
+
 
             Move move4 = m.getMove(p4.getPlayerNumber());
             System.out.println(Arrays.toString(m.cutOffMoveOccurence.keySet().toArray()));
             if(move4.makeMove(b)) p4.removePiece(move1.getPiece().getLabel());
+
+
+             */
             b.print();
-
-
-
-
-
             i++;
         }
 
