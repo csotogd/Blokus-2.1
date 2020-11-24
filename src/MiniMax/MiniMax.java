@@ -1,7 +1,9 @@
 package MiniMax;
 
+import DataBase.Data;
 import DataBase.PieceFactory;
 import GameBoard.Board;
+import GameBoard.Corner;
 import Player.Player;
 import Move.Move;
 import Tools.Vector2d;
@@ -217,6 +219,64 @@ public class MiniMax {
         cutOffMoveOccurence.remove(min);
         cutOffMoveOccurence.put(1,move);
     }
+
+    public int[] getArea(Board board){
+        int[] res = new int[players.length];
+        for(int i=0;i<players.length;i++) {
+            int farestX = Integer.MIN_VALUE;
+            int farestY = Integer.MIN_VALUE;
+
+            for (Corner corner : board.getCorner(players[i].getStartingCorner())) {
+                if (corner.getPosition().get_x() > farestX) farestX = corner.getPosition().get_x();
+                if (corner.getPosition().get_y() > farestY) farestY = corner.getPosition().get_y();
+            }
+            res[i]= (int) Math.sqrt((Math.pow(farestX - players[i].getStartingCorner().get_x(), 2) + Math.pow(farestY - players[i].getStartingCorner().get_y(), 2)));
+        }
+        return res;
+    }
+
+
+    public List<Integer> normalize(List<Integer>heuristics){
+        int max = Integer.MIN_VALUE;
+        for (Integer i:heuristics) {
+            if(i>=max)max = i;
+        }
+        for (int i = 0;i<heuristics.size();i++) {
+            heuristics.set(i,heuristics.get(i)/max);
+        }
+        return heuristics;
+    }
+
+
+    public float[] getScore(MiniMaxNode node) {
+        float[] score = new float[Data.getPlayersName().length];
+        //biggest piece heuristic
+        int[] nbrOfBlocks = new int[players.length];
+
+        //closest to middle heuristic
+        int[] area = getArea(node.getBoard());
+        //Adds most corners heuristic
+
+        int nbrOfCorner = board.getCorner(player.getStartingCorner()).size();
+        //the current state of the game
+        int state = player.getPiecesUsed().size();
+        List<Integer> heuristics = new ArrayList<>();
+        heuristics.add(nbrOfBlocks);heuristics.add(area);heuristics.add(nbrOfCorner);
+        //normalize the heuristics (to be able to use weight percentage)
+        heuristics = normalize(heuristics);
+        if(state<7){
+            //beginning of the game
+            return (0.4f*heuristics.get(0)+0.4f*heuristics.get(1)+0.2f*heuristics.get(2));
+        }else if(state>=7&&state<12){
+            //middle game
+            return (0.1f*heuristics.get(0)+0.6f*heuristics.get(1)+0.3f*heuristics.get(2));
+        }else{
+            //end game
+            return (0.2f*heuristics.get(0)+0.2f*heuristics.get(1)+0.6f*heuristics.get(2));
+        }
+        return score;
+    }
+
 
     public static void main(String[] args) {
         Player p1 = new HumanPlayer(1, "jo");
