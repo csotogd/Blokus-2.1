@@ -13,7 +13,7 @@ public class MiniMaxNode {
     private Board board;
     private Move move;
     private List<MiniMaxNode> children;
-    private float score;
+    private float[] score;
     private Player player;
     private int depth;
     private boolean wasSetToNegative;
@@ -29,7 +29,7 @@ public class MiniMaxNode {
         this.parent = this;
         this.move = null;
         this.children = new ArrayList<>();
-        this.score = 0;
+        this.score = new float[Data.getPlayersName().length];
         this.player = player;
         this.wasSetToNegative = false;
         this.visited = false;
@@ -54,9 +54,6 @@ public class MiniMaxNode {
 
 
 
-    public void setNegative(){
-        this.score = -this.score;
-    }
 
 
 
@@ -68,7 +65,7 @@ public class MiniMaxNode {
         return depth;
     }
 
-    public void setScore(float score) {
+    public void setScore(float[] score) {
         this.score = score;
     }
 
@@ -92,7 +89,7 @@ public class MiniMaxNode {
         return board;
     }
 
-    public float getScore() {
+    public float[] getScore() {
         return score;
     }
 
