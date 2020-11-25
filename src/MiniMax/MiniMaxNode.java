@@ -46,7 +46,7 @@ public class MiniMaxNode {
         this.parent.getChildren().add(this);
         this.move = move;
         this.depth = depth;
-        this.board = board.clone();
+        this.board = board;
         this.player = player;
         move.writePieceIntoBoard(this.board);
         this.wasSetToNegative = false;
@@ -54,7 +54,13 @@ public class MiniMaxNode {
     }
 
 
-
+    public void removeMove(){
+        for (int i = 0; i < move.getPiece().getShape().length; i++) {
+            for (int j = 0; j < move.getPiece().getShape()[0].length; j++) {
+                if(move.getPiece().getShape()[i][j]!=0) this.board.boardArray[move.getPosition().get_y()+i][move.getPosition().get_x()+j]=0;
+            }
+        }
+    }
 
 
 

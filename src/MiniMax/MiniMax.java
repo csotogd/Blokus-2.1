@@ -23,7 +23,7 @@ public class MiniMax {
 
     public MiniMax(Player[] players, Board board){
         this.players = players;
-        this.board = board;
+        this.board = board.clone();
         maxDepth = players.length*NBR_OF_TURNS;
     }
 
@@ -151,8 +151,9 @@ public class MiniMax {
         }
         float[] best =new float[players.length];
         for (int i = 0; i < best.length; i++) best[i] = Float.MIN_VALUE;
-        for (Move possibleMove : players[playerNbr-1].clone().possibleMoveSetBoosted(board)){
+        for (Move possibleMove : players[playerNbr-1].possibleMoveSetBoosted(board)){
             //TODO compute first the moves that have been cutoff earlier
+            boolean firstTurn = players[playerNbr-1].isFirstMove();
             MiniMaxNode newNode = new MiniMaxNode(node,possibleMove,depth-1,players[playerNbr-1],board);
             int nextPlayerNbr;
             if(playerNbr>=players.length){
@@ -161,6 +162,8 @@ public class MiniMax {
                 nextPlayerNbr = playerNbr+1;
             }
             float[] result = maxN(newNode, depth-1, nextPlayerNbr, best[playerNbr-1]);
+            newNode.removeMove();
+            if(firstTurn) players[playerNbr-1].setFirstMove(true);
             if(result[playerNbr-1]>best[playerNbr-1]){
                 best = result;
             }
@@ -330,8 +333,11 @@ public class MiniMax {
         p2.setPiecesList(PieceFactory.get().getAllPieces());
         p3.setPiecesList(PieceFactory.get().getAllPieces());
         p4.setPiecesList(PieceFactory.get().getAllPieces());
-        Board b = new Board(new Player[]{p1, p2});
-        MiniMax m = new MiniMax(new Player[]{p1,p2},b);
+//        Board b = new Board(new Player[]{p1, p2});
+//        MiniMax m = new MiniMax(new Player[]{p1,p2},b);
+
+        Board b = new Board(new Player[]{p1, p2,p3,p4});
+        MiniMax m = new MiniMax(new Player[]{p1,p2,p3,p4},b);
 
         int i= 0;
         while(i<15){
@@ -343,7 +349,7 @@ public class MiniMax {
             if(move2.makeMove(b)) p2.removePiece(move2.getPiece().getLabel());
             b.print();
 
-/*
+
 
             Move move3 = m.getMove(p3.getPlayerNumber());
             if(move3.makeMove(b)) p3.removePiece(move1.getPiece().getLabel());
@@ -357,7 +363,7 @@ public class MiniMax {
 
 
 
- */
+
 
 
             i++;
