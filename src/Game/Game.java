@@ -17,6 +17,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -71,7 +72,7 @@ public class Game extends Application {
     @Override
     public void start(Stage stage){
         Parent root = this.boardUI.gameBoard;
-        stage.setTitle("Blokus Game.Game Group 15");
+        stage.setTitle("Blokus Game Group 15");
         Scene scene = new Scene(root, 1000, 1000);
         stage.setScene(scene);
         stage.setFullScreen(true);
@@ -239,22 +240,22 @@ public class Game extends Application {
                     }
                 }
             });
-            Pane pane = new FlowPane();
-            pane.getChildren().add(dialogVbox);
-            pane.getChildren().add(boardUI.principal);
-            pane.getChildren().add(boardUI.pieceOfPlayer(0));
+            GridPane pane = new GridPane();
+            pane.add(boardUI.pieceOfPlayer(0),0,0);
             if(players.length==4){
-                pane.getChildren().add(boardUI.pieceOfPlayer(1));
-                pane.getChildren().add(boardUI.pieceOfPlayer(2));
-                pane.getChildren().add(boardUI.pieceOfPlayer(3));
+                pane.add(boardUI.pieceOfPlayer(1),0,1);
+                pane.add(boardUI.pieceOfPlayer(2),0,2);
+                pane.add(boardUI.pieceOfPlayer(3),0,3);
             }else{
-                pane.getChildren().add(boardUI.pieceOfPlayer(1));
+                pane.add(boardUI.pieceOfPlayer(1),0,1);
             }
             pane.setDisable(true);
             Pane pane1 = new FlowPane();
             pane1.setBackground(Data.createBackGround());
-            pane1.getChildren().add(pane);
+            pane1.getChildren().add(dialogVbox);
             pane1.getChildren().add(restartButton);
+            pane1.getChildren().add(boardUI.principal);
+            pane1.getChildren().add(pane);
             Scene dialogScene = new Scene(pane1, 1000, 1000);
             stage.setScene(dialogScene);
             stage.show();
