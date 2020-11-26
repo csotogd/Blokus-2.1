@@ -145,7 +145,9 @@ public class MiniMax {
         if(depth<=0) {
             float sum = 0; //commenter
             for(float score: getScore(node)) sum+=score;
-            if(u<sum) u=sum;
+            if(u<sum){
+                u=sum;
+            }
             node.setScore(getScore(node));
             return node.getScore();
         }
@@ -301,8 +303,8 @@ public class MiniMax {
         int[] index = getSortedIndex(nbrOfBlocks);// order the indices
         for (int i = 0; i < index.length; i++) {
             if(i<players.length-2 && score[index[i]]==score[index[i+1]]){ //if there is at least a next player compare to next player
-                int count=1; //number of players with the same score
-                for (int j = i; j < score.length && score[index[j]]==score[index[i]]; j++) { //how many of them?
+                int count=0; //number of players with the same score
+                for (int j = i; j+i < score.length && score[index[j+i]]==score[index[i]]; j++) { //how many of them?
                     count++;
                 }
                 float tot=0; // total of proportion for the players with the same score
@@ -325,8 +327,8 @@ public class MiniMax {
         index = getSortedIndex(area);
         for (int i = 0; i < index.length; i++) {
             if(i<players.length-2 && score[index[i]]==score[index[i+1]]){
-                int count=1;
-                for (int j = i; j < score.length && score[index[j]]==score[index[i]]; j++) {
+                int count=0;
+                for (int j = i; j+i < score.length && score[index[j+i]]==score[index[i]]; j++) {
                     count++;
                 }
                 float tot=0;
@@ -344,8 +346,8 @@ public class MiniMax {
         index = getSortedIndex(nbrOfCorner);
         for (int i = 0; i < index.length; i++) {
             if(i<players.length-2 && score[index[i]]==score[index[i+1]]){
-                int count=1;
-                for (int j = i; j < score.length && score[index[j]]==score[index[i]]; j++) {
+                int count=0;
+                for (int j = i; j+i < score.length && score[index[j+i]]==score[index[i]]; j++) {
                     count++;
                 }
                 float tot=0;
