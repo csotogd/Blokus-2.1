@@ -360,12 +360,6 @@ public class MiniMax {
                 i+=count;
             }else score[index[i]]+=maxCornerScore*distribution[i];
         }
-
-
-
-        for (int i = 0; i < score.length; i++) {
-            score[i]=nbrOfBlocks[i]+nbrOfCorner[i]+area[i];
-        }
         node.setScore(score);
         return score;
     }
@@ -389,7 +383,7 @@ public class MiniMax {
         int[] res = new int[players.length];
         for (int i = 0; i < array.length; i++) {
             if(max==-1||array[max]<array[i]) max=i;
-            if(min==-1||array[min]>array[i]) min=i;
+            if(min==-1||array[min]>=array[i]) min=i;
         }
         res[0]=max;
         res[res.length-1]=min;
@@ -400,7 +394,7 @@ public class MiniMax {
                     if(second==-1) second=i;
                     else if(array[i]>array[second]) second=i;
                     if(third==-1) third=i;
-                    else if(array[third]<array[i]) third=i;
+                    else if(array[third]<=array[i]) third=i;
                 }
             }
             res[1]=second;
