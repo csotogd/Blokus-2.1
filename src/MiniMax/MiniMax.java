@@ -261,8 +261,8 @@ public class MiniMax {
         cutOffMoveOccurence.put(1,move);
     }
 
-    public int[] getArea(Board board){
-        int[] res = new int[players.length];
+    public float[] getArea(Board board){
+        float[] res = new float[players.length];
         for(int i=0;i<players.length;i++) {
             int farestX = Integer.MIN_VALUE;
             int farestY = Integer.MIN_VALUE;
@@ -271,7 +271,7 @@ public class MiniMax {
                 if (corner.getPosition().get_x() > farestX) farestX = corner.getPosition().get_x();
                 if (corner.getPosition().get_y() > farestY) farestY = corner.getPosition().get_y();
             }
-            res[i]= (int) Math.sqrt((Math.pow(farestX - players[i].getStartingCorner().get_x(), 2) + Math.pow(farestY - players[i].getStartingCorner().get_y(), 2)));
+            res[i]= (float) Math.sqrt((Math.pow(farestX - players[i].getStartingCorner().get_x(), 2) + Math.pow(farestY - players[i].getStartingCorner().get_y(), 2)));
         }
         return res;
     }
@@ -290,17 +290,75 @@ public class MiniMax {
 
 
     public float[] getScore(MiniMaxNode node) {
+        float maxBlockScore=10, maxCornerScore=7, maxAreaScore = 4; // *weight* of different attribute
+        float[] distribution;
+        if(players.length>2) distribution=new float[]{0.6f,0.3f,0.1f,0}; //distribution of the points for 1st, 2nd, 3rd players (4th=0)
+        else distribution=new float[]{0.9f,0.1f}; // same for 2 players TODO: 2 players can simply be the relative proportion
         float[] score = new float[players.length];
+        //for (int i = 0; i < score.length; i++) score[i]=0;
         //biggest piece heuristic
-        int[] nbrOfBlocks = new int[players.length];
-        nbrOfBlocks=getBlocksScore(node.getBoard());
-        //closest to middle heuristic
-        int[] area = getArea(node.getBoard());
-        //Adds most corners heuristic
+        float[] nbrOfBlocks = getBlocksScore(node.getBoard()); //total number of block TODO: count only new pieces placed?
+        int[] index = getSortedIndex(nbrOfBlocks);// order the indices
+        for (int i = 0; i < index.length; i++) {
+            if(i<players.length-2 && score[index[i]]==score[index[i+1]]){ //if there is at least a next player compare to next player
+                int count=1; //number of players with the same score
+                for (int j = i; j < score.length && score[index[j]]==score[index[i]]; j++) { //how many of them?
+                    count++;
+                }
+                float tot=0; // total of proportion for the players with the same score
+                for (int j = 0; j < count; j++) {
+                    tot+=distribution[i+j];
+                }
+                for (int j = 0; j < count; j++) { //update them
+                    score[i+j]+=tot*maxBlockScore/count;
+                }
+                i+=count;//skip those
+            }else {
+                score[index[i]] += maxBlockScore * distribution[i];
+            }
+        }
 
-        int[] nbrOfCorner = new int[players.length];
+
+        //closest to middle heuristic
+        float[] area = getArea(node.getBoard());
+        //Adds most corners heuristic
+        index = getSortedIndex(area);
+        for (int i = 0; i < index.length; i++) {
+            if(i<players.length-2 && score[index[i]]==score[index[i+1]]){
+                int count=1;
+                for (int j = i; j < score.length && score[index[j]]==score[index[i]]; j++) {
+                    count++;
+                }
+                float tot=0;
+                for (int j = 0; j < count; j++) {
+                    tot+=distribution[i+j];
+                }
+                for (int j = 0; j < count; j++) {
+                    score[i+j]+=tot*maxAreaScore/count;
+                }
+                i+=count;
+            }else score[index[i]]+=maxAreaScore*distribution[i];
+        }
+        float[] nbrOfCorner = new float[players.length];
         for(int i=0; i<players.length;i++) nbrOfCorner[i]=board.getCorner(players[i].getStartingCorner()).size();
-        //the current state of the game
+        index = getSortedIndex(nbrOfCorner);
+        for (int i = 0; i < index.length; i++) {
+            if(i<players.length-2 && score[index[i]]==score[index[i+1]]){
+                int count=1;
+                for (int j = i; j < score.length && score[index[j]]==score[index[i]]; j++) {
+                    count++;
+                }
+                float tot=0;
+                for (int j = 0; j < count; j++) {
+                    tot+=distribution[i+j];
+                }
+                for (int j = 0; j < count; j++) {
+                    score[i+j]+=tot*maxCornerScore/count;
+                }
+                i+=count;
+            }else score[index[i]]+=maxCornerScore*distribution[i];
+        }
+
 
 
         for (int i = 0; i < score.length; i++) {
@@ -310,13 +368,54 @@ public class MiniMax {
         return score;
     }
 
-    public int[] getBlocksScore(Board board){
-        int[] res = new int[players.length];
+    public float[] getBlocksScore(Board board){
+        float[] res = new float[players.length];
         for (int i = 0; i < players.length; i++) {
             res[i] = 0;
         }
         for(int[] line:board.boardArray) for(int i:line) if(i!=0) res[i-1]++;
         return res;
+    }
+
+    /**
+     * sort the array indices (ascending order)
+     * @param array array to be sorted
+     * @return indices of array sorted
+     */
+    public int[] getSortedIndex(float[] array){
+        int max=-1, min=-1;
+        int[] res = new int[players.length];
+        for (int i = 0; i < array.length; i++) {
+            if(max==-1||array[max]<array[i]) max=i;
+            if(min==-1||array[min]>array[i]) min=i;
+        }
+        res[0]=max;
+        res[res.length-1]=min;
+        if(players.length>2){
+            int second=-1,third=-1;
+            for (int i = 0; i < players.length; i++) {
+                if(i!=max&&i!=min){
+                    if(second==-1) second=i;
+                    else if(array[i]>array[second]) second=i;
+                    if(third==-1) third=i;
+                    else if(array[third]<array[i]) third=i;
+                }
+            }
+            res[1]=second;
+            res[2]=third;
+        }
+        return res;
+//        ArrayList<Integer> result = new ArrayList<>(players.length);
+//        for (int i = 0; i < array.length; i++) {
+//            result.set(i,-1);
+//        }
+//        for (int i = 0; i < array.length; i++) {
+//            for (int j = 0; j < array.length; j++) {
+//                if(i==-1) result.set(i,j);
+//                else if(!result.contains(j) && array[result.get(i)]<array[j]) result.set(i, j);
+//            }
+//        }
+//        return result;
     }
 
 
