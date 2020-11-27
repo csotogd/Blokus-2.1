@@ -19,7 +19,7 @@ public class MiniMax {
     private int maxDepth;
     int rootPlayerNbr;
     HashMap<Integer,Move> cutOffMoveOccurence;
-    float u;
+    float u = 21;
 
     public MiniMax(Player[] players, Board board){
         this.players = players;
@@ -46,108 +46,16 @@ public class MiniMax {
         return null;
     }
 
-    private Move findBestMove(MiniMaxNode node){
-        System.out.println("depth = " + node.getDepth() + ", score = " + node.getScore());
-        if(node.getDepth()==0){
-            System.out.println("depth = 0");
-            return node.getMove();
-        }else{
-            for(MiniMaxNode n:node.getChildren()) {
-                System.out.println(n.getScore());
-                if(n.getScore()==node.getScore()){
-                    findBestMove(n);
-                }
-            }
-        }
-        System.out.println("not possible");
-        return null;
-    }
-    /*
-        public MiniMaxNode minimax(MiniMaxNode currentNode, int depth,int playerNbr, float alpha, float beta) {
-            if (depth == 0) {
-                return currentNode;
-            }
-            //Assuming the AI is purple player
-            MiniMaxNode bestNode = null;
-            if (playerNbr==rootPlayerNbr) {
-                float value = -10000000;
-                for (Move possibleMove:players[playerNbr-1].possibleMoveSetBoosted(board)) {
-                    MiniMaxNode newNode = new MiniMaxNode(currentNode,possibleMove,depth-1,players[playerNbr-1],board);
-                    float nodeValue = minimax(newNode,playerNbr+1, depth - 1, alpha, beta).getScore();
-                        if (nodeValue > value) {
-                            value = nodeValue;
-                            bestNode = newNode;
-                        }
-                        alpha = Math.max(alpha, value);
-                        if (alpha >= beta) {
-                            break;
-                        }
-
-                }
-                return bestNode;
-
-            } else {
-                float value = 10000000;
-                for (Move possibleMove:players[playerNbr-1].possibleMoveSetBoosted(board)) {
-                    MiniMaxNode newNode = new MiniMaxNode(currentNode,possibleMove,depth-1,players[playerNbr-1],board);
-                    float nodeValue = minimax(newNode, depth - 1, rootPlayerNbr,alpha, beta).getScore();
-                        if (nodeValue < value) {
-                            value = nodeValue;
-                            bestNode = newNode;
-                        }
-                        beta = Math.min(beta, value);
-                        if (beta <= alpha) {
-                            break;
-                        }
-
-                }
-                return bestNode;
-            }
-
-        }
-
-     */
-/*
-    private MiniMaxNode miniMax2P(MiniMaxNode node, int depth, int playerNbr,float alpha,float beta){
-        if(depth<=0){
-            return node;
-        }
-        if(playerNbr==rootPlayerNbr){
-            float bestVal = Float.MIN_VALUE;
-            for (Move possibleMove:players[playerNbr-1].possibleMoveSetBoosted(board)){
-                MiniMaxNode newNode = new MiniMaxNode(node,possibleMove,depth-1,players[playerNbr-1],board);
-                bestVal = Math.max(bestVal,miniMax2P(newNode,depth-1,playerNbr+1,alpha,beta).getScore());
-                alpha = Math.max(alpha,bestVal);
-                if(beta<=alpha){
-                    break;
-                }
-            }
-            node.setScore(bestVal);
-            return node;
-        }else{
-            float bestVal = Float.MAX_VALUE;
-            for (Move possibleMove:players[playerNbr-1].possibleMoveSetBoosted(board)){
-                MiniMaxNode newNode = new MiniMaxNode(node,possibleMove,depth-1,players[playerNbr-1],board);
-                bestVal = Math.min(bestVal,miniMax2P(newNode,depth-1,rootPlayerNbr,alpha,beta).getScore());
-                beta = Math.min(beta,bestVal);
-                if(beta<=alpha){
-                    break;
-                }
-            }
-            node.setScore(bestVal);
-            return node;
-        }
-
-    }
-
- */
     private float[] maxN(MiniMaxNode node, int depth, int playerNbr, float alpha){
         if(depth<=0) {
+            /*
             float sum = 0; //commenter
             for(float score: getScore(node)) sum+=score;
             if(u<sum){
                 u=sum;
             }
+
+             */
             node.setScore(getScore(node));
             return node.getScore();
         }
@@ -179,10 +87,8 @@ public class MiniMax {
 
     }
 
-
-
     /*
-        private float alphaBeta_Pruning(MiniMaxNode node, int depth, int playerNbr, float alpha, float beta) {
+        private float paranoidSearch(MiniMaxNode node, int depth, int playerNbr, float alpha, float beta) {
             //System.out.println(playerNbr);
             if(depth<=0){
                 if(playerNbr==rootPlayerNbr) {
@@ -291,15 +197,49 @@ public class MiniMax {
     }
 
 
+    private float[] getClassScore(float[] score,MiniMaxNode node,float[]heuristics,float[]distribution,float maximum){
+        int[] index = getSortedIndex(heuristics);// order the indices
+        for (int i = 0; i < index.length; i++) {
+            if(i<players.length-2 && score[index[i]]==score[index[i+1]]){ //if there is at least a next player compare to next player
+                int count=0; //number of players with the same score
+                for (int j = i; j+i < score.length && score[index[j+i]]==score[index[i]]; j++) { //how many of them?
+                    count++;
+                }
+                float tot=0; // total of proportion for the players with the same score
+                for (int j = 0; j < count; j++) {
+                    tot+=distribution[i+j];
+                }
+                for (int j = 0; j < count; j++) { //update them
+                    score[i+j]+=tot*maximum/count;
+                }
+                i+=count;//skip those
+            }else {
+                score[index[i]] += maximum * distribution[i];
+            }
+        }
+        return score;
+    }
+
+
+
+
     public float[] getScore(MiniMaxNode node) {
         float maxBlockScore=10, maxCornerScore=7, maxAreaScore = 4; // *weight* of different attribute
         float[] distribution;
         if(players.length>2) distribution=new float[]{0.6f,0.3f,0.1f,0}; //distribution of the points for 1st, 2nd, 3rd players (4th=0)
         else distribution=new float[]{0.9f,0.1f}; // same for 2 players TODO: 2 players can simply be the relative proportion
         float[] score = new float[players.length];
-        //for (int i = 0; i < score.length; i++) score[i]=0;
-        //biggest piece heuristic
-        float[] nbrOfBlocks = getBlocksScore(node.getBoard()); //total number of block TODO: count only new pieces placed?
+
+        score = getClassScore(score,node,getBlocksScore(node.getBoard()),distribution,maxBlockScore); //total number of block TODO: count only new pieces placed?
+        score = getClassScore(score,node,getArea(node.getBoard()),distribution,maxAreaScore);
+
+        float[] nbrOfCorner = new float[players.length];
+        for(int i=0; i<players.length;i++) nbrOfCorner[i]=board.getCorner(players[i].getStartingCorner()).size();
+        score = getClassScore(score,node,nbrOfCorner,distribution,maxCornerScore);
+
+
+/*
+        float[] nbrOfBlocks = getBlocksScore(node.getBoard()); //total number of block
         int[] index = getSortedIndex(nbrOfBlocks);// order the indices
         for (int i = 0; i < index.length; i++) {
             if(i<players.length-2 && score[index[i]]==score[index[i+1]]){ //if there is at least a next player compare to next player
@@ -319,7 +259,6 @@ public class MiniMax {
                 score[index[i]] += maxBlockScore * distribution[i];
             }
         }
-
 
         //closest to middle heuristic
         float[] area = getArea(node.getBoard());
@@ -341,6 +280,8 @@ public class MiniMax {
                 i+=count;
             }else score[index[i]]+=maxAreaScore*distribution[i];
         }
+
+
         float[] nbrOfCorner = new float[players.length];
         for(int i=0; i<players.length;i++) nbrOfCorner[i]=board.getCorner(players[i].getStartingCorner()).size();
         index = getSortedIndex(nbrOfCorner);
@@ -360,6 +301,10 @@ public class MiniMax {
                 i+=count;
             }else score[index[i]]+=maxCornerScore*distribution[i];
         }
+
+ */
+
+
         node.setScore(score);
         return score;
     }
@@ -401,17 +346,6 @@ public class MiniMax {
             res[2]=third;
         }
         return res;
-//        ArrayList<Integer> result = new ArrayList<>(players.length);
-//        for (int i = 0; i < array.length; i++) {
-//            result.set(i,-1);
-//        }
-//        for (int i = 0; i < array.length; i++) {
-//            for (int j = 0; j < array.length; j++) {
-//                if(i==-1) result.set(i,j);
-//                else if(!result.contains(j) && array[result.get(i)]<array[j]) result.set(i, j);
-//            }
-//        }
-//        return result;
     }
 
 
@@ -421,18 +355,17 @@ public class MiniMax {
         Player p3 = new HumanPlayer(3, "jo2");
         Player p4 = new HumanPlayer(4, "notJo2");
         p1.setStartingCorner(new Vector2d(0, 0));
-        p2.setStartingCorner(new Vector2d(19, 0));
+        //p2.setStartingCorner(new Vector2d(19, 0));
+        p2.setStartingCorner(new Vector2d(19, 19));
         p3.setStartingCorner(new Vector2d(19, 19));
         p4.setStartingCorner(new Vector2d(0, 19));
         p1.setPiecesList(PieceFactory.get().getAllPieces());
         p2.setPiecesList(PieceFactory.get().getAllPieces());
         p3.setPiecesList(PieceFactory.get().getAllPieces());
         p4.setPiecesList(PieceFactory.get().getAllPieces());
-//        Board b = new Board(new Player[]{p1, p2});
-//        MiniMax m = new MiniMax(new Player[]{p1,p2},b);
 
-        Board b = new Board(new Player[]{p1, p2,p3,p4});
-        MiniMax m = new MiniMax(new Player[]{p1,p2,p3,p4},b);
+        Board b = new Board(new Player[]{p1, p2});
+        MiniMax m = new MiniMax(new Player[]{p1,p2},b);
 
         int i= 0;
         while(i<15){
@@ -445,6 +378,7 @@ public class MiniMax {
             b.print();
 
 
+            /*
 
             Move move3 = m.getMove(p3.getPlayerNumber());
             if(move3.makeMove(b)) p3.removePiece(move1.getPiece().getLabel());
@@ -454,6 +388,8 @@ public class MiniMax {
             System.out.println(Arrays.toString(m.cutOffMoveOccurence.keySet().toArray()));
             if(move4.makeMove(b)) p4.removePiece(move1.getPiece().getLabel());
             b.print();
+
+             */
 
 
 
