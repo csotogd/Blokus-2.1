@@ -14,6 +14,7 @@ import java.util.*;
 
 public class MiniMax {
     Player[] players;
+    Board boardOrigin;
     Board board;
     private final int NBR_OF_TURNS = 1;
     private int maxDepth;
@@ -23,7 +24,7 @@ public class MiniMax {
 
     public MiniMax(Player[] players, Board board){
         this.players = players;
-        this.board = board.clone();
+        this.boardOrigin = board;
         maxDepth = players.length*NBR_OF_TURNS;
     }
 
@@ -31,31 +32,29 @@ public class MiniMax {
         //long start = System.currentTimeMillis(); //start of the timer
         this.rootPlayerNbr = playerNbr;
         this.cutOffMoveOccurence = new HashMap<>();
+        this.board = boardOrigin.clone();
         MiniMaxNode root = new MiniMaxNode(board,players[playerNbr-1].clone(),maxDepth);
         float[] score = maxN(root,maxDepth,playerNbr,Float.MIN_VALUE);
-//        System.out.println(Arrays.toString(score));
+
+        Move bestMove = getBestMove(root,score,playerNbr);
+        return bestMove;
+    }
+
+    private Move getBestMove(MiniMaxNode root,float[]score,int rootPlayerNbr){
         for(MiniMaxNode c: root.getChildren()) {
             boolean same = true;
             for (int i = 0; i < score.length; i++) {
                 if (c.getScore()[i]!=score[i]) same=false;
             }
-            if(same) return new Move(players[playerNbr-1],c.getMove().getPiece(), c.getMove().getPosition());
+            if(same) return new Move(players[rootPlayerNbr-1],c.getMove().getPiece(), c.getMove().getPosition());
         }
-        //return findBestMove(root);
         System.out.println("oops"+root.getChildren().size());
         return null;
     }
 
+
     private float[] maxN(MiniMaxNode node, int depth, int playerNbr, float alpha){
         if(depth<=0) {
-            /*
-            float sum = 0; //commenter
-            for(float score: getScore(node)) sum+=score;
-            if(u<sum){
-                u=sum;
-            }
-
-             */
             node.setScore(getScore(node));
             return node.getScore();
         }
