@@ -20,6 +20,7 @@ public class MiniMaxNode {
     /**
      * CONSTRUCTOR for the root (parent point to itself)
      * @param state current state of the game
+     * @param player player of the minimax algo node(here, equal to the player that moves)
      */
     public MiniMaxNode(Board state, Player player){
         this.board =state;
@@ -31,9 +32,11 @@ public class MiniMaxNode {
     }
 
     /**
-     * Regular node constructor
-     * @param parent parent node
-     * @param move move to make to arrive from parent to this node
+     * constructor for normal nodes
+     * @param parent parent of the node
+     * @param move the move of the node
+     * @param player player of the minimax algo node
+     * @param board board of the game
      */
     public MiniMaxNode(MiniMaxNode parent, Move move,Player player,Board board){
         this.children = new ArrayList<>();
@@ -45,7 +48,9 @@ public class MiniMaxNode {
         move.writePieceIntoBoard(this.board);
     }
 
-
+    /**
+     * used to remove the move on the board
+     */
     public void removeMove(){
         for (int i = 0; i < move.getPiece().getShape().length; i++) {
             for (int j = 0; j < move.getPiece().getShape()[0].length; j++) {

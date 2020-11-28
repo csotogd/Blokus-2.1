@@ -15,19 +15,29 @@ public class MiniMax {
     Player[] players;
     Board boardOrigin;
     Board board;
-    private final int NBR_OF_TURNS = 2;
+    private final int NBR_OF_TURNS = 1;
     private int maxDepth;
     int rootPlayerNbr;
     ArrayList<Move> cutOffMoveOccurence;
     float u = 30;
     int killerMovesLength = 10;
 
+    /**
+     * constructor of the algo class
+     * @param players - list of the game players
+     * @param board - object of the game board
+     */
     public MiniMax(Player[] players, Board board){
         this.players = players;
         this.boardOrigin = board;
         maxDepth = players.length*NBR_OF_TURNS;
     }
 
+    /**
+     * method called when we want to calculate and get the move of a specific player
+     * @param playerNbr - nbr of the player that has to make a move
+     * @return
+     */
     public Move getMove(int playerNbr){
         //long start = System.currentTimeMillis(); //start of the timer
         this.rootPlayerNbr = playerNbr;
@@ -39,6 +49,13 @@ public class MiniMax {
         return bestMove;
     }
 
+    /**
+     *
+     * @param root - root node
+     * @param score - best score
+     * @param rootPlayerNbr - nbr of the player that has to make a move
+     * @return the best move of the minimax tree
+     */
     private Move getBestMove(MiniMaxNode root,float[]score,int rootPlayerNbr){
         for(MiniMaxNode c: root.getChildren()) {
             boolean same = true;
@@ -51,6 +68,11 @@ public class MiniMax {
         return null;
     }
 
+    /**
+     * METHOD USED FOR THE KILLER MOVE STRATEGY THAT MINIMIZES THE NUMBER OF ITERATIONS
+     * @param playerNbr - nbr of the player that has to make a move
+     * @return a list of first the cutoff nodes (KILLER MOVES STARTEGY) and then all the other possible moves of that player
+     */
     private ArrayList<Move> getPossibleMoves(int playerNbr){
         ArrayList<Move> possibleMovesBoosted = new ArrayList<Move>();
         ArrayList<Move> possibleMoves = players[playerNbr-1].possibleMoveSet(board);
@@ -64,6 +86,14 @@ public class MiniMax {
         return possibleMovesBoosted;
     }
 
+    /**
+     * maxN mutliplayer minimax algorithm
+     * @param node - current node being investigated
+     * @param depth - current depth of the algo
+     * @param playerNbr - current player nbr
+     * @param alpha - current alpha of the minimax algo
+     * @return the best score of the root player
+     */
     private float[] maxN(MiniMaxNode node, int depth, int playerNbr, float alpha){
         //if we have reached a terminal node (leaf) we set the score as the heuristics and then backtrack
         if(depth<=0) {
@@ -153,6 +183,10 @@ public class MiniMax {
     /////////////////////////////////
     //KILLER MOVE STRATEGY
 
+    /**
+     * METHOD USED FOR THE KILLER MOVE STRATEGY THAT UPDATE THE LIST OF THE CUTOFF MOVE OCCURENCE
+     * @param move that is a cutoff in our algo
+     */
     public void checkToAddToCutOff(Move move){
         if(cutOffMoveOccurence.isEmpty()){
             cutOffMoveOccurence.add(move);
@@ -163,11 +197,15 @@ public class MiniMax {
                 cutOffMoveOccurence.add(move);
             }else{
                 deleteSmallestOccMove();
+                //replace the move in the cutoff list that has the fewest occurence with the current cutoff move
                 cutOffMoveOccurence.add(move);
             }
         }
     }
 
+    /**
+     * delete the move in the cutoff list that has the fewest occurence (will be replaced by a new one)
+     */
     public void deleteSmallestOccMove(){
         Move smallestMove = null;
         int min = Integer.MAX_VALUE;
@@ -183,6 +221,11 @@ public class MiniMax {
     ///////////////////////////////////////////////
     //HEURISTICS
 
+    /**
+     * method used to get the nbr of corner blocked by the move of the node for each player
+     * @param node current node being scored
+     * @return the nbr of corner blocked by the move of the node for each player
+     */
     private float[] blocksMostCorners(MiniMaxNode node){
         float[] score = new float[players.length];
         for(int k = 0;k<players.length;k++){
@@ -300,7 +343,11 @@ public class MiniMax {
     }
 
 
-
+    /**
+     * method used to calculate the area of each player after the current move
+     * @param board - board of the game
+     * @return the area of each player after the current move
+     */
     public float[] getArea(Board board){
         float[] res = new float[players.length];
         for(int i=0;i<players.length;i++) {
@@ -317,6 +364,27 @@ public class MiniMax {
     }
 
 
+    /**
+     *used to get the nbr of blocks for each player
+     * @param board - board of the game
+     * @return the nbr of blocks for each player
+     */
+    public float[] getBlocksScore(Board board){
+        float[] res = new float[players.length];
+        for (int i = 0; i < players.length; i++) {
+            res[i] = 0;
+        }
+        for(int[] line:board.boardArray) for(int i:line) if(i!=0) res[i-1]++;
+        return res;
+    }
+
+    /**
+     * method used to normalize each heursitics
+     * @param score - score of each player at the current node being scored
+     * @param heuristics - heuristics that is being normalized
+     * @param maximum - maximum of the heursitcs
+     * @return the score with the heuristics normlized
+     */
     public float[] normalize(float[]score,float[]heuristics,float maximum){
         float total = 0;
         for (int i = 0;i<heuristics.length;i++) {
@@ -329,6 +397,12 @@ public class MiniMax {
     }
 
 
+    /**
+     * used to get the Score of the node for each player
+     * @param node - node currently being scored
+     * @return the score of the node move for each player
+     */
+    //TODO add the heursitcs that if the move piece is small then try to predict future moves with highest score
     public float[] getScore(MiniMaxNode node) {
         int state = node.getPlayer().getPiecesUsed().size();
         float maxBlockScore=10, maxCornerScore=7, maxAreaScore = 4, maxCornerBlocked = 9;// *weight* of different attribute
@@ -358,15 +432,8 @@ public class MiniMax {
         node.setScore(score);
         return score;
     }
-
-    public float[] getBlocksScore(Board board){
-        float[] res = new float[players.length];
-        for (int i = 0; i < players.length; i++) {
-            res[i] = 0;
-        }
-        for(int[] line:board.boardArray) for(int i:line) if(i!=0) res[i-1]++;
-        return res;
-    }
+    ////////////////////////////////
+    //TESTING
 
     public static void main(String[] args) {
         Player p1 = new HumanPlayer(1, "jo");
