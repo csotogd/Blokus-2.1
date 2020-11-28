@@ -21,6 +21,7 @@ public class MiniMax {
     int rootPlayerNbr;
     HashMap<Integer,Move> cutOffMoveOccurence;
     float u = 21;
+    int killerMovesLength = 10;
 
     public MiniMax(Player[] players, Board board){
         this.players = players;
@@ -31,7 +32,7 @@ public class MiniMax {
     public Move getMove(int playerNbr){
         //long start = System.currentTimeMillis(); //start of the timer
         this.rootPlayerNbr = playerNbr;
-        this.cutOffMoveOccurence = new HashMap<>();
+        this.cutOffMoveOccurence = new HashMap<>(killerMovesLength);
         this.board = boardOrigin.clone();
         MiniMaxNode root = new MiniMaxNode(board,players[playerNbr-1].clone(),maxDepth);
         float[] score = maxN(root,maxDepth,playerNbr,Float.MIN_VALUE);
@@ -54,15 +55,19 @@ public class MiniMax {
 
 
     private float[] maxN(MiniMaxNode node, int depth, int playerNbr, float alpha){
+        //if we have reached a terminal node (leaf) we set the score as the heuristics and then backtrack
         if(depth<=0) {
             node.setScore(getScore(node));
             return node.getScore();
         }
+        //list of the best score for each player
         float[] best =new float[players.length];
         for (int i = 0; i < best.length; i++) best[i] = Float.MIN_VALUE;
+        //check for each child of the current node
         for (Move possibleMove : players[playerNbr-1].possibleMoveSetBoosted(board)){
             //TODO compute first the moves that have been cutoff earlier
             boolean firstTurn = players[playerNbr-1].isFirstMove();
+            //create new child
             MiniMaxNode newNode = new MiniMaxNode(node,possibleMove,depth-1,players[playerNbr-1],board);
             int nextPlayerNbr;
             if(playerNbr>=players.length){
@@ -70,13 +75,20 @@ public class MiniMax {
             }else{
                 nextPlayerNbr = playerNbr+1;
             }
+            //get the best list of that child
             float[] result = maxN(newNode, depth-1, nextPlayerNbr, best[playerNbr-1]);
-            newNode.removeMove();
+            //newNode.removeMove();
             if(firstTurn) players[playerNbr-1].setFirstMove(true);
+            //if the score of the current player in the current node in the tree is smaller than the score of the current player in the node child
+            //then there is a cutoff, and we keep the score of the child
             if(result[playerNbr-1]>best[playerNbr-1]){
                 best = result;
             }
+            //if the score of the current player in the current node in the tree is bigger than the score of the current player in the node parent
+            //then we set the score of the current node as the one of the child
             if(result[playerNbr-1]>=this.u-alpha) {
+                System.out.println(newNode.getMove().toString());
+
                 node.setScore(result);
                 return result;
             }
@@ -220,8 +232,6 @@ public class MiniMax {
     }
 
 
-
-
     public float[] getScore(MiniMaxNode node) {
         float maxBlockScore=10, maxCornerScore=7, maxAreaScore = 4; // *weight* of different attribute
         float[] distribution;
@@ -235,74 +245,6 @@ public class MiniMax {
         float[] nbrOfCorner = new float[players.length];
         for(int i=0; i<players.length;i++) nbrOfCorner[i]=board.getCorner(players[i].getStartingCorner()).size();
         score = getClassScore(score,node,nbrOfCorner,distribution,maxCornerScore);
-
-
-/*
-        float[] nbrOfBlocks = getBlocksScore(node.getBoard()); //total number of block
-        int[] index = getSortedIndex(nbrOfBlocks);// order the indices
-        for (int i = 0; i < index.length; i++) {
-            if(i<players.length-2 && score[index[i]]==score[index[i+1]]){ //if there is at least a next player compare to next player
-                int count=0; //number of players with the same score
-                for (int j = i; j+i < score.length && score[index[j+i]]==score[index[i]]; j++) { //how many of them?
-                    count++;
-                }
-                float tot=0; // total of proportion for the players with the same score
-                for (int j = 0; j < count; j++) {
-                    tot+=distribution[i+j];
-                }
-                for (int j = 0; j < count; j++) { //update them
-                    score[i+j]+=tot*maxBlockScore/count;
-                }
-                i+=count;//skip those
-            }else {
-                score[index[i]] += maxBlockScore * distribution[i];
-            }
-        }
-
-        //closest to middle heuristic
-        float[] area = getArea(node.getBoard());
-        //Adds most corners heuristic
-        index = getSortedIndex(area);
-        for (int i = 0; i < index.length; i++) {
-            if(i<players.length-2 && score[index[i]]==score[index[i+1]]){
-                int count=0;
-                for (int j = i; j+i < score.length && score[index[j+i]]==score[index[i]]; j++) {
-                    count++;
-                }
-                float tot=0;
-                for (int j = 0; j < count; j++) {
-                    tot+=distribution[i+j];
-                }
-                for (int j = 0; j < count; j++) {
-                    score[i+j]+=tot*maxAreaScore/count;
-                }
-                i+=count;
-            }else score[index[i]]+=maxAreaScore*distribution[i];
-        }
-
-
-        float[] nbrOfCorner = new float[players.length];
-        for(int i=0; i<players.length;i++) nbrOfCorner[i]=board.getCorner(players[i].getStartingCorner()).size();
-        index = getSortedIndex(nbrOfCorner);
-        for (int i = 0; i < index.length; i++) {
-            if(i<players.length-2 && score[index[i]]==score[index[i+1]]){
-                int count=0;
-                for (int j = i; j+i < score.length && score[index[j+i]]==score[index[i]]; j++) {
-                    count++;
-                }
-                float tot=0;
-                for (int j = 0; j < count; j++) {
-                    tot+=distribution[i+j];
-                }
-                for (int j = 0; j < count; j++) {
-                    score[i+j]+=tot*maxCornerScore/count;
-                }
-                i+=count;
-            }else score[index[i]]+=maxCornerScore*distribution[i];
-        }
-
- */
-
 
         node.setScore(score);
         return score;
@@ -354,8 +296,8 @@ public class MiniMax {
         Player p3 = new HumanPlayer(3, "jo2");
         Player p4 = new HumanPlayer(4, "notJo2");
         p1.setStartingCorner(new Vector2d(0, 0));
-        //p2.setStartingCorner(new Vector2d(19, 0));
-        p2.setStartingCorner(new Vector2d(19, 19));
+        p2.setStartingCorner(new Vector2d(19, 0));
+        //p2.setStartingCorner(new Vector2d(19, 19));
         p3.setStartingCorner(new Vector2d(19, 19));
         p4.setStartingCorner(new Vector2d(0, 19));
         p1.setPiecesList(PieceFactory.get().getAllPieces());
@@ -363,8 +305,8 @@ public class MiniMax {
         p3.setPiecesList(PieceFactory.get().getAllPieces());
         p4.setPiecesList(PieceFactory.get().getAllPieces());
 
-        Board b = new Board(new Player[]{p1, p2});
-        MiniMax m = new MiniMax(new Player[]{p1,p2},b);
+        Board b = new Board(new Player[]{p1, p2,p3,p4});
+        MiniMax m = new MiniMax(new Player[]{p1,p2,p3,p4},b);
 
         int i= 0;
         while(i<15){
@@ -377,7 +319,7 @@ public class MiniMax {
             b.print();
 
 
-            /*
+
 
             Move move3 = m.getMove(p3.getPlayerNumber());
             if(move3.makeMove(b)) p3.removePiece(move1.getPiece().getLabel());
@@ -388,7 +330,7 @@ public class MiniMax {
             if(move4.makeMove(b)) p4.removePiece(move1.getPiece().getLabel());
             b.print();
 
-             */
+
 
 
 
