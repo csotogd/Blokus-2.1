@@ -20,7 +20,7 @@ public class MiniMax {
     int rootPlayerNbr;
     ArrayList<Move> cutOffMoveOccurence;
     float u = 30;
-    int killerMovesLength = 100;
+    int killerMovesLength = 2;
 
     public MiniMax(Player[] players, Board board){
         this.players = players;
@@ -51,7 +51,7 @@ public class MiniMax {
         return null;
     }
 
-    private ArrayList<Move> getPossibleMoves(int playerNbr){
+    private ArrayList<Move> getPossibleMoves(int playerNbr, MiniMaxNode node){
         ArrayList<Move> possibleMovesBoosted = new ArrayList<Move>();
         ArrayList<Move> possibleMoves = players[playerNbr-1].possibleMoveSet(board);
         for (Move move:cutOffMoveOccurence) {
@@ -67,7 +67,6 @@ public class MiniMax {
     private float[] maxN(MiniMaxNode node, int depth, int playerNbr, float alpha){
         //if we have reached a terminal node (leaf) we set the score as the heuristics and then backtrack
         if(depth<=0) {
-            updateOcc();
             node.setScore(getScore(node));
             return node.getScore();
         }
@@ -75,7 +74,7 @@ public class MiniMax {
         float[] best =new float[players.length];
         for (int i = 0; i < best.length; i++) best[i] = Float.MIN_VALUE;
         //check for each child of the current node
-        ArrayList<Move>possibleMoves = getPossibleMoves(playerNbr);
+        ArrayList<Move>possibleMoves = getPossibleMoves(playerNbr,node);
         for (Move possibleMove : possibleMoves){
             //TODO compute first the moves that have been cutoff earlier
             boolean firstTurn = players[playerNbr-1].isFirstMove();
@@ -154,29 +153,17 @@ public class MiniMax {
     /////////////////////////////////
     //KILLER MOVE STRATEGY
 
-    public void updateOcc(){
-        for(Move m:cutOffMoveOccurence){
-            m.setOccurence(m.getOccurence()-1);
-        }
-    }
-
     public void checkToAddToCutOff(Move move){
-        if(cutOffMoveOccurence.isEmpty()||cutOffMoveOccurence.size()<killerMovesLength){
+        if(cutOffMoveOccurence.isEmpty()){
             cutOffMoveOccurence.add(move);
-        }else{
-            if(cutOffMoveOccurence.contains(move)){
-                increaseOcc(move);
+        }else {
+            if (cutOffMoveOccurence.contains(move)) {
+                move.setOccurence(move.getOccurence() + 1);
+            }else if (cutOffMoveOccurence.size() < killerMovesLength) {
+                cutOffMoveOccurence.add(move);
             }else{
                 deleteSmallestOccMove();
                 cutOffMoveOccurence.add(move);
-            }
-        }
-    }
-
-    public void increaseOcc(Move move){
-        for(Move m: cutOffMoveOccurence){
-            if(m.equals(move)){
-                m.setOccurence(m.getOccurence()+1);
             }
         }
     }
@@ -344,14 +331,14 @@ public class MiniMax {
 
     public float[] getScore(MiniMaxNode node) {
         int state = node.getPlayer().getPiecesUsed().size();
-        float maxBlockScore=10, maxCornerScore=7, maxAreaScore = 4, maxBlockCorner = 9;// *weight* of different attribute
+        float maxBlockScore=10, maxCornerScore=7, maxAreaScore = 4, maxCornerBlocked = 9;// *weight* of different attribute
 
-        if(state<7){
-            maxBlockScore=15; maxCornerScore=8; maxAreaScore = 4; maxBlockCorner = 3;
-        }else if(state>=7&&state<13){
-            maxBlockScore=7; maxCornerScore=10; maxAreaScore = 3; maxBlockCorner = 10;
+        if(state<6){
+            maxBlockScore=15; maxCornerScore=8; maxAreaScore = 4; maxCornerBlocked = 3;
+        }else if(state>=6&&state<13){
+            maxBlockScore=7; maxCornerScore=10; maxAreaScore = 3; maxCornerBlocked = 10;
         }else{
-            maxBlockScore=5; maxCornerScore=10; maxAreaScore = 5; maxBlockCorner = 10;
+            maxBlockScore=5; maxCornerScore=10; maxAreaScore = 5; maxCornerBlocked = 10;
         }
 
 
@@ -365,8 +352,8 @@ public class MiniMax {
         for(int i=0; i<players.length;i++) nbrOfCorner[i]=board.getCorner(players[i].getStartingCorner()).size();
         score = normalize(score,nbrOfCorner,maxCornerScore);
 
-        float[] nbrOfBlockCorner = blocksMostCorners(node);
-        score = normalize(score,nbrOfBlockCorner,maxBlockCorner);
+        float[] nbrOfCornerBlocked = blocksMostCorners(node);
+        score = normalize(score,nbrOfCornerBlocked,maxCornerBlocked);
 
         node.setScore(score);
         return score;
