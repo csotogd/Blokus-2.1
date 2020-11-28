@@ -68,8 +68,11 @@ public class Node {
     }
 
     public boolean expandGA(Player player,HashMap<Move,Float> sm, int numMoves){
+        int i=0;
         for (Map.Entry<Move, Float> en : sm.entrySet()) {
              children.add(new Node(this, en.getKey()));
+             i++;
+             if(i>=numMoves) break;
         }
 
         if(children.size()>0) return true;
@@ -185,7 +188,6 @@ public class Node {
         Board board = state.clone(); //clone the board
      //   Player[] temp = new Player[players.length];//clone the players
      //   for(Player p : players) temp[p.getPlayerNumber()-1]=p.clone();
-        //TODO max nbr of iteration implementation needed
         while(countPass<players.length){ //while not everyone has passed in a turn
             if(playerturn==0) countPass=0; // beginning of the turn, nobody has passed yet
             Move move = players[playerturn].randomPossibleMove(board); //random move

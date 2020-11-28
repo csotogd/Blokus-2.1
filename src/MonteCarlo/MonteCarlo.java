@@ -48,7 +48,7 @@ public class MonteCarlo {
             choosen.addScore(choosen.simulation((player+1)%players.length,player));//if we get a win update the score as well
         }
         Node res = root.getChildren().get(0);//choose the most visited node move
-        for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
+//        for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
         for(Node children : root.getChildren()) if(children.getVisitedNum()>res.getVisitedNum()||
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()>res.getScore())||
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()==res.getScore()&&children.getMove().getPiece().getNumberOfBlocks()>res.getMove().getPiece().getNumberOfBlocks())) res=children;
@@ -61,8 +61,9 @@ public class MonteCarlo {
         long start = System.currentTimeMillis(); //start of the timer
         root = new Node(board, players);
 
-//        System.out.println("p"+player+" "+root.getChildren().size()); // for debug purpose print the number of possible move
+//        System.out.println("p"+player+" "+root.getChildren().size()+" "+players[player].isFirstMove()); // for debug purpose print the number of possible move
         root.expandGA(players[player].clone(),score_move,numMoves);
+
         //System.out.println((System.currentTimeMillis()-start)+"ms"); // how long did we take to expand/visit every node?
         while(System.currentTimeMillis()-start<timeLimit){ // while there is still time
             //chose one of the possible move
@@ -76,7 +77,7 @@ public class MonteCarlo {
             choosen.addScore(choosen.simulation((player+1)%players.length,player));//if we get a win update the score as well
         }
         Node res = root.getChildren().get(0);//choose the most visited node move
-        for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
+//        for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
         for(Node children : root.getChildren()) if(children.getVisitedNum()>res.getVisitedNum()||
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()>res.getScore())||
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()==res.getScore()&&children.getMove().getPiece().getNumberOfBlocks()>res.getMove().getPiece().getNumberOfBlocks())) res=children;

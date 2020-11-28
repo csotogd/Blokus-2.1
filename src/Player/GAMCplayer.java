@@ -1,5 +1,6 @@
 package Player;
 
+import DataBase.Piece;
 import GameBoard.Board;
 import MonteCarlo.MonteCarlo;
 import Move.Move;
@@ -18,12 +19,17 @@ public class GAMCplayer extends GeneticPlayer {
 
     public Move getBestMove(Board board, int timelimit){
         HashMap<Move, Float> best_moves = calculateMoves(board);
-        int i =0;
-        for(Map.Entry<Move, Float> en: best_moves.entrySet()){
-            System.out.println(en.getKey()+ " "+ en.getValue());
-            if(i>2) break;
-        }
-        return mc.simulation(this.number-1, timelimit,best_moves);
+//        int i =0;
+//        for(Map.Entry<Move, Float> en: best_moves.entrySet()){
+//            System.out.println( en.getValue());
+//            System.out.println(en.getKey().getPiece()+ "@ "+ en.getKey().getPosition());
+//            i++;
+//            if(i>2) break;
+//        }
+        boolean firstmove = isFirstMove();
+        Move move = mc.simulation(this.number-1, timelimit,best_moves);
+        this.setFirstMove(firstmove);
+        return new Move(this,move.getPiece(),move.getPosition());
     }
 
     public HashMap<Move, Float> calculateMoves(Board board){
@@ -89,5 +95,15 @@ public class GAMCplayer extends GeneticPlayer {
 
     public void setMc(MonteCarlo mc) {
         this.mc = mc;
+    }
+
+    public GAMCplayer clone(){
+        GAMCplayer player = new GAMCplayer(number);
+        player.startingCorner=startingCorner;
+        player.setWeightsAsArray(weights.clone());
+        for(Piece p:piecesList) player.getPiecesList().add(p.clone());
+        player.setFirstMove(isFirstMove());
+
+        return player;
     }
 }
