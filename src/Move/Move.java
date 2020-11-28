@@ -19,6 +19,7 @@ public class Move {
     private Player player;
     private Piece piece;//needs to be rotated, mirror as the players wants
     private Vector2d position; //Position of the top-left corner of the piece. top-left corner of the board is 0,0
+    private int occurence;
 
 
 
@@ -349,5 +350,13 @@ public class Move {
 //
 //        System.out.println(player2.possibleMoveSet(board).size());
 
+    }
+
+    public int getOccurence() {
+        return occurence;
+    }
+
+    public void setOccurence(int occurence) {
+        this.occurence = occurence;
     }
 }
