@@ -19,7 +19,7 @@ public class MiniMax {
     private int maxDepth;
     int rootPlayerNbr;
     ArrayList<Move> cutOffMoveOccurence;
-    float u = 31;
+    float u = 30;
     int killerMovesLength = 100;
 
     public MiniMax(Player[] players, Board board){
@@ -343,7 +343,18 @@ public class MiniMax {
 
 
     public float[] getScore(MiniMaxNode node) {
-        float maxBlockScore=10, maxCornerScore=7, maxAreaScore = 4, maxBlockCorner = 10;// *weight* of different attribute
+        int state = node.getPlayer().getPiecesUsed().size();
+        float maxBlockScore=10, maxCornerScore=7, maxAreaScore = 4, maxBlockCorner = 9;// *weight* of different attribute
+
+        if(state<7){
+            maxBlockScore=15; maxCornerScore=8; maxAreaScore = 4; maxBlockCorner = 3;
+        }else if(state>=7&&state<13){
+            maxBlockScore=7; maxCornerScore=10; maxAreaScore = 3; maxBlockCorner = 10;
+        }else{
+            maxBlockScore=5; maxCornerScore=10; maxAreaScore = 5; maxBlockCorner = 10;
+        }
+
+
         float[] score = new float[players.length];
 
         score = normalize(score,getBlocksScore(node.getBoard()),maxBlockScore); //total number of block TODO: count only new pieces placed?
@@ -354,7 +365,7 @@ public class MiniMax {
         for(int i=0; i<players.length;i++) nbrOfCorner[i]=board.getCorner(players[i].getStartingCorner()).size();
         score = normalize(score,nbrOfCorner,maxCornerScore);
 
-        float[] nbrOfBlockCorner = getBlocksScore(node.getBoard());
+        float[] nbrOfBlockCorner = blocksMostCorners(node);
         score = normalize(score,nbrOfBlockCorner,maxBlockCorner);
 
         node.setScore(score);
