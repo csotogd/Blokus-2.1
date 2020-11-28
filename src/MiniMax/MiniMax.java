@@ -1,5 +1,6 @@
 package MiniMax;
 
+import DataBase.Piece;
 import DataBase.PieceFactory;
 import GameBoard.Board;
 import GameBoard.Corner;
@@ -18,8 +19,8 @@ public class MiniMax {
     private int maxDepth;
     int rootPlayerNbr;
     ArrayList<Move> cutOffMoveOccurence;
-    float u = 21;
-    int killerMovesLength = 20;
+    float u = 31;
+    int killerMovesLength = 100;
 
     public MiniMax(Player[] players, Board board){
         this.players = players;
@@ -32,11 +33,8 @@ public class MiniMax {
         this.rootPlayerNbr = playerNbr;
         this.cutOffMoveOccurence = new ArrayList<Move>(killerMovesLength);
         this.board = boardOrigin.clone();
-        MiniMaxNode root = new MiniMaxNode(board,players[playerNbr-1].clone(),maxDepth);
+        MiniMaxNode root = new MiniMaxNode(board,players[playerNbr-1].clone());
         float[] score = maxN(root,maxDepth,playerNbr,Float.MIN_VALUE);
-        for (Move m:cutOffMoveOccurence) {
-            System.out.println(m.getOccurence());
-        }
         Move bestMove = getBestMove(root,score,playerNbr);
         return bestMove;
     }
@@ -53,6 +51,18 @@ public class MiniMax {
         return null;
     }
 
+    private ArrayList<Move> getPossibleMoves(int playerNbr){
+        ArrayList<Move> possibleMovesBoosted = new ArrayList<Move>();
+        ArrayList<Move> possibleMoves = players[playerNbr-1].possibleMoveSet(board);
+        for (Move move:cutOffMoveOccurence) {
+            if(possibleMoves.contains(move)){
+                possibleMovesBoosted.add(move);
+                possibleMoves.remove(move);
+            }
+        }
+        possibleMovesBoosted.addAll(possibleMoves);
+        return possibleMovesBoosted;
+    }
 
     private float[] maxN(MiniMaxNode node, int depth, int playerNbr, float alpha){
         //if we have reached a terminal node (leaf) we set the score as the heuristics and then backtrack
@@ -65,11 +75,12 @@ public class MiniMax {
         float[] best =new float[players.length];
         for (int i = 0; i < best.length; i++) best[i] = Float.MIN_VALUE;
         //check for each child of the current node
-        for (Move possibleMove : players[playerNbr-1].possibleMoveSetBoosted(board)){
+        ArrayList<Move>possibleMoves = getPossibleMoves(playerNbr);
+        for (Move possibleMove : possibleMoves){
             //TODO compute first the moves that have been cutoff earlier
             boolean firstTurn = players[playerNbr-1].isFirstMove();
             //create new child
-            MiniMaxNode newNode = new MiniMaxNode(node,possibleMove,depth-1,players[playerNbr-1],board);
+            MiniMaxNode newNode = new MiniMaxNode(node,possibleMove,players[playerNbr-1],board);
             int nextPlayerNbr;
             if(playerNbr>=players.length){
                 nextPlayerNbr = 1;
@@ -89,6 +100,7 @@ public class MiniMax {
             //then we set the score of the current node as the one of the child
             //cutoff
             if(result[playerNbr-1]>=this.u-alpha) {
+                node.setKillerMoves(newNode.getMove());
                 checkToAddToCutOff(newNode.getMove());
                 node.setScore(result);
                 return result;
@@ -137,9 +149,11 @@ public class MiniMax {
                 return alpha;
             }
         }
-
-
      */
+
+    /////////////////////////////////
+    //KILLER MOVE STRATEGY
+
     public void updateOcc(){
         for(Move m:cutOffMoveOccurence){
             m.setOccurence(m.getOccurence()-1);
@@ -179,6 +193,127 @@ public class MiniMax {
         cutOffMoveOccurence.remove(smallestMove);
     }
 
+    ///////////////////////////////////////////////
+    //HEURISTICS
+
+    private float[] blocksMostCorners(MiniMaxNode node){
+        float[] score = new float[players.length];
+        for(int k = 0;k<players.length;k++){
+            Piece piece = node.getMove().getPiece();
+            int[][] shape = piece.getShape();
+            Vector2d position = node.getMove().getPosition();
+
+            int blockCornerNumber = 0;
+            for (int i = 0; i < shape.length; i++){
+                for (int j = 0; j < shape[0].length; j++){
+                    if (shape[i][j] != 0){
+                        int nbrCornersBlocked = isDiffPlayerToCorner(i + position.get_y(), j + position.get_x(), board,players[k].getPlayerNumber());
+                        blockCornerNumber+=nbrCornersBlocked;
+                    }
+                }
+            }
+            score[k] = blockCornerNumber;
+        }
+
+        return score;
+    }
+
+    /**
+     * This method checks whether a certain coordinate is a toCorner of a different player.
+     * So it checks if on that square, a different player could make a move
+     * @param YPos y position of the square
+     * @param XPos x position of the square
+     * @param board current game board
+     * @return the number of players for which the given square was a corner
+     */
+    private int isDiffPlayerToCorner(int YPos, int XPos, Board board, int playerNbr){
+        int[][] grid = board.getBoardArray();
+        /*
+        We check every corner point of p, here denoted by a c
+        grid:
+            c 0 c
+            0 p 0
+            c 0 c
+        If we encounter a position c where c is a player number other then this player, then we check whether
+        that player can make a move on p. We do this by checking all of the sides of p (denoted by the 0's).
+        If one of those sides is equal to the player number (of the opponent), then this player could not make
+        a move on p, and this position is not counted. However, if none of the sides are this player number,
+        then the opponent could make a move. If this move would be performed, then this square would be taken.
+        So we know that this move blocks a corner and we add 1 to the score.
+
+        This method and checkSides are made so the main strategy method doesn't get too long.
+
+        Maybe you can fix the issues by putting this method in the if statement expression, instead of the
+        condition. Then let it return an integer instead of a boolean. Just make a new variable at the beginning
+        of this method and set it to 0, and then increment that value everytime you reach a point marked with a *
+        Then, at the end you return that variable and add it to the blockCornerNumber
+
+        You still need to find something for when one player has p as a toCorner twice:
+        1 0 1
+        0 p 0
+        0 0 0
+        when this happens, this corner would be counted twice (after you fixed the previous problem).
+        But you would only block one move from player 1. So it should only be counted once, right?
+
+        Good luck!
+         */
+
+        boolean[] playerBlocked = new boolean[board.getNumberOfPlayers()];
+        //playerBlocked[i] will store true if a corner of player numbered i+1 is a happened at the given square.
+        //at most we can have 3 corners, one for each player except the current one
+
+        try {
+            int topLeft = grid[YPos - 1][XPos - 1];
+            if (topLeft != 0 && topLeft != playerNbr && checkSides(YPos, XPos, grid, topLeft))
+                playerBlocked[topLeft-1]=true;
+        } catch (ArrayIndexOutOfBoundsException e){
+
+        }
+        try {
+            int topRight = grid[YPos - 1][XPos + 1];
+            if (topRight != 0 && topRight != playerNbr && checkSides(YPos, XPos, grid, topRight))
+                playerBlocked[topRight-1]=true;
+        } catch (ArrayIndexOutOfBoundsException e){
+
+        }
+        try {
+            int bottomLeft = grid[YPos + 1][XPos - 1];
+            if (bottomLeft != 0 && bottomLeft != playerNbr && checkSides(YPos, XPos, grid, bottomLeft))
+                playerBlocked[bottomLeft-1]=true;
+        } catch (ArrayIndexOutOfBoundsException e){
+
+        }
+        try {
+            int bottomRight = grid[YPos + 1][XPos + 1];
+            if (bottomRight != 0 && bottomRight != playerNbr && checkSides(YPos, XPos, grid, bottomRight))
+                playerBlocked[bottomRight-1]=true;
+        } catch (ArrayIndexOutOfBoundsException e){
+
+        }
+        int nbrOfBlocks = 0;
+        for(int i = 0; i < playerBlocked.length; i++)
+            if (playerBlocked[i])
+                nbrOfBlocks++;
+        return nbrOfBlocks;
+    }
+
+    /**
+     * Checks whether a toCorner is actually valid (a piece can be placed there)
+     * @param YPos y position of the square
+     * @param XPos x position of the square
+     * @param grid the board.board variable
+     * @param playerNumber The number of the player who has the toCorner
+     * @return true when all direct sides of (Ypos, XPos) are not playerNumber
+     */
+    private boolean checkSides(int YPos, int XPos, int[][] grid, int playerNumber){
+        return (XPos - 1 < 0 || grid[YPos][XPos - 1] != playerNumber) &&//check left
+                (YPos - 1 < 0 || grid[YPos - 1][XPos] != playerNumber) &&//check top
+                (XPos + 1 >= grid[0].length || grid[YPos][XPos + 1] != playerNumber) &&//check right
+                (YPos + 1 >= grid.length || grid[YPos + 1][XPos] != playerNumber);//check bottom
+    }
+
+
+
     public float[] getArea(Board board){
         float[] res = new float[players.length];
         for(int i=0;i<players.length;i++) {
@@ -208,15 +343,19 @@ public class MiniMax {
 
 
     public float[] getScore(MiniMaxNode node) {
-        float maxBlockScore=10, maxCornerScore=7, maxAreaScore = 4; // *weight* of different attribute
+        float maxBlockScore=10, maxCornerScore=7, maxAreaScore = 4, maxBlockCorner = 10;// *weight* of different attribute
         float[] score = new float[players.length];
 
         score = normalize(score,getBlocksScore(node.getBoard()),maxBlockScore); //total number of block TODO: count only new pieces placed?
+
         score = normalize(score,getArea(node.getBoard()),maxAreaScore);
 
         float[] nbrOfCorner = new float[players.length];
         for(int i=0; i<players.length;i++) nbrOfCorner[i]=board.getCorner(players[i].getStartingCorner()).size();
         score = normalize(score,nbrOfCorner,maxCornerScore);
+
+        float[] nbrOfBlockCorner = getBlocksScore(node.getBoard());
+        score = normalize(score,nbrOfBlockCorner,maxBlockCorner);
 
         node.setScore(score);
         return score;

@@ -15,24 +15,19 @@ public class MiniMaxNode {
     private List<MiniMaxNode> children;
     private float[] score;
     private Player player;
-    private int depth;
-    private boolean wasSetToNegative;
-    private boolean visited;
+    private Move killerMoves;
 
     /**
      * CONSTRUCTOR for the root (parent point to itself)
      * @param state current state of the game
      */
-    public MiniMaxNode(Board state, Player player,int depth){
+    public MiniMaxNode(Board state, Player player){
         this.board =state;
-        this.depth = depth;
         this.parent = this;
         this.move = null;
         this.children = new ArrayList<>();
         this.score = new float[Data.getPlayersName().length];
         this.player = player;
-        this.wasSetToNegative = false;
-        this.visited = false;
     }
 
     /**
@@ -40,17 +35,14 @@ public class MiniMaxNode {
      * @param parent parent node
      * @param move move to make to arrive from parent to this node
      */
-    public MiniMaxNode(MiniMaxNode parent, Move move, int depth,Player player,Board board){
+    public MiniMaxNode(MiniMaxNode parent, Move move,Player player,Board board){
         this.children = new ArrayList<>();
         this.parent = parent;
         this.parent.getChildren().add(this);
         this.move = move;
-        this.depth = depth;
         this.board = board;
         this.player = player;
         move.writePieceIntoBoard(this.board);
-        this.wasSetToNegative = false;
-        this.visited = false;
     }
 
 
@@ -68,20 +60,8 @@ public class MiniMaxNode {
         return move;
     }
 
-    public int getDepth() {
-        return depth;
-    }
-
     public void setScore(float[] score) {
         this.score = score;
-    }
-
-    public boolean isVisited() {
-        return visited;
-    }
-
-    public void setVisited(boolean visited) {
-        this.visited = visited;
     }
 
     public List<MiniMaxNode> getChildren() {
@@ -102,5 +82,13 @@ public class MiniMaxNode {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public Move getKillerMoves() {
+        return killerMoves;
+    }
+
+    public void setKillerMoves(Move killerMoves) {
+        this.killerMoves = killerMoves;
     }
 }
