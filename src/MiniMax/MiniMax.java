@@ -15,12 +15,12 @@ public class MiniMax {
     Player[] players;
     Board boardOrigin;
     Board board;
-    private final int NBR_OF_TURNS = 1;
+    private final int NBR_OF_TURNS = 2;
     private int maxDepth;
     int rootPlayerNbr;
     ArrayList<Move> cutOffMoveOccurence;
     float u = 30;
-    int killerMovesLength = 2;
+    int killerMovesLength = 10;
 
     public MiniMax(Player[] players, Board board){
         this.players = players;
@@ -51,7 +51,7 @@ public class MiniMax {
         return null;
     }
 
-    private ArrayList<Move> getPossibleMoves(int playerNbr, MiniMaxNode node){
+    private ArrayList<Move> getPossibleMoves(int playerNbr){
         ArrayList<Move> possibleMovesBoosted = new ArrayList<Move>();
         ArrayList<Move> possibleMoves = players[playerNbr-1].possibleMoveSet(board);
         for (Move move:cutOffMoveOccurence) {
@@ -74,7 +74,7 @@ public class MiniMax {
         float[] best =new float[players.length];
         for (int i = 0; i < best.length; i++) best[i] = Float.MIN_VALUE;
         //check for each child of the current node
-        ArrayList<Move>possibleMoves = getPossibleMoves(playerNbr,node);
+        ArrayList<Move>possibleMoves = getPossibleMoves(playerNbr);
         for (Move possibleMove : possibleMoves){
             //TODO compute first the moves that have been cutoff earlier
             boolean firstTurn = players[playerNbr-1].isFirstMove();
@@ -156,7 +156,7 @@ public class MiniMax {
     public void checkToAddToCutOff(Move move){
         if(cutOffMoveOccurence.isEmpty()){
             cutOffMoveOccurence.add(move);
-        }else {
+        }else{
             if (cutOffMoveOccurence.contains(move)) {
                 move.setOccurence(move.getOccurence() + 1);
             }else if (cutOffMoveOccurence.size() < killerMovesLength) {
