@@ -25,7 +25,11 @@ public class GeneticPlayer extends BotPlayer {
     weights[3] = biggestPiece
     weights[4] = farFromStartingPoint
      */
-    protected float[][] weights = new float[3][5];
+    protected float[][] weights = new float[][]{
+                        {0.41936195f, 7.441067f, 1.3479153f, 3.7524276f, 0.56057155f},
+                        {0.41936195f, 7.441067f, 1.3479153f, 3.7524276f, 0.56057155f},
+                        {0.41936195f, 7.441067f, 1.3479153f, 3.7524276f, 0.56057155f}
+                                                                            };
     protected int[] phasesStartTurns = new int[2];
     protected float[] currentWeights = weights[0];
 
@@ -127,7 +131,7 @@ public class GeneticPlayer extends BotPlayer {
         turn = 0;
     }
 
-    private void determinePhase(){
+    protected void determinePhase(){
         if (turn >= phasesStartTurns[0] && turn < phasesStartTurns[1]){
             currentWeights = weights[1];
             phase = 1;
@@ -201,7 +205,7 @@ public class GeneticPlayer extends BotPlayer {
     //return type can be changed
 
 
-    private float blocksMostCorners(float weight, Move move, Board board){
+    protected float blocksMostCorners(float weight, Move move, Board board){
         Piece piece = move.getPiece();
         int[][] shape = piece.getShape();
         Vector2d position = move.getPosition();
@@ -324,7 +328,7 @@ public class GeneticPlayer extends BotPlayer {
 
 
 
-    private float closestToMiddle(float weight, Move move, Board board) {
+    protected float closestToMiddle(float weight, Move move, Board board) {
         //for every move, see how close the closest corner is to the middle.
 
         //TODO: It seems to have some trouble with the dot piece (I1). We might have to check that
@@ -363,7 +367,7 @@ public class GeneticPlayer extends BotPlayer {
         //movesAndScores.put(move, movesAndScores.get(move) + score);
     }
 
-    private float biggestPiece(float weight, Move move, Board board){
+    protected float biggestPiece(float weight, Move move, Board board){
         Piece piece = move.getPiece();
         //Max number of blocks in a piece is 5
         float normalization = 5;
@@ -375,7 +379,7 @@ public class GeneticPlayer extends BotPlayer {
     }
 
     //TODO TESTING
-    private float addsMostCorners(float weight, Move move, Board board) {
+    protected float addsMostCorners(float weight, Move move, Board board) {
 
         //for every move, see how many corners would be added.
 
@@ -432,7 +436,7 @@ public class GeneticPlayer extends BotPlayer {
      * @param board
 
  */
-    private float farFromStartingCorner(float weight, Move move, Board board){
+    protected float farFromStartingCorner(float weight, Move move, Board board){
 
         //for every move, see which of the corner of the piece is furthest away from the starting corner.
         //score will be the distance between it and the corner. The further away the greater the distance

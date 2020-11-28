@@ -67,6 +67,15 @@ public class Node {
         return false;
     }
 
+    public boolean expandGA(Player player,HashMap<Move,Float> sm, int numMoves){
+        for (Map.Entry<Move, Float> en : sm.entrySet()) {
+             children.add(new Node(this, en.getKey()));
+        }
+
+        if(children.size()>0) return true;
+        return false;
+    }
+
     /**
      * Expand with random moves a state
      * @param player the player for which we want to expand the moves

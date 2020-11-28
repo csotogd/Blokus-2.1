@@ -91,6 +91,7 @@ public class Game extends Application {
         boardUI = new BoardUI(this);
         mc = new MonteCarlo(players,board);
         miniMax = new MiniMax(players,board);
+        for(Player p: players) if(p instanceof GAMCplayer) ((GAMCplayer) p).setMc(new MonteCarlo(players, board)); // TODO:do the same for regular monte carlo
         if (actualPlayer instanceof HumanPlayer)
             state = GameState.HUMAN_MOVE;
         else {
@@ -117,6 +118,8 @@ public class Game extends Application {
                 players[i-1]=new GeneticPlayer(i);
             }else if(playerType.equals("MiniMax Player")){
                 players[i-1]=new MiniMaxPlayer(i);
+            }else if(playerType.equals("GAMCplayer")){
+                players[i-1]=new GAMCplayer(i);
             }
             players[i-1].setColor(colors[i-1]);
             players[i-1].setName(playersName[i-1]);
@@ -277,7 +280,9 @@ public class Game extends Application {
                     @Override
                     protected Move call(){
                         Move move = null;
-                        if(actualPlayer instanceof GeneticPlayer){
+                        if( actualPlayer instanceof  GAMCplayer){
+                            move = ((GAMCplayer) actualPlayer).getBestMove(board,3500);
+                        }else if(actualPlayer instanceof GeneticPlayer){
                             move = ((GeneticPlayer) actualPlayer).calculateMove(board);
                             ((GeneticPlayer) actualPlayer).addTurn();
                         }else if(actualPlayer instanceof MCPlayer) {
