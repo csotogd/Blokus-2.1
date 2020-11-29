@@ -282,6 +282,7 @@ public class Game extends Application {
                         Move move = null;
                         if( actualPlayer instanceof  GAMCplayer){
                             move = ((GAMCplayer) actualPlayer).getBestMove(board,3500);
+                            ((GAMCplayer)actualPlayer).addTurn();
                         }else if(actualPlayer instanceof GeneticPlayer){
                             move = ((GeneticPlayer) actualPlayer).calculateMove(board);
                             ((GeneticPlayer) actualPlayer).addTurn();

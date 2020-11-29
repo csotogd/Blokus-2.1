@@ -13,6 +13,7 @@ public class GAMCplayer extends GeneticPlayer {
     private MonteCarlo mc;
 
 
+
     public GAMCplayer(int number) {
         super(number);
     }
@@ -34,6 +35,12 @@ public class GAMCplayer extends GeneticPlayer {
 
     public HashMap<Move, Float> calculateMoves(Board board){
         determinePhase();
+        System.out.println("in GAMC\t   IN PHASE "+getPhase());
+        for (int i = 0; i <5 ; i++) {
+            System.out.print(currentWeights[i]+" ");
+        }
+        System.out.println();
+
 
         //while we code all the different strategies, make this call the one you want to try
         //System.out.println("In calculate move for genetic algorithm");

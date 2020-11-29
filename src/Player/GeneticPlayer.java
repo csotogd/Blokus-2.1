@@ -15,7 +15,7 @@ public class GeneticPlayer extends BotPlayer {
 
     public static final int NUMBER_OF_STRATEGIES = 5;
     public static final int NUMBER_OF_PHASES = 2;
-    private int turn = 0;
+    private int turn = 1;
     private int phase = 0;
 
     /*
@@ -26,11 +26,11 @@ public class GeneticPlayer extends BotPlayer {
     weights[4] = farFromStartingPoint
      */
     protected float[][] weights = new float[][]{
-                        {0.41936195f, 7.441067f, 1.3479153f, 3.7524276f, 0.56057155f},
-                        {0.41936195f, 7.441067f, 1.3479153f, 3.7524276f, 0.56057155f},
-                        {0.41936195f, 7.441067f, 1.3479153f, 3.7524276f, 0.56057155f}
+            {0.5312532f, 0.38739195f, 0.6310179f, 0.80074483f, 0.43988678f},
+    { 0.03257805f, 0.21643633f, 0.56497073f, 0.8927979f, 0.68175447f},
+    {0.06342363f, 0.5615145f, 0.099959135f, 0.94023997f, 0.013810515f},
                                                                             };
-    protected int[] phasesStartTurns = new int[2];
+    protected int[] phasesStartTurns = {5,12};
     protected float[] currentWeights = weights[0];
 
 
@@ -134,6 +134,7 @@ public class GeneticPlayer extends BotPlayer {
     protected void determinePhase(){
         if (turn >= phasesStartTurns[0] && turn < phasesStartTurns[1]){
             currentWeights = weights[1];
+
             phase = 1;
         }else if (turn >= phasesStartTurns[1]){
             currentWeights = weights[2];
@@ -142,6 +143,7 @@ public class GeneticPlayer extends BotPlayer {
             currentWeights = weights[0];
             phase = 0;
         }
+        //System.out.println("Phase" +phase);
     }
 
 
@@ -154,6 +156,13 @@ public class GeneticPlayer extends BotPlayer {
 
     public Move calculateMove(Board board){
         determinePhase();
+        //System.out.println("in turn "+turn + "weights");
+        /*
+        for (int i = 0; i < this.currentWeights.length; i++) {
+
+                System.out.println(this.currentWeights[i]);
+            }
+*/
 
        //while we code all the different strategies, make this call the one you want to try
         //System.out.println("In calculate move for genetic algorithm");

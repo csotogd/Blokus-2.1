@@ -26,18 +26,19 @@ import  java.util.Random;
  *
  */
 public class WeightCalculator {
-    private int populationSize =100000; //must be multiple of 4
-    private final int generations = 1;
-    private final double mutationChance = 0.1;
+    private int populationSize =1000; //must be multiple of 4
+    private final int generations = 100;
+    private final double mutationChance = 0.025;
     private ArrayList<GeneticPlayer> winners = new ArrayList<>();//could also be a population of weights... we´ll see
     private  ArrayList<GeneticPlayer> population = new ArrayList<>();
     private final int nbrOfPlayers = 4;
     private final int DIMENSION = 20;
     private final float[] targetWeights={0.41936195f, 7.441067f, 1.3479153f, 3.7524276f, 0.56057155f} ;//this arre the weights that won´t change for 2 of the 3 phases
     private final float[] computedWeightsPhase0={0.5312532f, 0.38739195f, 0.6310179f, 0.80074483f, 0.43988678f} ;
+    private final float[] computedWeightsPhase2={0.06342363f, 0.5615145f, 0.099959135f, 0.94023997f, 0.013810515f} ;
     private final float[] standard={0.2f, 0.2f, 0.2f, 0.2f, 0.2f} ;
     //private final float[] targetWeights={ 0.3924f, 0.522f, 0.49f, 0.98038f, 0.863f} ;//this arre the weights that won´t change for 2 of the 3 phases
-    private int alteredPhase=0;   // the phase for which we will alter the weights in case we do
+    private int alteredPhase=1;   // the phase for which we will alter the weights in case we do
 
     public static void main(String[] args) {
         //Found these weight sets:
@@ -242,12 +243,19 @@ public class WeightCalculator {
                     individual.setWeightClosestToMiddle(random.nextFloat(), phase);
                     individual.setWeightFarFromStartingPoint(random.nextFloat(), phase);
                 }
+                else if(phase==0){
+                    individual.setWeightAddMostCorners(computedWeightsPhase0[0], phase);
+                    individual.setWeightBlocksMostCorners(computedWeightsPhase0[1], phase);
+                    individual.setWeightClosestToMiddle(computedWeightsPhase0[2], phase);
+                    individual.setWeightBiggestPiece(computedWeightsPhase0[3], phase);
+                    individual.setWeightFarFromStartingPoint(computedWeightsPhase0[4], phase);
+                }
                 else  {
-                    individual.setWeightAddMostCorners(standard[0], phase);
-                    individual.setWeightBlocksMostCorners(standard[1], phase);
-                    individual.setWeightClosestToMiddle(standard[2], phase);
-                    individual.setWeightBiggestPiece(standard[3], phase);
-                    individual.setWeightFarFromStartingPoint(standard[4], phase);
+                    individual.setWeightAddMostCorners(computedWeightsPhase2[0], phase);
+                    individual.setWeightBlocksMostCorners(computedWeightsPhase2[1], phase);
+                    individual.setWeightClosestToMiddle(computedWeightsPhase2[2], phase);
+                    individual.setWeightBiggestPiece(computedWeightsPhase2[3], phase);
+                    individual.setWeightFarFromStartingPoint(computedWeightsPhase2[4], phase);
                 }
             }
             population.add(individual);
