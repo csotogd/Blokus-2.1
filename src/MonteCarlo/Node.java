@@ -10,14 +10,14 @@ import Tools.Vector2d;
 import java.util.*;
 
 public class Node {
-    private Node parent;
-    private Board state;
-    private Move move;
-    private List<Node> children;
-    private int visitedNum;
-    private double score;
-    private static double c=8;
-    private Player[] players;
+    private Node parent; // here, it will always be the root node
+    private Board state; // board with which we clone to do simulation on
+    private Move move; //move attributed to this node
+    private List<Node> children; // possible move from this point on (or move to be explored)
+    private int visitedNum; //number of time we visited a node
+    private double score; // number of time we wins (1) or draw (0.5)
+    private static double c=8; // constant for ucb1
+    private Player[] players; // players typically cloned to do simulations
     private double ucbScore;
 
     /**
@@ -67,10 +67,16 @@ public class Node {
         return false;
     }
 
-    public boolean expandGA(Player player,HashMap<Move,Float> sm, int numMoves){
+    /**
+     * expand the node with moves that the GA deemed interesting
+     * @param best_moves score_move hashmap containing the moves sorted in descending order
+     * @param numMoves number of move to be explored
+     * @return true if expansion was successful
+     */
+    public boolean expandGA(ArrayList<Move> best_moves, int numMoves){
         int i=0;
-        for (Map.Entry<Move, Float> en : sm.entrySet()) {
-             children.add(new Node(this, en.getKey()));
+        for (Move move : best_moves) {
+             children.add(new Node(this, move));
              i++;
              if(i>=numMoves) break;
         }
@@ -161,7 +167,11 @@ public class Node {
         return moveSet;
     }
 
-
+    /**
+     * heuristic method to choose biggest pieces
+     * @param player player for which we need to select the pieces
+     * @return subset of piece the player has
+     */
     public List<Piece> getBiggestPieces(Player player){
         int maxscore = 0;
         LinkedList<Piece> temp = new LinkedList<>();
@@ -212,6 +222,9 @@ public class Node {
         return 1;//win
     }
 
+    /**
+     * clones the player, and write the move on the board
+     */
     public void initializeNode(){
         state = parent.getState().clone();
         players = new Player[parent.getPlayers().length];
@@ -226,12 +239,11 @@ public class Node {
         move.writePieceIntoBoard(state);
     }
 
+    /**
+     * UCB1  higher for bigger win loss ratio, and higher for not visited in a long time
+     * @return evaluations of exploration possibility
+     */
     public double getUCB1(){
-        if(parent.getVisitedNum()>0) return computeUCB();
-        return ucbScore;
-    }
-
-    public double computeUCB(){
         if(visitedNum!=0) ucbScore= score/(double) visitedNum + Node.c*Math.sqrt(Math.log(2*parent.getVisitedNum())/(double) visitedNum);
         else ucbScore= Node.c*Math.sqrt(Math.log(2*parent.getVisitedNum())/(double) visitedNum);
         return ucbScore;

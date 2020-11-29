@@ -105,16 +105,30 @@ public class Corner {
         this.position = newPos;
     }
 
+    /**
+     * change the position of the corner according to shift
+     * @param shift vector2d position of the piece on the board
+     * @return corner positions on the board
+     */
     public Corner cornerAdd(Vector2d shift) {
         Corner newCorner = new Corner(position.add(shift));
         for(Vector2d v: toCornerPositions) newCorner.addAdjacent(v.add(shift));
         return newCorner;
     }
 
+    /**
+     * get the expected position of the corresponding corner
+     * @return expected position of the corresponding corner
+     */
     public Vector2d[] getRelativeToCornerPositions() {
         return relativeToCornerPositions;
     }
 
+    /**
+     * used to rotate corner with relative corner position according to 1st parameter
+     * @param relativeToCornerPositions topleft topright bottomright bottomleft (null if doesn't exist)
+     * @param newPosition new postion of the corner (rotated)
+     */
     public void setRelativeToCornerPositions(Vector2d[] relativeToCornerPositions, Vector2d newPosition) {
         this.relativeToCornerPositions = relativeToCornerPositions;
         this.position = newPosition;
@@ -162,6 +176,11 @@ public class Corner {
         return sb.toString();
     }
 
+    /**
+     * copy a list of corners
+     * @param original corner list to be copied
+     * @return the copy
+     */
     public static List<Corner> copyOf(List<Corner> original){
         ArrayList<Corner> copy = new ArrayList<>();
         for(Corner c:original) copy.add(c.clone());

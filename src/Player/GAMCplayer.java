@@ -13,45 +13,46 @@ public class GAMCplayer extends GeneticPlayer {
     private MonteCarlo mc;
 
 
-
+    /**
+     * Constructor
+     * @param number number of the player
+     */
     public GAMCplayer(int number) {
         super(number);
     }
 
+    /**
+     * Method to be called when we want to find a move to play
+     * @param board board on which the move has to be played
+     * @param timelimit in ms, timelimit for the exploration
+     * @return best move computed
+     */
     public Move getBestMove(Board board, int timelimit){
-        HashMap<Move, Float> best_moves = calculateMoves(board);
-//        int i =0;
-//        for(Map.Entry<Move, Float> en: best_moves.entrySet()){
-//            System.out.println( en.getValue());
-//            System.out.println(en.getKey().getPiece()+ "@ "+ en.getKey().getPosition());
-//            i++;
-//            if(i>2) break;
-//        }
+        ArrayList<Move> best_moves = calculateMoves(board);
         boolean firstmove = isFirstMove();
         Move move = mc.simulation(this.number-1, timelimit,best_moves);
         this.setFirstMove(firstmove);
         return new Move(this,move.getPiece(),move.getPosition());
     }
 
-    public HashMap<Move, Float> calculateMoves(Board board){
+    /**
+     *
+     * @param board
+     * @return
+     */
+    public ArrayList<Move> calculateMoves(Board board){
         determinePhase();
-        System.out.println("in GAMC\t   IN PHASE "+getPhase());
+    /*    System.out.println("in GAMC\t   IN PHASE "+getPhase());
         for (int i = 0; i <5 ; i++) {
             System.out.print(currentWeights[i]+" ");
         }
         System.out.println();
 
+     */
 
-        //while we code all the different strategies, make this call the one you want to try
-        //System.out.println("In calculate move for genetic algorithm");
-
-        float bestScore = -1000;
-        ArrayList<Move> bestMoves = new ArrayList<Move>();
         HashMap<Move, Float> score_moves=new HashMap<Move, Float>();
-        for (Move move : super.possibleMoveSet(board)) {
+        for (Move move : super.possibleMoveSet(board)) { //compute the score of each possible move
             float score = 0;
-            //uncomment to test a strategy
-
             //the weights is what we will calculate in the genetic algorithm
             score += addsMostCorners(currentWeights[0], move, board);
             score += blocksMostCorners(currentWeights[1], move, board);
@@ -67,37 +68,29 @@ public class GAMCplayer extends GeneticPlayer {
              */
 
             score_moves.put(move, score*-1); //TODO: reverse order in other way if possible?
-            bestMoves.add(move);
-
         }
+        ArrayList<Move> sorted= sortByValue(score_moves); // sort the moves by their score
 
-        score_moves = sortByValue(score_moves);
-
-        return score_moves;
+        return sorted;
     }
 
-    // function to sort hashmap by values 
-    public static HashMap<Move, Float> sortByValue(HashMap<Move, Float> hm)
-    {
-        // Create a list from elements of HashMap 
-        List<Map.Entry<Move, Float> > list =
-                new LinkedList<Map.Entry<Move, Float> >(hm.entrySet());
+    /**
+     * Sort the hashmap by the score value
+     * @param hm hashmap to be sorted
+     * @return an arraylist of the moves sorted
+     */
+    public static ArrayList<Move> sortByValue(HashMap<Move, Float> hm) {
+        List<Map.Entry<Move, Float> > list = new LinkedList<>(hm.entrySet());
 
         // Sort the list 
-        Collections.sort(list, new Comparator<Map.Entry<Move, Float> >() {
-            public int compare(Map.Entry<Move, Float> o1,
-                               Map.Entry<Move, Float> o2)
-            {
-                return (o1.getValue()).compareTo(o2.getValue());
-            }
-        });
+        Collections.sort(list, (o1, o2) -> (o1.getValue()).compareTo(o2.getValue()));
 
-        // put data from sorted list to hashmap
-        HashMap<Move, Float> temp = new LinkedHashMap<Move, Float>();
+        // put data from sorted list to ArrayList
+        ArrayList<Move> best_moves= new ArrayList<>();
         for (Map.Entry<Move, Float> aa : list) {
-            temp.put(aa.getKey(), aa.getValue());
+            best_moves.add(aa.getKey());
         }
-        return temp;
+        return best_moves;
     }
 
     public void setMc(MonteCarlo mc) {

@@ -42,11 +42,11 @@ public class Game extends Application {
 
     private Stage stage;
 
-    MonteCarlo mc;
-
     MiniMax miniMax;
 
     public Board board;
+
+    private int timeLimit = 3500; // timelimit for MC player and GAMC player
 
 
     /**
@@ -89,9 +89,9 @@ public class Game extends Application {
             System.out.println(player.getPlayerNumber());
         board = new Board(players);
         boardUI = new BoardUI(this);
-        mc = new MonteCarlo(players,board);
         miniMax = new MiniMax(players,board);
-        for(Player p: players) if(p instanceof GAMCplayer) ((GAMCplayer) p).setMc(new MonteCarlo(players, board)); // TODO:do the same for regular monte carlo
+        for(Player p: players) if(p instanceof GAMCplayer) ((GAMCplayer) p).setMc(new MonteCarlo(players, board));
+        else if(p instanceof MCPlayer)((MCPlayer) p).setMc(new MonteCarlo(players, board));
         if (actualPlayer instanceof HumanPlayer)
             state = GameState.HUMAN_MOVE;
         else {
@@ -281,13 +281,13 @@ public class Game extends Application {
                     protected Move call(){
                         Move move = null;
                         if( actualPlayer instanceof  GAMCplayer){
-                            move = ((GAMCplayer) actualPlayer).getBestMove(board,3500);
+                            move = ((GAMCplayer) actualPlayer).getBestMove(board,timeLimit);
                             ((GAMCplayer)actualPlayer).addTurn();
                         }else if(actualPlayer instanceof GeneticPlayer){
                             move = ((GeneticPlayer) actualPlayer).calculateMove(board);
                             ((GeneticPlayer) actualPlayer).addTurn();
                         }else if(actualPlayer instanceof MCPlayer) {
-                            move = mc.simulation(actualPlayer.getNumber()-1, 3500);
+                            move = ((MCPlayer) actualPlayer).getMc().simulation(actualPlayer.getNumber()-1, timeLimit);
                         }else if(actualPlayer instanceof MiniMaxPlayer){
                             move = miniMax.getMove(actualPlayer.getPlayerNumber());
                         }

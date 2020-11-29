@@ -6,6 +6,7 @@ import Move.Move;
 import Player.*;
 import Tools.Vector2d;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MonteCarlo {
@@ -32,52 +33,44 @@ public class MonteCarlo {
         root = new Node(board, players);
         if(players[player].getPiecesList().size()>17) root.randomExpandBias(players[player].clone(), numMoves);
         else root.randomExpand(this.players[player].clone(), numMoves);// expand will append a children of every possible move to the root
-        //TODO : not expand every possible move ?
-//        System.out.println("p"+player+" "+root.getChildren().size()); // for debug purpose print the number of possible move
 
-        //System.out.println((System.currentTimeMillis()-start)+"ms"); // how long did we take to expand/visit every node?
         while(System.currentTimeMillis()-start<timeLimit){ // while there is still time
             //chose one of the possible move
             Node choosen = root.getChildren().get(0); //choose one node to simulate
             for(Node children : root.getChildren()) {
                 if(children.getUCB1()>choosen.getUCB1()) choosen=children;
             }
-            //System.out.println("ucbscore: "+choosen.getUCB1()+" / " +choosen.getMove().getPiece().getLabel());
             //simulate turn by turn until the end -> back propagate score
             choosen.addVisitiedNum(); // update the count of the visited number
             choosen.addScore(choosen.simulation((player+1)%players.length,player));//if we get a win update the score as well
         }
         Node res = root.getChildren().get(0);//choose the most visited node move
-//        for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
-        for(Node children : root.getChildren()) if(children.getVisitedNum()>res.getVisitedNum()||
-                (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()>res.getScore())||
+        for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
+        for(Node children : root.getChildren()) if(children.getVisitedNum()>res.getVisitedNum()|| // choose the node according to number of time visited, if equals, check if ratio win/loss is higher
+                (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()>res.getScore())||// if equal again, choose biggest piece
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()==res.getScore()&&children.getMove().getPiece().getNumberOfBlocks()>res.getMove().getPiece().getNumberOfBlocks())) res=children;
-        numMoves = root.getVisitedNum()/7;
+        numMoves = root.getVisitedNum()/7; // next time we do simulations, we will explore a number of moves such that we can visit 7 times each
         for(Player p: players) if(p.getPlayerNumber()==res.getMove().getPlayer().getPlayerNumber()) return new Move(p,res.getMove().getPiece(), res.getMove().getPosition());
         return res.getMove();
     }
 
-    public Move simulation(int player, long timeLimit, HashMap<Move, Float> score_move){
+    public Move simulation(int player, long timeLimit, ArrayList<Move> score_move){
         long start = System.currentTimeMillis(); //start of the timer
         root = new Node(board, players);
+        root.expandGA(score_move,numMoves); //expansion of node according to GA scores
 
-//        System.out.println("p"+player+" "+root.getChildren().size()+" "+players[player].isFirstMove()); // for debug purpose print the number of possible move
-        root.expandGA(players[player].clone(),score_move,numMoves);
-
-        //System.out.println((System.currentTimeMillis()-start)+"ms"); // how long did we take to expand/visit every node?
         while(System.currentTimeMillis()-start<timeLimit){ // while there is still time
             //chose one of the possible move
             Node choosen = root.getChildren().get(0); //choose one node to simulate
             for(Node children : root.getChildren()) {
                 if(children.getUCB1()>choosen.getUCB1()) choosen=children;
             }
-            //System.out.println("ucbscore: "+choosen.getUCB1()+" / " +choosen.getMove().getPiece().getLabel());
             //simulate turn by turn until the end -> back propagate score
             choosen.addVisitiedNum(); // update the count of the visited number
             choosen.addScore(choosen.simulation((player+1)%players.length,player));//if we get a win update the score as well
         }
         Node res = root.getChildren().get(0);//choose the most visited node move
-//        for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
+
         for(Node children : root.getChildren()) if(children.getVisitedNum()>res.getVisitedNum()||
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()>res.getScore())||
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()==res.getScore()&&children.getMove().getPiece().getNumberOfBlocks()>res.getMove().getPiece().getNumberOfBlocks())) res=children;
