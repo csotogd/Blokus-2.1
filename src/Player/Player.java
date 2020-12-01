@@ -168,11 +168,8 @@ public abstract class Player {
         for (Piece piecetoClone: this.getPiecesList()){
             if (!piecetoClone.isUsed()) {
                 Piece piece = piecetoClone.clone(); // we clone it cause we rotate it and we do not want that to affect the real piece displayed
-                for (int i = 0; i < piece.getTotalConfig(); i++) { //TODO calculate only for permutations of a piece, for instance 1 instead of 4
-                    piece.rotateLeft(); //try all possible rotations
-                    //get all the corners for that piece.
-                    if(i==piece.getNbRotation()-1) piece.rotateUpsideDown(); //TODO is done, but have to be tested
-                    for (Corner pieceCorner : piece.getCornersContacts(new Vector2d(0, 0))) {
+                for (int i = 0; i < piece.getTotalConfig(); i++) {
+                    for (Corner pieceCorner : piece.getCorners().get(piece.getCurrentState())) {
                         //piece.printShape();
                         Move firstMove = new Move(this, piece, startingCorner);
                         if (firstMove.isAllowed(board))
@@ -180,10 +177,9 @@ public abstract class Player {
 
                         for (Corner corner : cornersOnBOard) {
                             for (Vector2d emptyCorner : corner.getToCornerPositions()) { //for all the possible empty squares that would become corner contact
-                                //System.out.println("in for: ");emptyCorner.printVector();
+//                                System.out.println("in for: ");emptyCorner.printVector();
                                 //move the piece so that it is contact with the corner with the part of it we want
                                 Vector2d positionOfPiece= emptyCorner.subtract(pieceCorner.getPosition());
-
 
                                 Move move = new Move(this, piece, positionOfPiece);
                                 //move.print();
@@ -195,6 +191,9 @@ public abstract class Player {
 
                         }
                     }
+                    piece.rotateRight(); //try all possible rotations
+                    //get all the corners for that piece.
+                    if(i==piece.getNbRotation()-1) piece.rotateUpsideDown();
                 }
             }
         }
@@ -222,7 +221,7 @@ public abstract class Player {
                         Move firstMove = new Move(this, piece.clone(), startingCorner.subtract(adjust));
                         if (firstMove.isAllowed(board)) moveSet.add(firstMove);
                     }else
-                        for (Corner pieceCorner : piece.getCornersContacts(new Vector2d(0, 0))) {
+                        for (Corner pieceCorner : piece.getCorners().get(piece.getCurrentState())) {
                             for (Corner corner : cornersOnBoard) {
                                 for (Vector2d emptyCorner : corner.getToCornerPositions()) { //for all the possible empty squares that would become corner contact
                                     //move the piece so that it is contact with the corner with the part of it we want
@@ -269,7 +268,7 @@ public abstract class Player {
                             return firstMove;
                         }
                     }else{ // verify corners on board
-                        List<Corner> pieceCorner = piece.getCornersContacts(new Vector2d(0, 0));
+                        List<Corner> pieceCorner = piece.getCorners().get(piece.getCurrentState());
                         if(cornersOnBoard.size()==0) return null;
                         for (int k = 0; k < pieceCorner.size(); k++) {
                             int randomCornerBoard = r.nextInt(cornersOnBoard.size());
@@ -319,7 +318,7 @@ public abstract class Player {
                             return firstMove;
                         }
                     }else{ // verify corners on board
-                        List<Corner> pieceCorner = piece.getCornersContacts(new Vector2d(0, 0));
+                        List<Corner> pieceCorner = piece.getCorners().get(piece.getCurrentState());
                         for (int k = 0; k < pieceCorner.size(); k++) {
                             if(cornersOnBoard.size()==0) return null;
                             int randomCornerBoard = r.nextInt(cornersOnBoard.size());

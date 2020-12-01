@@ -80,8 +80,8 @@ public class MonteCarlo {
     }
 
     public static void main(String[] args){
-        Player p1 = new HumanPlayer(1, "jo");
-        Player p2 = new HumanPlayer(2, "notJo");
+        Player p1 = new MiniMaxPlayer(1);
+        Player p2 = new MCPlayer(2, "notJo");
         Player p3 = new HumanPlayer(3, "jo2");
         Player p4 = new HumanPlayer(4, "notJo2");
         p1.setStartingCorner(new Vector2d(0,0));

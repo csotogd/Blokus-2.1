@@ -2,6 +2,8 @@ package Move;
 
 import DataBase.Piece;
 import DataBase.PieceFactory;
+import DataBase.Pieces.UPiece;
+import DataBase.Pieces.V5Piece;
 import GameBoard.Corner;
 import Player.*;
 import Tools.Vector2d;
@@ -342,13 +344,40 @@ public class Move {
 
 
 
-//        Move move2 = new Move(player1,fpiece,new Vector2d(0,2));
-//        System.out.println(move2.isAllowed(board));
-//
-//        move2.makeMove(board);
-//        board.print();
-//
-//        System.out.println(player2.possibleMoveSet(board).size());
+        Move move2 = new Move(player1,fpiece,new Vector2d(0,2));
+        System.out.println(move2.isAllowed(board));
+
+        move2.makeMove(board);
+        board.print();
+
+        System.out.println(player2.possibleMoveSet(board).size());
+        while(player1.getPiecesList().size()>0){
+            player1.getPiecesList().remove(player1.getPiecesList().get(player1.getPiecesList().size()-1));
+        }
+        player1.getPiecesList().add(new V5Piece());
+
+        board.boardArray=new int[][]{
+                {1,1,1,0,0,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,0,0,0,0,0 ,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
+        System.out.println(player1.possibleMove(board));
 
     }
 
