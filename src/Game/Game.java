@@ -182,7 +182,7 @@ public class Game extends Application {
             actualPlayer=players[0];
 
         //after the new player is assigned, we should check if thath player is able to do at least one move, else we skip him
-        if( !  actualPlayer.possibleMove(board)){
+        if( ! actualPlayer.possibleMove(board)){
             actualPlayer.setSkippedLastMove(true);//no move made, player out of the game.
             System.out.println("player "+actualPlayer.getName()+" can not move, no available moves");
             updateState();
