@@ -1,3 +1,5 @@
+package Game;
+
 import DataBase.Data;
 import Game.Game;
 import javafx.animation.*;
@@ -30,7 +32,7 @@ public class StartScreen extends Application {
 
     private List<Pair<String, Runnable>> menuData = Arrays.asList(
             new Pair<String, Runnable>("Play", () -> {
-                new Game().start(stage);
+                new Game(stage);
             }),
             new Pair<String, Runnable>("Settings", () -> {
                 try {

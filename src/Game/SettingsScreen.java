@@ -1,4 +1,7 @@
+package Game;
+
 import DataBase.Data;
+import Game.StartScreen;
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -9,12 +12,9 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -95,7 +95,7 @@ public class SettingsScreen extends Application {
         Text opt4 = new Text("Player 3 name :");
         Text opt5 = new Text("Player 4 name :");
 
-        String optionsP[] = {"Human Player", "Monte Carlo Player", "Genetic Player" };
+        String optionsP[] = {"Human Player", "Monte Carlo Player", "Genetic Player","MiniMax Player","GAMCplayer" };
 
         grid.add(opt2, 0, 2);
 
@@ -154,13 +154,11 @@ public class SettingsScreen extends Application {
             @Override
             public void handle(ActionEvent event) {
                 try {
-
                     if(opt6X.getText().equals("")){
                         Data.setDIMENSION(20);
                     }else{
                         Data.setDIMENSION(Integer.parseInt(opt6X.getText()));
                     }
-
                     if(c1.getSelectionModel().getSelectedItem().equals("2 Players")) {
                         playersName = new String[2];
 
@@ -175,6 +173,7 @@ public class SettingsScreen extends Application {
                         }else{
                             playersName[1] = opt3TextField.getText();
                         }
+                        Data.setDIMENSION(14);
 
                     }else{
                         playersName = new String[4];

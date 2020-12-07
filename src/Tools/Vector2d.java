@@ -83,6 +83,14 @@ public class Vector2d {
     }
 
     /**
+     * clone method
+     * @return return a copy of the vector
+     */
+    public Vector2d clone(){
+        return new Vector2d(x, y);
+    }
+
+    /**
      * @return Gets the magnitude of a vector (or the distance from the origin)
      */
     public int magnitude(){
@@ -132,9 +140,37 @@ public class Vector2d {
         return "(" + x + ", " + y  + ")";
     }
 
+    @Override
+    public boolean equals(Object o){
+        if(o==null) return false;
+        if(!(o instanceof Vector2d)) return false;
+        Vector2d other = (Vector2d) o;
+        if(x!=other.get_x()||y!=other.get_y()) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode(){
+        return x+10000*y;
+    }
+
     public static void main(String[] args) {
         Vector2d vector1= new Vector2d(15,6);
         Vector2d vector2 = new Vector2d(19, 0);
         System.out.println();
+        Vector2d vector3 = vector1.clone();
+        vector1= vector1.add(vector2);
+        System.out.println(vector1);
+        System.out.println(vector3);
+
+    }
+
+    /**
+     * in place modification of vector2d
+     * @param shift amount to be added
+     */
+    public void addInPlace(Vector2d shift) {
+        this.x+=shift.get_x();
+        this.y+=shift.get_y();
     }
 }

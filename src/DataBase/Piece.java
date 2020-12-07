@@ -3,12 +3,14 @@ package DataBase;
 
 import DataBase.Pieces.*;
 import GameBoard.Corner;
+import Move.Move;
+import Player.HumanPlayer;
 import Tools.Vector2d;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Piece {
+public abstract class Piece {
     private int[][] shape; //state of the piece
     private boolean used;
     protected boolean mirror; //possible to mirror
@@ -19,76 +21,67 @@ public class Piece {
     private int number;//can be either 1,2,3,4 depending on the player
     private double posInBoardX; //UI related
     private double posInBoardY;
-    private Piece origin;
+    private boolean cornerComputed;
+    private ArrayList<Corner> corners;
+    private Vector2d position; //last time the corners was computed?
+    protected int current_state;
 
     /**
      * CONSTRUCTOR
-     *
-     * @param label       name of the piece
-     * @param array       shape-> state of the piece
-     * @param mirror      possible to flip the piece
-     * @param rotation    number of rotation without flipping
+     * @param label name of the piece
+     * @param array shape-> state of the piece
+     * @param mirror possible to flip the piece
+     * @param rotation number of rotation without flipping
      * @param totalConfig total number of configuration
      */
-    public Piece(String label, int[][] array, boolean mirror, int rotation, int totalConfig) {
+    public Piece (String label, int[][]  array, boolean mirror, int rotation, int totalConfig) {
         this.shape = array;
         this.mirror = mirror;
         this.nbRotation = rotation;
-        this.totalConfig = totalConfig;
-        this.label = label;
+        this.totalConfig=totalConfig;
+        this.label=label;
         this.used = false;
-        this.numberOfBlocks = 0;
-        origin = this;
-        for (int[] line : shape)
-            for (int i : line)
-                if (i != 0) this.numberOfBlocks++;
+        this.numberOfBlocks=0;
+        for(int[] line : shape)
+            for(int i: line)
+                if(i!=0) this.numberOfBlocks++;
+        this.position=new Vector2d(0,0);
+        current_state=0;
     }
 
     /**
-     * CONSTRUCTOR 2
-     *
-     * @param label       name of the piece
-     * @param array       shape-> state of the piece
-     * @param mirror      possible to flip the piece
-     * @param rotation    number of rotation without flipping
+     * CONSTRUCTOR 2 used by clone method
+     * @param label name of the piece
+     * @param mirror possible to flip the piece
+     * @param rotation number of rotation without flipping
      * @param totalConfig total number of configuration
-     * @param origin      the original piece
+     * @param currentS state of the piece
      */
-    public Piece(String label, int[][] array, boolean mirror, int rotation, int totalConfig, Piece origin) {
-        this.shape = array;
+    public Piece (String label, boolean mirror, int rotation, int totalConfig, int currentS) {
+        this.shape = getPermutations().get(currentS);
         this.mirror = mirror;
         this.nbRotation = rotation;
-        this.totalConfig = totalConfig;
-        this.label = label;
+        this.totalConfig=totalConfig;
+        this.label=label;
         this.used = false;
-        this.numberOfBlocks = 0;
-        this.origin = origin;
-        for (int[] line : shape)
-            for (int i : line)
-                if (i != 0) this.numberOfBlocks++;
+        this.cornerComputed=false;
+        this.position=new Vector2d(0,0);
+        this.current_state=currentS;
+        calculateNumberOfBlocks();
     }
 
     /**
      * Cloning method
-     *
      * @return a new piece with the same state
      */
-    public Piece clone() {
-        int[][] shape = new int[getShape().length][getShape()[0].length];
-        for (int i = 0; i < this.shape.length; i++)
-            for (int j = 0; j < this.shape[i].length; j++)
-                shape[i][j] = this.shape[i][j];
-        String label = this.label;
-        boolean mirror = this.mirror; //this is probably not necessary
-        int rotation = this.nbRotation; //this is probably not necessary
+    public abstract Piece clone();
 
-        return new Piece(label, shape, mirror, rotation, totalConfig, this.origin);
-    }
+
+    public abstract List<List<Corner>> getCorners();
 
 
     /**
      * MAkes sure every piece has its own number
-     *
      * @param number
      */
     public void setNumber(int number) {
@@ -105,14 +98,13 @@ public class Piece {
 
     /**
      * Getter
-     *
      * @return current state of the piece
      */
-    public int[][] getShape() {
-        int[][] newshape = new int[shape.length][shape[0].length];
+    public int[][] getShape(){
+        int[][] newshape= new int[shape.length][shape[0].length];
         for (int i = 0; i < shape.length; i++) {
             for (int j = 0; j < shape[0].length; j++) {
-                newshape[i][j] = shape[i][j];
+                newshape[i][j]=shape[i][j];
             }
         }
         return newshape;
@@ -121,45 +113,69 @@ public class Piece {
     /**
      * Mutator, rotate to the left the current state of the piece
      */
-    public void rotateLeft() {
-        if (nbRotation > 1) {
-            int[][] newState = new int[shape[0].length][shape.length];
-            for (int i = 0; i < shape.length; i++) {
-                for (int j = 0; j < shape[0].length; j++) {
-                    newState[newState.length - 1 - j][i] = shape[i][j];
-                }
-            }
-            shape = newState;
+    public void rotateLeft(){
+        if(nbRotation>1){
+            current_state--;
+            if(current_state<0||current_state==nbRotation-1) current_state+=nbRotation;
+            shape = getPermutations().get(current_state);
         }
     }
 
     /**
      * Mutator, rotate to the right the current state of the piece
      */
-    public void rotateRight() {
-        if (nbRotation > 1) {
-            int[][] newState = new int[shape[0].length][shape.length];
-            for (int i = 0; i < shape.length; i++) {
-                for (int j = 0; j < shape[0].length; j++) {
-                    newState[j][newState[0].length - 1 - i] = shape[i][j];
-                }
-            }
-            shape = newState;
+    public void rotateRight(){
+        if(nbRotation>1){ // do this only if the piece has rotations
+            current_state++;
+            if(current_state>=totalConfig||current_state==nbRotation) current_state-=nbRotation;
+            shape = getPermutations().get(current_state);
         }
     }
 
     /**
      * Mutator, flip the current state of the piece (mirror)
      */
-    public void rotateUpsideDown() {
-        if (mirror) {
+    public void rotateUpsideDown(){
+        if(mirror){
+            if(nbRotation!=totalConfig) {
+                if (current_state >= nbRotation) current_state -= nbRotation;
+                else current_state += nbRotation;
+            }else{
+                if(current_state<totalConfig/2) current_state += nbRotation/2;
+                else current_state -= nbRotation/2;
+            }
+            shape = getPermutations().get(current_state);
+        }
+    }
+
+    /**
+     * Mutator, rotate to the right the current state of the piece
+     */
+    public void rotateRi(){
+        if(nbRotation>1){ // do this only if the piece has rotations
+            int[][] newState = new int[shape[0].length][shape.length];
+            for (int i = 0; i < shape.length; i++) {
+                for (int j = 0; j < shape[0].length; j++) {
+                    newState[j][newState[0].length-1-i]= shape[i][j];
+                }
+            }
+            shape= newState;
+        }
+    }
+
+    /**
+     * Mutator, flip the current state of the piece (mirror)
+     */
+    public void rotateUp(){
+        if(mirror){
             int[][] newState = new int[shape.length][shape[0].length];
             for (int i = 0; i < shape.length; i++) {
                 for (int j = 0; j < shape[0].length; j++) {
-                    newState[newState.length - 1 - i][j] = shape[i][j];
+                    newState[newState.length-1-i][j]= shape[i][j];
                 }
             }
-            shape = newState;
+            shape=newState;
+
         }
     }
 
@@ -167,9 +183,9 @@ public class Piece {
         return used;
     }
 
-    public void printShape() {
+    public void printShape(){
         System.out.println();
-        for (int i = 0; i < shape.length; i++) {
+        for (int i=0; i<shape.length; i++) {
             for (int j = 0; j < shape[0].length; j++) {
                 System.out.print(shape[i][j]);
             }
@@ -178,12 +194,12 @@ public class Piece {
         System.out.println();
     }
 
-    public List<int[][]> getPermutations() {
+    public  List<int[][]> getPermutations(){
         System.out.println("using get permutations from piece class, not allowed, ask carlos");
         return null;
     }
 
-    public int getNumberOfBlocks() {
+    public int getNumberOfBlocks(){
         return this.numberOfBlocks;
     }
 
@@ -203,8 +219,12 @@ public class Piece {
         return label;
     }
 
-    public int getNumber() {
-        return this.number;
+    public int getNumber(){
+        return  this.number;
+    }
+
+    public int getCurrentState() {
+        return current_state;
     }
 
     public void setPosInBoardX(double posInBoardX) {
@@ -215,8 +235,8 @@ public class Piece {
         this.posInBoardY = posInBoardY;
     }
 
-    public void setUsed(boolean used) {
-        this.used = used;
+    public void setUsed(boolean used){
+        this.used=used;
     }
 
     public double getPosInBoardX() {
@@ -228,84 +248,39 @@ public class Piece {
     }
 
     protected void calculateNumberOfBlocks() {
-        int blocks = 0;
+        int blocks=0;
 
         for (int i = 0; i < shape.length; i++) {
             for (int j = 0; j < shape[0].length; j++) {
-                if (shape[i][j] == 1)
+                if(shape[i][j]==1)
                     blocks++;
             }
         }
-        numberOfBlocks = blocks;
+        numberOfBlocks=blocks;
     }
 
-    public Piece getPiece() {
+    public  Piece getPiece(){
         System.out.println("calling get piece in piece class, only makes sense in subclasses");
         return null;
     }
 
-    public Piece getOrigin() {
-        return origin;
-    }
-
     /**
      * Methods that finds coordinates of the corners of the piece and the coordinates of the corner of the piece on the board
-     *
      * @return the positions of the hypothetical corners w.r.t. coordinates of the board !!
      */
-    public ArrayList<Corner> getCornersContacts(Vector2d position) {
-        ArrayList<Corner> result = new ArrayList<>(); //contains the corners of the piece
-        for (int y = 0; y < shape.length; y++) {
-            for (int x = 0; x < shape[0].length; x++) {
-                if (shape[y][x] != 0) {
-                    boolean top = true, right = true, down = true, left = true; //is not occupied by a block
-                    Vector2d current_position = position.add(new Vector2d(x, y));
-                    if (y > 0 && shape[y - 1][x] != 0) top = false; //if top outside OR top block occupied
-                    if (y < shape.length - 1 && shape[y + 1][x] != 0)
-                        down = false; //if down outside OR down block occupied
-                    if (x > 0 && shape[y][x - 1] != 0) left = false; //if left outside OR left block occupied
-                    if (x < shape[0].length - 1 && shape[y][x + 1] != 0)
-                        right = false; //if right outside OR right block occupied
-                    Corner current = null;
-                    if (top && left) { //now adding corresponding corner positions
-                        current = new Corner(current_position, current_position.add(new Vector2d(-1, -1)));
-                        result.add(current);
-                    }
-                    if (top && right) {
-                        if (current == null) {
-                            current = new Corner(current_position, current_position.add(new Vector2d(1, -1)));
-                            result.add(current);
-                        } else {
-                            current.addAdjacent(current_position.add(new Vector2d(1, -1)));
-                        }
-                    }
-                    if (down && left) {
-                        if (current == null) {
-                            current = new Corner(current_position, current_position.add(new Vector2d(-1, 1)));
-                            result.add(current);
-                        } else {
-                            current.addAdjacent(current_position.add(new Vector2d(-1, 1)));
-                        }
-                    }
-                    if (down && right) {
-                        if (current == null) {
-                            current = new Corner(current_position, current_position.add(new Vector2d(1, 1)));
-                            result.add(current);
-                        } else {
-                            current.addAdjacent(current_position.add(new Vector2d(1, 1)));
-                        }
-                    }
-
-                }
-            }
+    public ArrayList<Corner> getCornersContacts(Vector2d position){
+        List<Corner> corners0 = this.getCorners().get(current_state);
+        ArrayList<Corner> ret = new ArrayList<>();
+        for(Corner c: corners0) {
+            ret.add(c.cornerAdd(position));
         }
-        return result;
+        return ret;
     }
 
-    public String toString() {
+    public String toString(){
         StringBuilder s = new StringBuilder();
-        s.append(label + ": \n\n");
-        for (int[] line : shape) {
+        s.append(label+": \n\n");
+        for(int[] line : shape) {
             for (int i : line) {
                 s.append(i);
             }
@@ -314,43 +289,43 @@ public class Piece {
         return s.toString();
     }
 
-    public static void main(String[] args) {
+    @Override
+    public boolean equals(Object other){
+        if(!(other instanceof Piece)) return false;
+        Piece o=(Piece)other;
+        if(!o.getLabel().equals(label)) return false;
+        if(o.getCurrentState()!=current_state) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode(){
+        return current_state+10*label.hashCode();
+    }
+
+    public static void main(String[]args) {
         int count = 1;
         //for(Piece p: PieceFactory.get().getAllPieces()) System.out.println((count++)+" "+p);
 
-        Piece p = new WPiece();
-        for (int[][] perm : p.getPermutations()) {
-            for (int i = 0; i < perm.length; i++) {
-                for (int j = 0; j < perm[0].length; j++) {
-                    System.out.print(perm[i][j]);
-                }
-                System.out.println();
-            }
+        Piece p = new L4Piece();
+        System.out.println(p);
+
+
+        for(Corner c: p.getCornersContacts(new Vector2d(5,5))){
+            System.out.println(c.getPosition()+":");
+            for(Vector2d v:c.getToCornerPositions()) System.out.print(" "+v+" ");
             System.out.println();
         }
+        p.rotateRight();
 
-        Piece p2 = new FPiece();
-        for (int[][] perm : p2.getPermutations()) {
-            for (int i = 0; i < perm.length; i++) {
-                for (int j = 0; j < perm[0].length; j++) {
-                    System.out.print(perm[i][j]);
-                }
-                System.out.println();
-            }
-            System.out.println();
-        }
-
-        Piece p3 = new I1Piece();
-        for (int[][] perm : p3.getPermutations()) {
-            for (int i = 0; i < perm.length; i++) {
-                for (int j = 0; j < perm[0].length; j++) {
-                    System.out.print(perm[i][j]);
-                }
-                System.out.println();
-            }
+        System.out.println(p);
+        for(Corner c: p.getCornersContacts(new Vector2d(2,2))){
+            System.out.println(c.getPosition()+":");
+            for(Vector2d v:c.getToCornerPositions()) System.out.print(" "+v+" ");
             System.out.println();
         }
     }
+
 
 }
 

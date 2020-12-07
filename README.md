@@ -12,7 +12,7 @@ The following instructions work in IntelliJ Idea as it is the IDE we all used
 
 4 Click on the + and add the entire lib folder of the javafx sdk
 
-5. Go to StartScreen.java file and click on Edit run configurations, just to the left of the 
+5. Go to Game.StartScreen.java file and click on Edit run configurations, just to the left of the 
 green triangle, in the top right of the screen
 
 6. In the VM Options, write, 
@@ -21,6 +21,6 @@ where path is the path to your java fx sdk path, C:\Program Files\Java\javafx-sd
 
 7. Add Junit classpath
 
-8. Run StartScreen
+8. Run Game.StartScreen
 
 9 Enjoy!

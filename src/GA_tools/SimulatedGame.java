@@ -22,9 +22,8 @@ public class SimulatedGame {
     public Board board;
     public Player[] players; //Initialize in game object
     private Player actualPlayer;
-    private int playerCounter;
     private final int NUMBER_OF_PIECES_PER_PLAYER=20;
-    private BoardUI.GameState state;
+    private Game.GameState state;
     private ArrayList<Move> movesLog=new ArrayList<>();
     private  int nbrMoves=0;
     private int moveLimit=100;
@@ -33,15 +32,15 @@ public class SimulatedGame {
         String[] playersName= new String[players.length];
         this.players = this.initializePlayers(playersName, dimension, players);
          this.board = new Board(this.players, dimension);
-         state= BoardUI.GameState.AI_MOVE;
+         state = Game.GameState.AI_MOVE;
 
         //game state of human move not considered
     }
 
-public void simulate(){
+    public void simulate(){
         actualPlayer=players[0];
         handleAITurn();
-}
+    }
 
 
     /**
@@ -49,8 +48,8 @@ public void simulate(){
      */
     private void updateState(){
         if(moveLimit<=nbrMoves) {
-            state = BoardUI.GameState.END;
-            System.out.println(nbrMoves);
+            state = Game.GameState.END;
+            //System.out.println(nbrMoves);
             try {
                 TimeUnit.SECONDS.sleep(4);
             }
@@ -59,42 +58,43 @@ public void simulate(){
             }
         }
 
-        if( state== BoardUI.GameState.AI_MOVE) {
+        if( state== Game.GameState.AI_MOVE) {
             if (noOneMoved()){
-                state = BoardUI.GameState.END;
-                System.out.println("In game status:  mo one moved");
+                state = Game.GameState.END;
+                //System.out.println("In game status:  mo one moved");
             }
             else {
-                System.out.println(actualPlayer.getName()+ " skipped last move?: "+actualPlayer.getSkippedLastMove());
+                //System.out.println(actualPlayer.getName()+ " skipped last move?: "+actualPlayer.getSkippedLastMove());
                 //System.out.println("In game status:  someone did move moved");
                 nextTurn();
 
-                    state = BoardUI.GameState.AI_MOVE;
+                    state = Game.GameState.AI_MOVE;
                     handleAITurn();
 
             }
            // debuggingPiecesUsed();
         }
-        if (state== BoardUI.GameState.END){
+        if (state== Game.GameState.END){
             countPoints();
-            System.out.println("THE GAME HAS ENDED");
+            //System.out.println("THE GAME HAS ENDED");
         }
     }
 
 
     private void handleAITurn(){
          {
-            System.out.println("handle");
+            //System.out.println("handle");
             //So far this will only print the current piece into the board,
             //then the user will drag it manually into there
             //TODO make it so that no action can be taken while ai is taking its turn
             //TODO handle logic and animation for ai move
             Move move = null;
             if (actualPlayer instanceof GeneticPlayer) {
-                System.out.println("move: " + nbrMoves);
-                board.print();
+                //System.out.println("move: " + nbrMoves);
+                //board.print();
 
                 move = ((GeneticPlayer) actualPlayer).calculateMove(board);
+                ((GeneticPlayer) actualPlayer).addTurn();
                 if(move !=null) {
                     makeMove(move);
                     moveAllowed(move.getPiece());
@@ -121,11 +121,11 @@ public void simulate(){
     }
 
     private void countPoints(){
-        System.out.println("In countPoints(): ");
+        //System.out.println("In countPoints(): ");
         for(Player player: players) {
             countPointsPlayer(player);
 
-            System.out.println(player.getName()+"has "+player.getPoints()+" points");
+            //System.out.println(player.getName()+"has "+player.getPoints()+" points");
         }
     }
 
@@ -146,7 +146,7 @@ public void simulate(){
         for(Piece piece : player.getPiecesUsed()){
             //in board ui, pieces are not marked as used
             piecesPlaced++;
-            System.out.println("piece used");
+            //System.out.println("piece used");
         }
         for(Piece piece : player.getPiecesList()) {
             blocksNotPlaced += piece.getNumberOfBlocks();
@@ -158,14 +158,14 @@ public void simulate(){
 
         if (piecesPlaced==NUMBER_OF_PIECES_PER_PLAYER){//if I check if number of unused pieeces is 0, the size might be 1 when it should be 0 cause the deletion is done in the ui logic after the make move...but just maybe, I have not checked
             Piece lastPiece= player.getMoveLog().peek().getPiece();
-            System.out.println("last piece placed"+ lastPiece.getLabel());
+            //System.out.println("last piece placed"+ lastPiece.getLabel());
             if(lastPiece.getNumberOfBlocks()==1)
                 points+=20;
             else
                 points+=15;
 
         }
-        System.out.println(player.getName()+" Points: "+ points);
+        //System.out.println(player.getName()+" Points: "+ points);
 
         player.setPoints(points);
 
@@ -197,7 +197,7 @@ public void simulate(){
         //after the new player is assigned, we should check if thath player is able to do at least one move, else we skip him
         if( !  actualPlayer.possibleMove(board)){
             actualPlayer.setSkippedLastMove(true);//no move made, player out of the game.
-            System.out.println("player "+actualPlayer.getName()+" can not move, no available moves");
+            //System.out.println("player "+actualPlayer.getName()+" can not move, no available moves");
             updateState();
         }
         else
@@ -229,6 +229,7 @@ public void simulate(){
         for(int i=1; i<= playersName.length; i++){
             players[i-1].setColor(colors[i-1]);
             players[i-1].setName(playersName[i-1]);
+            //players[i-1].setNumber(i);//need to test this line
         }
         Game.initializePlayerPieces(playersName, players);
         players[0].setStartingCorner(new Vector2d(0,0));
