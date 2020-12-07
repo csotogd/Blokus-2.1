@@ -273,10 +273,10 @@ public class Game extends Application {
         boardUI.leftRotate.setDisable(true);
         boardUI.rightRotate.setDisable(true);
         boardUI.flip.setDisable(true);
-        Service<Move> calculateMove = new Service<>(){
+        Service<Move> calculateMove = new Service<Move>(){
             @Override
             protected Task<Move> createTask() {
-                return new Task<>(){
+                return new Task<Move>(){
                     @Override
                     protected Move call(){
                         Move move = null;
