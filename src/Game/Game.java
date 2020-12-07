@@ -1,5 +1,3 @@
-package Game;
-
 import GameBoard.Board;
 import GameBoard.BoardUI;
 import Move.Move;
@@ -44,16 +42,13 @@ public class Game extends Application {
      * @param stage
      */
     @Override
-    public void start(Stage stage){
+    public void start(Stage stage) {
         DIMENSION = Data.getDIMENSION();
         playersName = Data.getPlayersName();
-        players=initializePlayers(playersName, DIMENSION, players);
-        for(Player player:players)
-            System.out.println(player.getPlayerNumber());
-
-        BoardUI gameBoard = new BoardUI(players,stage);
+        initializePlayers();
+        BoardUI gameBoard = new BoardUI(players, stage);
         Parent root = gameBoard.gameBoard;
-        stage.setTitle("Blokus Game.Game Group 15");
+        stage.setTitle("Blokus Game Group 15");
         Scene scene = new Scene(root, 1000, 1000);
         stage.setScene(scene);
         stage.setFullScreen(true);
@@ -63,49 +58,47 @@ public class Game extends Application {
     /**
      * method used to initialize every player
      */
-    public static Player[] initializePlayers(String[] playersName, int DIMENSION, Player[] players){
-        Color[] colors = {Color.RED,Color.YELLOW,Color.GREEN,Color.BLUE};
-        players= new Player[playersName.length];
-        //System.out.println("this code is in game.java line 66,67,68, jo, martin and gyu, comment where necessary it please");
+    private void initializePlayers() {
+        Color[] colors = {Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE};
+        players = new Player[playersName.length];
+        System.out.println("this code is in game.java line 66,67,68, jo, martin and gyu, comment where necessary it please");
 
-        for(int i=1; i<= playersName.length; i++){
-            String playerType = Data.getPlayerTypes()[i-1];
-            if(playerType.equals("Human Player")){
-                players[i-1]=new HumanPlayer(i);
-            }else if(playerType.equals("Monte Carlo Player")){
+        for (int i = 1; i <= playersName.length; i++) {
+            String playerType = Data.getPlayerTypes()[i - 1];
+            if (playerType.equals("Human Player")) {
+                players[i - 1] = new HumanPlayer(i);
+            } else if (playerType.equals("Monte Carlo Player")) {
                 System.out.println("Bot");
                 //TODO add the Monte Carlo Player class
-                players[i-1]=new BotPlayer(i,playersName[i-1]);
-            }else if(playerType.equals("Genetic Player")){
-                players[i-1]=new GeneticPlayer(i);
+                players[i - 1] = new BotPlayer(i, playersName[i - 1]);
+            } else if (playerType.equals("Genetic Player")) {
+                players[i - 1] = new GeneticPlayer(i);
             }
-            players[i-1].setColor(colors[i-1]);
-            players[i-1].setName(playersName[i-1]);
+            players[i - 1].setColor(colors[i - 1]);
+            players[i - 1].setName(playersName[i - 1]);
         }
-        initializePlayerPieces(playersName, players);
-        players[0].setStartingCorner(new Vector2d(0,0));
-        if(players.length==4){
-            players[1].setStartingCorner(new Vector2d(DIMENSION-1,0));
-            players[2].setStartingCorner(new Vector2d(DIMENSION-1,DIMENSION-1));
-            players[3].setStartingCorner(new Vector2d(0,DIMENSION-1));
-        }else{
-            players[1].setStartingCorner(new Vector2d(DIMENSION-1,DIMENSION-1));
+        initializePlayerPieces();
+        players[0].setStartingCorner(new Vector2d(0, 0));
+        if (players.length == 4) {
+            players[1].setStartingCorner(new Vector2d(DIMENSION - 1, 0));
+            players[2].setStartingCorner(new Vector2d(DIMENSION - 1, DIMENSION - 1));
+            players[3].setStartingCorner(new Vector2d(0, DIMENSION - 1));
+        } else {
+            players[1].setStartingCorner(new Vector2d(DIMENSION - 1, DIMENSION - 1));
         }
 
-        return players;
     }
-
 
     /**
      * method to initialize each player pieces
      */
-    public static void initializePlayerPieces(String[] playersName,  Player[] players){
+    private void initializePlayerPieces(){
 
-        for(int i=1; i<= playersName.length; i++){
-            PieceFactory pieceFactory= PieceFactory.get();
+        for(int i=1; i<= playersName.length; i++) {
+            PieceFactory pieceFactory = PieceFactory.get();
             List<Piece> pieces = pieceFactory.getAllPieces();
 
-            players[i-1].setPiecesList(pieces);
+            players[i - 1].setPiecesList(pieces);
 
         }
 
