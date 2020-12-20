@@ -198,14 +198,20 @@ public class Node {
         Board board = state.clone(); //clone the board
      //   Player[] temp = new Player[players.length];//clone the players
      //   for(Player p : players) temp[p.getPlayerNumber()-1]=p.clone();
+        boolean[] passed = new boolean[players.length];
+        for (int i = 0; i < passed.length; i++) {
+            passed[i]=false;
+        }
         while(countPass<players.length){ //while not everyone has passed in a turn
-            if(playerturn==0) countPass=0; // beginning of the turn, nobody has passed yet
-            Move move = players[playerturn].randomPossibleMove(board); //random move
-            if(move!=null) {
-                move.writePieceIntoBoard(board);
-                players[playerturn].getPiecesList().remove(move.getPiece());
-            }else{
-                countPass++;
+            if(!passed[playerturn]) {
+                Move move = players[playerturn].randomPossibleMove(board); //random move
+                if(move!=null) {
+                    move.writePieceIntoBoard(board);
+                    players[playerturn].getPiecesList().remove(move.getPiece());
+                }else{
+                    passed[playerturn]=true;
+                    countPass++;
+                }
             }
             playerturn = (playerturn+1)%players.length;
         }
@@ -216,7 +222,7 @@ public class Node {
        // System.out.println(move.getPiece().getLabel()+" "+playerScores[0]+" "+playerScores[1]+" "+playerScores[2]+" "+playerScores[3]);
         for(int score:playerScores) {
             if(playerScores[playerOfInterest]>score) return 0;//loss
-            else if(playerScores[playerOfInterest]>score) same++;
+            else if(playerScores[playerOfInterest]==score) same++;
         }
         if(same>1) return 0.5;//draw
         return 1;//win
