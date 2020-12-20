@@ -182,7 +182,7 @@ public class Game extends Application {
             actualPlayer=players[0];
 
         //after the new player is assigned, we should check if thath player is able to do at least one move, else we skip him
-        if( ! actualPlayer.possibleMove(board)){
+        if( !  actualPlayer.possibleMove(board)){
             actualPlayer.setSkippedLastMove(true);//no move made, player out of the game.
             System.out.println("player "+actualPlayer.getName()+" can not move, no available moves");
             updateState();
@@ -273,10 +273,10 @@ public class Game extends Application {
         boardUI.leftRotate.setDisable(true);
         boardUI.rightRotate.setDisable(true);
         boardUI.flip.setDisable(true);
-        Service<Move> calculateMove = new Service<Move>(){
+        Service<Move> calculateMove = new Service<>(){
             @Override
             protected Task<Move> createTask() {
-                return new Task<Move>(){
+                return new Task<>(){
                     @Override
                     protected Move call(){
                         Move move = null;

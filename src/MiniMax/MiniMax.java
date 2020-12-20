@@ -407,9 +407,9 @@ public class MiniMax {
         int state = node.getPlayer().getPiecesUsed().size();
         float maxBlockScore=10, maxCornerScore=7, maxAreaScore = 4, maxCornerBlocked = 9;// *weight* of different attribute
 
-        if(state<5){
+        if(state<6){
             maxBlockScore=15; maxCornerScore=8; maxAreaScore = 4; maxCornerBlocked = 3;
-        }else if(state>=5&&state<12){
+        }else if(state>=6&&state<13){
             maxBlockScore=7; maxCornerScore=10; maxAreaScore = 3; maxCornerBlocked = 10;
         }else{
             maxBlockScore=5; maxCornerScore=10; maxAreaScore = 5; maxCornerBlocked = 10;
