@@ -51,9 +51,9 @@ public class Corner {
      * @param position position of the corner
      * @param other position of a corresponding corner
      */
-    public Corner(Vector2d position, Vector2d other){
-        this.position=position;
-        this.toCornerPositions= new ArrayList<Vector2d>();
+    public Corner(Vector2d position, Vector2d other) {
+        this.position = position;
+        this.toCornerPositions = new ArrayList<Vector2d>();
         toCornerPositions.add(other);
     }
 
@@ -70,11 +70,11 @@ public class Corner {
      * @param otherCorner the other corner to be evaluated
      * @return true if the two corner are touching diagonally
      */
-    public boolean isCompatible(Corner otherCorner){
-        for(Vector2d c : toCornerPositions){
-            if(c.get_x()==otherCorner.getPosition().get_x()&& c.get_y()==otherCorner.getPosition().get_y()){
-                for(Vector2d v:otherCorner.getToCornerPositions()){
-                    if(v.get_x()==position.get_x() && v.get_y() == position.get_y()) return true;
+    public boolean isCompatible(Corner otherCorner) {
+        for (Vector2d c : toCornerPositions) {
+            if (c.get_x() == otherCorner.getPosition().get_x() && c.get_y() == otherCorner.getPosition().get_y()) {
+                for (Vector2d v : otherCorner.getToCornerPositions()) {
+                    if (v.get_x() == position.get_x() && v.get_y() == position.get_y()) return true;
                 }
             }
         }

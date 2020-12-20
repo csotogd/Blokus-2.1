@@ -173,7 +173,7 @@ public class SettingsScreen extends Application {
                         }else{
                             playersName[1] = opt3TextField.getText();
                         }
-                        Data.setDIMENSION(16);
+                        Data.setDIMENSION(14);
 
                     }else{
                         playersName = new String[4];
