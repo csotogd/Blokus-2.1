@@ -273,9 +273,11 @@ public abstract class Player {
                         for (int k = 0; k < pieceCorner.size(); k++) {
                             int randomCornerBoard = r.nextInt(cornersOnBoard.size());
                             for (int l = 0; l < cornersOnBoard.size(); l++) { //TODO: ?emptycorner is the only thing that is not random
-                                for (Vector2d emptyCorner : cornersOnBoard.get((l + randomCornerBoard) % cornersOnBoard.size()).getToCornerPositions()) { //for all the possible empty squares that would become corner contact
+                                List<Vector2d> cornersEmpty = cornersOnBoard.get((l + randomCornerBoard) % cornersOnBoard.size()).getToCornerPositions();
+                                int emptycornerrand = r.nextInt(cornersEmpty.size());
+                                for (int m = 0; m < cornersEmpty.size(); m++) {//for all the possible empty squares that would become corner contact
                                     //move the piece so that it is contact with the corner with the part of it we want
-                                    Vector2d positionOfPiece = emptyCorner.subtract(pieceCorner.get(k).getPosition());
+                                    Vector2d positionOfPiece = cornersEmpty.get((m+emptycornerrand)%cornersEmpty.size()).subtract(pieceCorner.get(k).getPosition());
                                     Move move = new Move(this, piece, positionOfPiece);
 
                                     if (move.isAllowed(board, piece.getCornersContacts(positionOfPiece).get(k), cornersOnBoard.get((l+randomCornerBoard)%cornersOnBoard.size()))) {

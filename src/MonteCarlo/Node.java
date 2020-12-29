@@ -16,7 +16,7 @@ public class Node {
     private List<Node> children; // possible move from this point on (or move to be explored)
     private int visitedNum; //number of time we visited a node
     private double score; // number of time we wins (1) or draw (0.5)
-    private static double c=8; // constant for ucb1
+    private static double c=2; // constant for ucb1
     private Player[] players; // players typically cloned to do simulations
     private double ucbScore;
 
@@ -199,9 +199,6 @@ public class Node {
      //   Player[] temp = new Player[players.length];//clone the players
      //   for(Player p : players) temp[p.getPlayerNumber()-1]=p.clone();
         boolean[] passed = new boolean[players.length];
-        for (int i = 0; i < passed.length; i++) {
-            passed[i]=false;
-        }
         while(countPass<players.length){ //while not everyone has passed in a turn
             if(!passed[playerturn]) {
                 Move move = players[playerturn].randomPossibleMove(board); //random move
@@ -215,16 +212,22 @@ public class Node {
             }
             playerturn = (playerturn+1)%players.length;
         }
-        //board.print();
+//        board.print();
+//        for (int i = 0; i < players.length; i++) {
+//            if(players[i].possibleMove(board)) System.out.println("noooooo");
+//        }
         int[] playerScores=new int[players.length];
         for(Player p: players) for(Piece piece: p.getPiecesList()) playerScores[p.getPlayerNumber()-1]+=piece.getNumberOfBlocks();
         int same=0;
        // System.out.println(move.getPiece().getLabel()+" "+playerScores[0]+" "+playerScores[1]+" "+playerScores[2]+" "+playerScores[3]);
         for(int score:playerScores) {
+//            System.out.println(score);
             if(playerScores[playerOfInterest]>score) return 0;//loss
             else if(playerScores[playerOfInterest]==score) same++;
         }
-        if(same>1) return 0.5;//draw
+//        System.out.println("draw?");
+        if(same>1) return 1.0/same;//draw
+//        System.out.println("win");
         return 1;//win
     }
 
