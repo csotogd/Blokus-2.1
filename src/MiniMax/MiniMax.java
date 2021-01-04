@@ -44,9 +44,20 @@ public class MiniMax {
         this.cutOffMoveOccurence = new ArrayList<Move>(killerMovesLength);
         this.board = boardOrigin.clone();
         MiniMaxNode root = new MiniMaxNode(board,players[playerNbr-1].clone());
-        float[] score = maxN(root,maxDepth,playerNbr,Float.MIN_VALUE);
-        Move bestMove = getBestMove(root,score,playerNbr);
+        //float[] score = maxN(root,maxDepth,playerNbr,Float.MIN_VALUE);
+        //Move bestMove = getBestMove(root,score,playerNbr);
+        float score = paranoidSearch(root,maxDepth,playerNbr,Float.MIN_VALUE,Float.MAX_VALUE);
+        Move bestMove = getpBestMove(root,score,playerNbr);
         return bestMove;
+    }
+
+    private Move getpBestMove(MiniMaxNode root,float score,int rootPlayerNbr){
+        for(MiniMaxNode c: root.getChildren()) {
+            System.out.println(c.getpScore());
+            if (c.getpScore()==score) return new Move(players[rootPlayerNbr-1],c.getMove().getPiece(), c.getMove().getPosition());
+        }
+        System.out.println("oops"+root.getChildren().size());
+        return null;
     }
 
     /**
@@ -140,45 +151,53 @@ public class MiniMax {
 
     }
 
-    /*
-        private float paranoidSearch(MiniMaxNode node, int depth, int playerNbr, float alpha, float beta) {
-            //System.out.println(playerNbr);
-            if(depth<=0){
-                if(playerNbr==rootPlayerNbr) {
-                    return node.getScore();
-                }else{
-                    System.out.println("STOP RECURSION COND., not possible, smth wrong");
-                    //never here because we never reach a terminal node that is not the root player
-                    return -node.getScore();
-                }
+
+    private float paranoidSearch(MiniMaxNode node, int depth, int playerNbr, float alpha, float beta) {
+        System.out.println("player = " + playerNbr + " ,depth = "+depth);
+        if(depth<=0){
+            if(playerNbr==rootPlayerNbr) {
+                node.setpScore(getScore(node)[playerNbr-1]);
+                return node.getpScore();
             }else{
-                //TODO order the move so that the worst ones are at the end and are pruned faster
-                for (Move possibleMove : players[playerNbr-1].possibleMoveSetBoosted(board)){
-                    //TODO compute first the moves that have been cutoff earlier
-                    MiniMaxNode newNode = new MiniMaxNode(node,possibleMove,depth-1,players[playerNbr-1],board);
-                    int nextPlayerNbr = 0;
-                    if(playerNbr>=players.length){
-                        nextPlayerNbr = 1;
-                    }else{
-                        nextPlayerNbr = playerNbr+1;
-                    }
-                    if(playerNbr==rootPlayerNbr || nextPlayerNbr==rootPlayerNbr){
-                        alpha = Math.max(alpha, -alphaBeta_Pruning(newNode,depth-1,nextPlayerNbr,-beta,-alpha));
-                    }else {
-                        alpha = Math.max(alpha, alphaBeta_Pruning(newNode,depth-1,nextPlayerNbr,alpha,beta));
-                    }
-                    if(alpha>=beta){
-                        //checkToAddToCutOff(node.getMove());
-                        node.setScore(beta);
-                        return beta;
-                    }
-                }
-                //updateOcc();
-                node.setScore(alpha);
-                return alpha;
+                System.out.println("STOP RECURSION COND., not possible, smth wrong");
+                //never here because we never reach a terminal node that is not the root player
+                node.setpScore(-getScore(node)[playerNbr-1]);
+                return node.getpScore();
             }
         }
-     */
+        ArrayList<Move>possibleMoves = getPossibleMoves(playerNbr);
+        //TODO order the move so that the worst ones are at the end and are pruned faster
+        for (Move possibleMove : possibleMoves){
+            boolean firstTurn = players[playerNbr-1].isFirstMove();
+            //TODO compute first the moves that have been cutoff earlier
+            MiniMaxNode newNode = new MiniMaxNode(node,possibleMove,players[playerNbr-1],board);
+            int nextPlayerNbr;
+            if(playerNbr>=players.length){
+                nextPlayerNbr = 1;
+            }else{
+                nextPlayerNbr = playerNbr+1;
+            }
+            if(playerNbr==rootPlayerNbr || nextPlayerNbr==rootPlayerNbr){
+                alpha = Math.max(alpha, -paranoidSearch(newNode,depth-1,nextPlayerNbr,-beta,-alpha));
+            }else {
+                alpha = Math.max(alpha, paranoidSearch(newNode,depth-1,nextPlayerNbr,alpha,beta));
+            }
+            newNode.removeMove();
+            if(firstTurn){
+                players[playerNbr-1].setFirstMove(true);
+            }
+            if(alpha>=beta){
+                System.out.println("cutoff : " + node.getMove().getPiece().toString());
+                node.setKillerMoves(newNode.getMove());
+                checkToAddToCutOff(newNode.getMove());
+                node.setpScore(beta);
+                return beta;
+            }
+        }
+        node.setpScore(alpha);
+        return alpha;
+    }
+
 
     /////////////////////////////////
     //KILLER MOVE STRATEGY

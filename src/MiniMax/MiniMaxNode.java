@@ -14,6 +14,7 @@ public class MiniMaxNode {
     private Move move;
     private List<MiniMaxNode> children;
     private float[] score;
+    private float pScore;
     private Player player;
     private Move killerMoves;
 
@@ -67,6 +68,14 @@ public class MiniMaxNode {
 
     public void setScore(float[] score) {
         this.score = score;
+    }
+
+    public float getpScore() {
+        return pScore;
+    }
+
+    public void setpScore(float pScore) {
+        this.pScore = pScore;
     }
 
     public List<MiniMaxNode> getChildren() {
