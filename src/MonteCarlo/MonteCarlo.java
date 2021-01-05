@@ -31,8 +31,8 @@ public class MonteCarlo {
     public Move simulation(int player, long timeLimit){
         long start = System.currentTimeMillis(); //start of the timer
         root = new Node(board, players);
-        if(players[player].getPiecesList().size()>17) root.randomExpandBias(players[player].clone(), numMoves);
-        else root.randomExpand(this.players[player].clone(), numMoves);// expand will append a children of every possible move to the root
+        if(players[player].getPiecesList().size()>17) root.randomExpandBias(players[player], numMoves);
+        else root.randomExpand(this.players[player], numMoves);// expand will append a children of every possible move to the root
 
         while(System.currentTimeMillis()-start<timeLimit){ // while there is still time
             //chose one of the possible move

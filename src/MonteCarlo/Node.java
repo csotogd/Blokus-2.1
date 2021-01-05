@@ -37,10 +37,6 @@ public class Node {
 
     }
 
-    public Player[] getPlayers() {
-        return players;
-    }
-
 
     /**
      * Regular constructor
@@ -54,7 +50,20 @@ public class Node {
         //children = new ArrayList<>();
         visitedNum = 0;
         score = 0;
-        ucbScore = move.getPiece().getNumberOfBlocks()+move.getPiece().getCorners().get(0).size();
+    }
+
+    public Player[] getPlayers() {
+        Player[] result;
+        if(parent==this) {
+            result = new Player[players.length];
+            for (int i = 0; i < players.length; i++) {
+                result[i]=players[i].clone();
+            }
+            return result;
+        }
+        result = parent.getPlayers();
+        result[move.getPlayer().getPlayerNumber()-1].removePiece(move.getPiece().getLabel());
+        return result;
     }
 
     /**
@@ -62,6 +71,7 @@ public class Node {
      * @param player
      */
     public boolean expand(Player player){
+        for(Player p:players) if(p.getPlayerNumber()==player.getPlayerNumber()) player = p;
         for(Move m : player.possibleMoveSet(state)) children.add(new Node(this,m));
         if(children.size()>0) return true;
         return false;
@@ -91,7 +101,7 @@ public class Node {
      * @return true if it was successful, false otherwise
      */
     public boolean randomExpand(Player player, int numMoves){
-
+        for(Player p:players) if(p.getPlayerNumber()==player.getPlayerNumber()) player = p;
         for(int i=0;i<numMoves;i++){
             Node n = new Node(this,player.randomPossibleMoveClone(state, player.getPiecesList()));
             if(!children.contains(n)) children.add(n);
@@ -107,6 +117,7 @@ public class Node {
      */
     public boolean randomExpandBias(Player player,int numMoves){
         List biggestPieces;
+        for(Player p:players) if(p.getPlayerNumber()==player.getPlayerNumber()) player = p;
         if(player.getPiecesList().size()<5){
             biggestPieces = player.getPiecesList();
         }else{
@@ -235,17 +246,10 @@ public class Node {
      * clones the player, and write the move on the board
      */
     public void initializeNode(){
-        state = parent.getState().clone();
-        players = new Player[parent.getPlayers().length];
-        int count =0;
-        for(Player p : parent.getPlayers()) { //copy the players but take care to remove the piece played
-            players[count++]=p.clone();
-            if(players[count-1].getPlayerNumber()==move.getPlayer().getPlayerNumber()) {
-                players[count - 1].removePiece(move.getPiece().getLabel());
-                players[count - 1].setNotFirstMove();
-            }
-        }
-        move.writePieceIntoBoard(state);
+        state = getState();
+        players = getPlayers();
+        //TODO player has to be set not 1st move
+//        move.writePieceIntoBoard(state);
     }
 
     /**
@@ -271,7 +275,10 @@ public class Node {
     }
 
     public Board getState() {
-        return state;
+        if(this.parent==this) return state.clone();
+        Board result = parent.getState();
+        this.move.writePieceIntoBoard(result);
+        return result;
     }
 
     public void setState(Board state) {

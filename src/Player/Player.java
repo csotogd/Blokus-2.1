@@ -101,13 +101,13 @@ public abstract class Player {
 
     public abstract Player clone();
 
-    public void removePiece(String label){
+    public boolean removePiece(String label){
         Piece pieceToRemove = null;
         for(Piece p: piecesList) if(p.getLabel().equalsIgnoreCase(label)){
             pieceToRemove=p;
-            break;
+            return piecesList.remove(pieceToRemove);
         }
-        piecesList.remove(pieceToRemove);
+        return false;
     }
 
 
