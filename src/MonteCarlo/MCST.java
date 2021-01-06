@@ -1,5 +1,4 @@
 package MonteCarlo;
-
 import DataBase.PieceFactory;
 import GameBoard.Board;
 import Move.Move;
@@ -7,9 +6,9 @@ import Player.*;
 import Tools.Vector2d;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class MonteCarlo {
-
+public class MCST {
     Player[] players;
     Node root;
     Board board;
@@ -20,7 +19,7 @@ public class MonteCarlo {
      * @param pls players in the current game, order matters !
      * @param bo board
      */
-    public MonteCarlo(Player[] pls, Board bo){
+    public MCST(Player[] pls, Board bo){
         players= pls;
         board=bo;
         root = new Node(bo, pls);
@@ -32,12 +31,31 @@ public class MonteCarlo {
         root = new Node(board, players);
         if(players[player].getPiecesList().size()>17) root.randomExpandBias(players[player], numMoves);
         else root.randomExpand(this.players[player], numMoves);// expand will append a children of every possible move to the root
-
+        List<Node> toExpand=new ArrayList<Node>();
+        toExpand.addAll(root.getChildren());
         while(System.currentTimeMillis()-start<timeLimit){ // while there is still time
             //chose one of the possible move
-            Node choosen = root.getChildren().get(0); //choose one node to simulate
-            for(Node children : root.getChildren()) {
-                if(children.getUCB1()>choosen.getUCB1()) choosen=children;
+            Node choosen =null;
+            if(toExpand.size()==0) {
+                choosen = root.getChildren().get(0); //choose one node to simulate
+                for (Node children : root.getChildren()) {
+                    if (children.getUCB1() > choosen.getUCB1()) choosen = children;
+                }
+            }else{
+                choosen = toExpand.remove(0);
+            }
+            while(choosen.getChildren()!=null){
+                Node old = choosen;
+                choosen = choosen.getChildren().get(0); //choose one node to simulate
+                for (Node children : old.getChildren()) {
+                    if (children.getUCB1() > choosen.getUCB1()) choosen = children;
+                }
+            }
+            if(choosen.getVisitedNum()!=0){
+                choosen.initChildren();
+                choosen.randomExpand(players[(player+1)%players.length],numMoves);//expandOne
+                toExpand.addAll(choosen.getChildren());
+                choosen = toExpand.remove(0);
             }
             //simulate turn by turn until the end -> back propagate score
             choosen.addVisitiedNum(); // update the count of the visited number
@@ -54,37 +72,6 @@ public class MonteCarlo {
         return res.getMove();
     }
 
-    /**
-     * simulation bias by genetic algorithm GA
-     * @param player num of plyaer(-1)
-     * @param timeLimit in ms
-     * @param score_move list of moves
-     * @return move that shows promising result
-     */
-    public Move simulation(int player, long timeLimit, ArrayList<Move> score_move){
-        long start = System.currentTimeMillis(); //start of the timer
-        root = new Node(board, players);
-        root.expandGA(score_move,numMoves); //expansion of node according to GA scores
-
-        while(System.currentTimeMillis()-start<timeLimit){ // while there is still time
-            //chose one of the possible move
-            Node choosen = root.getChildren().get(0); //choose one node to simulate
-            for(Node children : root.getChildren()) {
-                if(children.getUCB1()>choosen.getUCB1()) choosen=children;
-            }
-            //simulate turn by turn until the end -> back propagate score
-            choosen.addVisitiedNum(); // update the count of the visited number
-            choosen.addScore(choosen.simulation((player+1)%players.length,player));//if we get a win update the score as well
-        }
-        Node res = root.getChildren().get(0);//choose the most visited node move
-
-        for(Node children : root.getChildren()) if(children.getVisitedNum()>res.getVisitedNum()||
-                (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()>res.getScore())||
-                (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()==res.getScore() && score_move.indexOf(children.getMove())<score_move.indexOf(res.getMove()))) res=children;
-        numMoves = root.getVisitedNum()/7;
-        for(Player p: players) if(p.getPlayerNumber()==res.getMove().getPlayer().getPlayerNumber()) return new Move(p,res.getMove().getPiece(), res.getMove().getPosition());
-        return res.getMove();
-    }
 
     public static void main(String[] args){
         Player p1 = new MiniMaxPlayer(1);
@@ -100,7 +87,7 @@ public class MonteCarlo {
         p3.setPiecesList(PieceFactory.get().getAllPieces());
         p4.setPiecesList(PieceFactory.get().getAllPieces());
         Board b = new Board(new Player[]{p1,p2,p3,p4});
-        MonteCarlo mc = new MonteCarlo(new Player[]{p1,p2,p3,p4},b);
+        MCST mc = new MCST(new Player[]{p1,p2,p3,p4},b);
 
         int i= 0;
         while(i<15){
@@ -125,6 +112,7 @@ public class MonteCarlo {
         }
 
     }
+
 
 
 

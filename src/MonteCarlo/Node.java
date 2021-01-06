@@ -19,6 +19,7 @@ public class Node {
     private static double c=2; // constant for ucb1
     private Player[] players; // players typically cloned to do simulations
     private double ucbScore;
+    private int depth;
 
     /**
      * CONSTRUCTOR for the root (parent point to itself)
@@ -34,7 +35,7 @@ public class Node {
         players = new Player[ps.length];
         int count =0;
         for(Player p : ps) players[count++]=p.clone();
-
+        depth=-1;
     }
 
 
@@ -47,23 +48,10 @@ public class Node {
         this.parent=parent;
         this.move = move;
 
-        //children = new ArrayList<>();
+        children = null;
         visitedNum = 0;
         score = 0;
-    }
-
-    public Player[] getPlayers() {
-        Player[] result;
-        if(parent==this) {
-            result = new Player[players.length];
-            for (int i = 0; i < players.length; i++) {
-                result[i]=players[i].clone();
-            }
-            return result;
-        }
-        result = parent.getPlayers();
-        result[move.getPlayer().getPlayerNumber()-1].removePiece(move.getPiece().getLabel());
-        return result;
+        depth = parent.getDepth()+1;
     }
 
     /**
@@ -86,9 +74,9 @@ public class Node {
     public boolean expandGA(ArrayList<Move> best_moves, int numMoves){
         int i=0;
         for (Move move : best_moves) {
-             children.add(new Node(this, move));
-             i++;
-             if(i>=numMoves) break;
+            children.add(new Node(this, move));
+            i++;
+            if(i>=numMoves) break;
         }
 
         if(children.size()>0) return true;
@@ -101,13 +89,18 @@ public class Node {
      * @return true if it was successful, false otherwise
      */
     public boolean randomExpand(Player player, int numMoves){
-        for(Player p:players) if(p.getPlayerNumber()==player.getPlayerNumber()) player = p;
+        Player p = players[player.getPlayerNumber()-1];
         for(int i=0;i<numMoves;i++){
-            Node n = new Node(this,player.randomPossibleMoveClone(state, player.getPiecesList()));
-            if(!children.contains(n)) children.add(n);
+            Node n = new Node(this,p.randomPossibleMoveClone(state, p.getPiecesList()));
+            if(!children.contains(n)&&n.getMove()!=null) children.add(n);
         }
         if(children.size()>0) return true;
         return false;
+    }
+
+    public void initChildren(){
+        this.children = new ArrayList<Node>();
+        initializeNode();
     }
 
     /**
@@ -117,15 +110,15 @@ public class Node {
      */
     public boolean randomExpandBias(Player player,int numMoves){
         List biggestPieces;
-        for(Player p:players) if(p.getPlayerNumber()==player.getPlayerNumber()) player = p;
-        if(player.getPiecesList().size()<5){
-            biggestPieces = player.getPiecesList();
+        Player p = players[player.getPlayerNumber()-1];
+        if(p.getPiecesList().size()<5){
+            biggestPieces = p.getPiecesList();
         }else{
-            biggestPieces = getBiggestPieces(player);
+            biggestPieces = getBiggestPieces(p);
         }
         int count=0;
         for(int i=0;i<numMoves;i++){
-            Node n = new Node(this,player.randomPossibleMoveClone(state, biggestPieces));
+            Node n = new Node(this,p.randomPossibleMoveClone(state, biggestPieces));
             if(!children.contains(n)) {
                 children.add(n);
                 count=0;
@@ -207,8 +200,8 @@ public class Node {
         initializeNode();// make the move, copy players
         int countPass=0; //number of time a player has passed during a simulation
         Board board = state.clone(); //clone the board
-     //   Player[] temp = new Player[players.length];//clone the players
-     //   for(Player p : players) temp[p.getPlayerNumber()-1]=p.clone();
+        //   Player[] temp = new Player[players.length];//clone the players
+        //   for(Player p : players) temp[p.getPlayerNumber()-1]=p.clone();
         boolean[] passed = new boolean[players.length];
         while(countPass<players.length){ //while not everyone has passed in a turn
             if(!passed[playerturn]) {
@@ -230,7 +223,7 @@ public class Node {
         int[] playerScores=new int[players.length];
         for(Player p: players) for(Piece piece: p.getPiecesList()) playerScores[p.getPlayerNumber()-1]+=piece.getNumberOfBlocks();
         int same=0;
-       // System.out.println(move.getPiece().getLabel()+" "+playerScores[0]+" "+playerScores[1]+" "+playerScores[2]+" "+playerScores[3]);
+        // System.out.println(move.getPiece().getLabel()+" "+playerScores[0]+" "+playerScores[1]+" "+playerScores[2]+" "+playerScores[3]);
         for(int score:playerScores) {
 //            System.out.println(score);
             if(playerScores[playerOfInterest]>score) return 0;//loss
@@ -248,8 +241,28 @@ public class Node {
     public void initializeNode(){
         state = getState();
         players = getPlayers();
-        //TODO player has to be set not 1st move
 //        move.writePieceIntoBoard(state);
+    }
+
+    public Player[] getPlayers() {
+        Player[] result;
+        if(parent==this) {
+            result = new Player[players.length];
+            for (int i = 0; i < players.length; i++) {
+                result[i]=players[i].clone();
+            }
+            return result;
+        }
+        result = parent.getPlayers();
+        result[move.getPlayer().getPlayerNumber()-1].removePiece(move.getPiece().getLabel());
+        return result;
+    }
+
+    public Board getState() {
+        if(this.parent==this) return state.clone();
+        Board result = parent.getState();
+        this.move.writePieceIntoBoard(result);
+        return result;
     }
 
     /**
@@ -272,13 +285,6 @@ public class Node {
 
     public void setParent(Node parent) {
         this.parent = parent;
-    }
-
-    public Board getState() {
-        if(this.parent==this) return state.clone();
-        Board result = parent.getState();
-        this.move.writePieceIntoBoard(result);
-        return result;
     }
 
     public void setState(Board state) {
@@ -311,5 +317,17 @@ public class Node {
     public void addScore(double s) {
         this.score +=s;
         if(parent!=this) parent.addScore(s);
+    }
+
+    public Node expandOne(){
+        if(children==null) children = new ArrayList<Node>();
+        Node n = new Node(this,players[(depth+1)%players.length].randomPossibleMove(getState()));
+        children.add(n) ; //TODO clone only once
+        //TODO : make sure it's a new move
+        return n;
+    }
+
+    public int getDepth() {
+        return depth;
     }
 }
