@@ -44,12 +44,23 @@ public class MiniMax {
         this.cutOffMoveOccurence = new ArrayList<Move>(killerMovesLength);
         this.board = boardOrigin.clone();
         MiniMaxNode root = new MiniMaxNode(board,players[playerNbr-1].clone());
-        //maxN
-        //float[] score = maxN(root,maxDepth,playerNbr,Float.MIN_VALUE);
-        //Move bestMove = getBestMove(root,score,playerNbr);
-        //paranoid
-        float score = paranoidSearch(root,maxDepth,playerNbr,Float.MIN_VALUE,Float.MAX_VALUE);
-        Move bestMove = getpBestMove(root,score,playerNbr);
+        Move bestMove = null;
+
+        long start = System.currentTimeMillis(); //start of the timer
+        if(players[playerNbr-1].getPiecesUsed().size()<7){
+            //maxN
+            float[] score = maxN(root,maxDepth,playerNbr,Float.MIN_VALUE);
+            bestMove = getBestMove(root,score,playerNbr);
+            System.out.println("MOVE DONE USING MAX-N");
+        }else{
+            //paranoid
+            float score = paranoidSearch(root,maxDepth,playerNbr,Float.MIN_VALUE,Float.MAX_VALUE);
+            bestMove = getpBestMove(root,score,playerNbr);
+            System.out.println("MOVE DONE USING PARANOID");
+        }
+        long stop = System.currentTimeMillis()-start ;//start of the timer
+        System.out.println(stop + "millisecond(s)");
+
         return bestMove;
     }
 
@@ -155,15 +166,14 @@ public class MiniMax {
 
 
     private float paranoidSearch(MiniMaxNode node, int depth, int playerNbr, float alpha, float beta) {
-        System.out.println("player = " + playerNbr + " ,depth = "+depth);
         if(depth<=0){
             if(playerNbr==rootPlayerNbr) {
-                node.setpScore(getScore(node)[rootPlayerNbr-1]);
+                node.setpScore(getPScore(node));
                 return node.getpScore();
             }else{
                 System.out.println("STOP RECURSION COND., not possible, smth wrong");
                 //never here because we never reach a terminal node that is not the root player
-                node.setpScore(-getScore(node)[rootPlayerNbr-1]);
+                node.setpScore(-getPScore(node));
                 return node.getpScore();
             }
         }
@@ -188,10 +198,11 @@ public class MiniMax {
             if(firstTurn){
                 players[playerNbr-1].setFirstMove(true);
             }
+            //System.out.println("alpha = " + alpha + " , beta = " + beta);
             if(alpha>=beta){
-                System.out.println("cutoff : " + node.getMove().getPiece().toString());
-                node.setKillerMoves(newNode.getMove());
-                checkToAddToCutOff(newNode.getMove());
+                //System.out.println("cutoff");
+//                node.setKillerMoves(newNode.getMove());
+//                checkToAddToCutOff(newNode.getMove());
                 node.setpScore(beta);
                 return beta;
             }
@@ -417,6 +428,68 @@ public class MiniMax {
         return score;
     }
 
+    public float getPScore(MiniMaxNode node){
+        int state = node.getPlayer().getPiecesUsed().size();
+        float blockScoreW, cornerScoreW, areaScoreW, cornerBlockedW;// *weight* of different attribute
+
+        if(state<6){
+            blockScoreW=0.5f; cornerScoreW=0.3f; areaScoreW = 0.15f; cornerBlockedW = 0.05f;
+        }else if(state>=6&&state<13){
+            blockScoreW=0.15f; cornerScoreW=0.4f; areaScoreW = 0.05f; cornerBlockedW = 0.4f;
+        }else{
+            blockScoreW=0.2f; cornerScoreW=0.4f; areaScoreW = 0.2f; cornerBlockedW = 0.4f;
+        }
+        float nbrOfBlocks = 0;
+        for (int i = 0; i < board.boardArray.length; i++) {
+            for (int j = 0; j < board.boardArray[i].length; j++) {
+                if(board.boardArray[i][j]==node.getPlayer().getPlayerNumber()){
+                    nbrOfBlocks++;
+                }
+            }
+        }
+
+        float nbrOfCorners = board.getCorner(node.getPlayer().getStartingCorner()).size();
+
+        int farestX = Integer.MIN_VALUE;
+        int farestY = Integer.MIN_VALUE;
+
+        for (Corner corner : board.getCorner(node.getPlayer().getStartingCorner())) {
+            if (corner.getPosition().get_x() > farestX) farestX = corner.getPosition().get_x();
+            if (corner.getPosition().get_y() > farestY) farestY = corner.getPosition().get_y();
+        }
+        float area = (float) Math.sqrt((Math.pow(farestX - node.getPlayer().getStartingCorner().get_x(), 2) + Math.pow(farestY - node.getPlayer().getStartingCorner().get_y(), 2)));
+
+        Piece piece = node.getMove().getPiece();
+        int[][] shape = piece.getShape();
+        Vector2d position = node.getMove().getPosition();
+
+        int blockCornerNumber = 0;
+        for (int i = 0; i < shape.length; i++){
+            for (int j = 0; j < shape[0].length; j++){
+                if (shape[i][j] != 0){
+                    int nbrCornersBlocked = isDiffPlayerToCorner(i + position.get_y(), j + position.get_x(), board,node.getPlayer().getPlayerNumber());
+                    blockCornerNumber+=nbrCornersBlocked;
+                }
+            }
+        }
+        float blockedCorner = blockCornerNumber;
+
+        /*//NORMALIZATION
+        float[] scores = {nbrOfBlocks,nbrOfCorners,area,blockedCorner};
+        float max = Float.MAX_VALUE;
+        for (int i = 0; i < scores.length; i++) {
+            if(scores[i]>max){
+                max = scores[i];
+            }
+        }
+        for (int i = 0; i < scores.length; i++) {
+            scores[i] = scores[i]/max;
+        }*/
+
+        return (nbrOfBlocks*blockScoreW)+(nbrOfCorners*cornerScoreW)+(area*areaScoreW)+(blockedCorner*cornerBlockedW);
+
+    }
+
 
     /**
      * used to get the Score of the node for each player
@@ -462,8 +535,8 @@ public class MiniMax {
         Player p3 = new HumanPlayer(3, "jo2");
         Player p4 = new HumanPlayer(4, "notJo2");
         p1.setStartingCorner(new Vector2d(0, 0));
-        p2.setStartingCorner(new Vector2d(19, 0));
-        //p2.setStartingCorner(new Vector2d(19, 19));
+        //p2.setStartingCorner(new Vector2d(19, 0));
+        p2.setStartingCorner(new Vector2d(19, 19));
         p3.setStartingCorner(new Vector2d(19, 19));
         p4.setStartingCorner(new Vector2d(0, 19));
         p1.setPiecesList(PieceFactory.get().getAllPieces());
@@ -471,17 +544,14 @@ public class MiniMax {
         p3.setPiecesList(PieceFactory.get().getAllPieces());
         p4.setPiecesList(PieceFactory.get().getAllPieces());
 
-        Board b = new Board(new Player[]{p1, p2,p3,p4});
-        MiniMax m = new MiniMax(new Player[]{p1,p2,p3,p4},b);
+        Board b = new Board(new Player[]{p1, p2});
+        MiniMax m = new MiniMax(new Player[]{p1,p2},b);
 
         int i= 0;
         while(i<15){
-            long start = System.currentTimeMillis(); //start of the timer
             Move move1 = m.getMove(p1.getPlayerNumber());
             if(move1.makeMove(b)) p1.removePiece(move1.getPiece().getLabel());
             b.print();
-            long stop = System.currentTimeMillis()-start ;//start of the timer
-            System.out.println(stop/1000 + "second(s)");
 
 
             Move move2 = m.getMove(p2.getPlayerNumber());
