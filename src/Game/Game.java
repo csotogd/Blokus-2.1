@@ -116,9 +116,9 @@ public class Game extends Application {
                 players[i-1]=new MCPlayer(i,playersName[i-1]);
             }else if(playerType.equals("Genetic Player")){
                 players[i-1]=new GeneticPlayer(i);
-            }else if(playerType.equals("MiniMax Player")){
+            }else if(playerType.equals("MiniMax-MaxN Player")||playerType.equals("MiniMax-Paranoid Player")){
                 players[i-1]=new MiniMaxPlayer(i);
-            }else if(playerType.equals("GAMCplayer")){
+            }else if(playerType.equals("GAMC Player")){
                 players[i-1]=new GAMCplayer(i);
             }
             players[i-1].setColor(colors[i-1]);
