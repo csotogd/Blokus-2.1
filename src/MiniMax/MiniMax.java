@@ -47,7 +47,7 @@ public class MiniMax {
         Move bestMove = null;
 
         long start = System.currentTimeMillis(); //start of the timer
-        if(players[playerNbr-1].getPiecesUsed().size()<7){
+        if(players[playerNbr-1].getPiecesUsed().size()<0){
             //maxN
             float[] score = maxN(root,maxDepth,playerNbr,Float.MIN_VALUE);
             bestMove = getBestMove(root,score,playerNbr);
@@ -201,8 +201,8 @@ public class MiniMax {
             //System.out.println("alpha = " + alpha + " , beta = " + beta);
             if(alpha>=beta){
                 //System.out.println("cutoff");
-//                node.setKillerMoves(newNode.getMove());
-//                checkToAddToCutOff(newNode.getMove());
+                node.setKillerMoves(newNode.getMove());
+                checkToAddToCutOff(newNode.getMove());
                 node.setpScore(beta);
                 return beta;
             }

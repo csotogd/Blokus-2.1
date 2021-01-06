@@ -75,7 +75,7 @@ public class Game extends Application {
         stage.setTitle("Blokus Game Group 15");
         Scene scene = new Scene(root, 1000, 1000);
         stage.setScene(scene);
-        stage.setFullScreen(true);
+        stage.setMaximized(true);
         stage.show();
     }
 

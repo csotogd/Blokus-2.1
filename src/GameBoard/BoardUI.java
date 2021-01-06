@@ -608,7 +608,7 @@ public class BoardUI{
                 Point2D coordinates = gameBoardRep.localToScene(bounds.getMinX(), bounds.getMinY());
 
                 //System.out.println(coordinates.getX()+ " "+coordinates.getY());
-                Vector2d position = new Vector2d((int)((MousePosX-coordinates.getX())/27),(int)((MousePosY-coordinates.getY())/27));
+                Vector2d position = new Vector2d((int)((MousePosX-coordinates.getX())/27),(int)((MousePosY-coordinates.getY())/27)-1);
                 //System.out.println(position.get_x() + "  " + position.get_y());
                 //System.out.println("starting corner: "+actualPlayer.getStartingCorner().get_x()+" "+actualPlayer.getStartingCorner().get_y());
 
