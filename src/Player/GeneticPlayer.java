@@ -249,7 +249,7 @@ public class GeneticPlayer extends BotPlayer {
         //If there are no legal moves left, skip this turn
         if (moves.isEmpty()){
             player.setSkippedLastMove(true);
-            //Maybe noonemoved here
+
             if (noOneMoved(board.getPlayers())){
                 //Maybe some score business
                 int points = 0;
@@ -301,9 +301,6 @@ public class GeneticPlayer extends BotPlayer {
             score += biggestPiece(currentWeights[3], move, board);
             score += farFromStartingCorner(currentWeights[4], move, board);
 
-            //Maybe add score of player moves and substract score of opponent moves
-            //Maybe calculate the highest score and return that move
-
             //Track whether it's the first move
             boolean moveNbrOne = player.isFirstMove();
             //Perform move
@@ -313,15 +310,9 @@ public class GeneticPlayer extends BotPlayer {
 
             //Do recursive call
             score -= expandAndEvaluate(board, nextPlayer, depth);
-            /*if (nextPlayerNbr != this.getPlayerNumber()){
-                score -= temp;
-            } else {
-                score += temp;
-            }//does this also work for opponents?*/
 
             //Undo move
             move.removePieceFromBoard(board);
-            //Maybe have to restore player.firstMove if it was their first move?
             player.setFirstMove(moveNbrOne);
             usedPiece.setUsed(false);
             player.getMoveLog().pop();
@@ -332,12 +323,10 @@ public class GeneticPlayer extends BotPlayer {
                 bestMove = move;
             }
         }
-        //return only the score of the best move
 
-        //Also, think of a way to return only the best move from the "root"
-        //this, maybe?
         chosenMove = bestMove;
 
+        //return only the score of the best move
         return maxScore;
     }
 
