@@ -55,6 +55,7 @@ public class MiniMax {
         }else{
             //paranoid
             float score = paranoidSearch(root,maxDepth,playerNbr,Float.MIN_VALUE,Float.MAX_VALUE);
+            System.out.println("best score = " + score);
             bestMove = getpBestMove(root,score,playerNbr);
             System.out.println("MOVE DONE USING PARANOID");
         }
@@ -429,7 +430,7 @@ public class MiniMax {
     }
 
     public float getPScore(MiniMaxNode node){
-        int state = node.getPlayer().getPiecesUsed().size();
+        int state = players[rootPlayerNbr-1].getPiecesUsed().size();
         float blockScoreW, cornerScoreW, areaScoreW, cornerBlockedW;// *weight* of different attribute
 
         if(state<6){
@@ -442,22 +443,22 @@ public class MiniMax {
         float nbrOfBlocks = 0;
         for (int i = 0; i < board.boardArray.length; i++) {
             for (int j = 0; j < board.boardArray[i].length; j++) {
-                if(board.boardArray[i][j]==node.getPlayer().getPlayerNumber()){
+                if(board.boardArray[i][j]==players[rootPlayerNbr-1].getPlayerNumber()){
                     nbrOfBlocks++;
                 }
             }
         }
 
-        float nbrOfCorners = board.getCorner(node.getPlayer().getStartingCorner()).size();
+        float nbrOfCorners = board.getCorner(players[rootPlayerNbr-1].getStartingCorner()).size();
 
         int farestX = Integer.MIN_VALUE;
         int farestY = Integer.MIN_VALUE;
 
-        for (Corner corner : board.getCorner(node.getPlayer().getStartingCorner())) {
+        for (Corner corner : board.getCorner(players[rootPlayerNbr-1].getStartingCorner())) {
             if (corner.getPosition().get_x() > farestX) farestX = corner.getPosition().get_x();
             if (corner.getPosition().get_y() > farestY) farestY = corner.getPosition().get_y();
         }
-        float area = (float) Math.sqrt((Math.pow(farestX - node.getPlayer().getStartingCorner().get_x(), 2) + Math.pow(farestY - node.getPlayer().getStartingCorner().get_y(), 2)));
+        float area = (float) Math.sqrt((Math.pow(farestX - players[rootPlayerNbr-1].getStartingCorner().get_x(), 2) + Math.pow(farestY - players[rootPlayerNbr-1].getStartingCorner().get_y(), 2)));
 
         Piece piece = node.getMove().getPiece();
         int[][] shape = piece.getShape();
@@ -467,7 +468,7 @@ public class MiniMax {
         for (int i = 0; i < shape.length; i++){
             for (int j = 0; j < shape[0].length; j++){
                 if (shape[i][j] != 0){
-                    int nbrCornersBlocked = isDiffPlayerToCorner(i + position.get_y(), j + position.get_x(), board,node.getPlayer().getPlayerNumber());
+                    int nbrCornersBlocked = isDiffPlayerToCorner(i + position.get_y(), j + position.get_x(), board,players[rootPlayerNbr-1].getPlayerNumber());
                     blockCornerNumber+=nbrCornersBlocked;
                 }
             }
