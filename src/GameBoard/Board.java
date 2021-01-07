@@ -286,4 +286,8 @@ public class Board{
     public int getBoardDimension(){
         return this.DIMENSION;
     }
+
+    public Player[] getPlayers() {
+        return players;
+    }
 }

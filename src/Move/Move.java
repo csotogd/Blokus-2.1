@@ -270,6 +270,15 @@ public class Move {
         return false;
         }
 
+    public void removePieceFromBoard(Board board){
+        for (int i = 0; i < piece.getShape().length; i++) {
+            for (int j = 0; j < piece.getShape()[0].length; j++) {
+                if (piece.getShape()[i][j] != 0)
+                    board.boardArray[position.get_y() + i][position.get_x() + j] = 0;
+            }
+        }
+    }
+
     public Player getPlayer() {
         return player;
     }

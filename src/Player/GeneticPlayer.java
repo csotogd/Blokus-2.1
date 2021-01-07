@@ -7,8 +7,6 @@ import Move.Move;
 import Tools.Vector2d;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class GeneticPlayer extends BotPlayer {
@@ -167,6 +165,18 @@ public class GeneticPlayer extends BotPlayer {
        //while we code all the different strategies, make this call the one you want to try
         //System.out.println("In calculate move for genetic algorithm");
 
+
+        int depth = phase+1;
+
+        //New method test
+        chosenMove = null;
+        expandAndEvaluate(board.clone(), this, depth);
+        if (chosenMove.getPlayer() != this){
+            System.out.println("huh, maybe this player has no moves left?");
+        }
+        chosenMove.print();
+
+
         float bestScore = -1000;
         ArrayList<Move> bestMoves = new ArrayList<Move>();
 
@@ -208,10 +218,160 @@ public class GeneticPlayer extends BotPlayer {
             bestMove = bestMoves.get(0);
         }
 
-        return bestMove;
+        return chosenMove;
     }
 
-    //return type can be changed
+
+    private Move chosenMove = null;
+    /**
+     * Recursive method
+     * ...
+     * @param player
+     * @param depth
+     */
+    protected float expandAndEvaluate(Board board, Player player, int depth){
+
+        //TODO: Make it able to be reused by Carlos
+
+        //Recursion business
+        depth--;
+        if (depth == -1){
+            return 0;
+        }
+
+        int nextPlayerNbr = player.getPlayerNumber() + 1;
+        if (nextPlayerNbr > board.getNumberOfPlayers()){
+            nextPlayerNbr = 1;
+        }
+        Player nextPlayer = board.getPlayers()[nextPlayerNbr - 1];
+
+        ArrayList<Move> moves = player.possibleMoveSet(board);
+        //If there are no legal moves left, skip this turn
+        if (moves.isEmpty()){
+            player.setSkippedLastMove(true);
+            //Maybe noonemoved here
+            if (noOneMoved(board.getPlayers())){
+                //Maybe some score business
+                int points = 0;
+                for (Player p : board.getPlayers()){
+                    if (p.getPlayerNumber() == player.getPlayerNumber()) {
+                        points += countPointsPlayer(p);
+                    } else{
+                        points -= countPointsPlayer(p);
+                    }
+                }
+
+                player.setSkippedLastMove(false);
+                return points;//maybe *100 because points are the most important thing?
+            }
+
+            //Go to next player (they might still have moves)
+            float points = expandAndEvaluate(board, nextPlayer, depth);
+            player.setSkippedLastMove(false);
+            return points;
+        }
+
+        ArrayList<Piece> pieces = (ArrayList<Piece>) player.getPiecesList();
+
+        float maxScore = -100000;
+        Move bestMove = null;
+
+        for (Move move : moves){
+            //We have to pick out the used piece like this, because possibleMoveSet() returns cloned objects.
+            //This way we can better keep track of which pieces have been used
+            String pieceLabel = move.getPiece().getLabel();
+            Piece usedPiece = null;
+            for (Piece piece : pieces){
+                if (piece.getLabel().equals(pieceLabel)){
+                    usedPiece = piece;
+                    break;
+                }
+            }
+            //If the piece in this move is already used, we can't use it again
+            if (usedPiece.isUsed()){
+                continue;
+            }
+
+            //Scoring business
+            //Have to check whether the scoring will still work when calculating for different players
+            float score = 0;
+            score += addsMostCorners(currentWeights[0], move, board);
+            score += blocksMostCorners(currentWeights[1], move, board);
+            score += closestToMiddle(currentWeights[2], move, board);
+            score += biggestPiece(currentWeights[3], move, board);
+            score += farFromStartingCorner(currentWeights[4], move, board);
+
+            //Maybe add score of player moves and substract score of opponent moves
+            //Maybe calculate the highest score and return that move
+
+            //Track whether it's the first move
+            boolean moveNbrOne = player.isFirstMove();
+            //Perform move
+            move.writePieceIntoBoard(board);
+            usedPiece.setUsed(true);
+            player.getMoveLog().push(move);
+
+            //Do recursive call
+            score -= expandAndEvaluate(board, nextPlayer, depth);
+            /*if (nextPlayerNbr != this.getPlayerNumber()){
+                score -= temp;
+            } else {
+                score += temp;
+            }//does this also work for opponents?*/
+
+            //Undo move
+            move.removePieceFromBoard(board);
+            //Maybe have to restore player.firstMove if it was their first move?
+            player.setFirstMove(moveNbrOne);
+            usedPiece.setUsed(false);
+            player.getMoveLog().pop();
+
+            //check whether this is currently the best move
+            if (score > maxScore){
+                maxScore = score;
+                bestMove = move;
+            }
+        }
+        //return only the score of the best move
+
+        //Also, think of a way to return only the best move from the "root"
+        //this, maybe?
+        chosenMove = bestMove;
+
+        return maxScore;
+    }
+
+    protected boolean noOneMoved(Player[] players){
+        for (Player player: players){
+            if(!player.getSkippedLastMove())
+                return false;
+        }
+        return true;
+    }
+
+    public int countPointsPlayer(Player player){
+        System.out.println("sim end");
+        int points=0;
+        int piecesPlaced=0;
+        for (Piece piece : player.getPiecesList()){
+            if (piece.isUsed()){
+                piecesPlaced++;
+            } else{
+                points -= piece.getNumberOfBlocks();
+            }
+        }
+
+        if (piecesPlaced == 21){//if I check if number of unused pieces is 0, the size might be 1 when it should be 0 cause the deletion is done in the ui logic after the make move...but just maybe, I have not checked
+            Piece lastPiece = player.getMoveLog().peek().getPiece();
+            if(lastPiece.getNumberOfBlocks() == 1)
+                points+=20;
+            else
+                points+=15;
+
+        }
+
+        return points;
+    }
 
 
     protected float blocksMostCorners(float weight, Move move, Board board){
