@@ -1,5 +1,6 @@
 package MiniMax;
 
+import DataBase.Data;
 import DataBase.Piece;
 import DataBase.PieceFactory;
 import GameBoard.Board;
@@ -47,7 +48,7 @@ public class MiniMax {
         Move bestMove = null;
 
         long start = System.currentTimeMillis(); //start of the timer
-        if(players[playerNbr-1].getPiecesUsed().size()<0){
+        if(Data.getPlayerTypes()[rootPlayerNbr-1]=="MiniMax-MaxN Player"){
             //maxN
             float[] score = maxN(root,maxDepth,playerNbr,Float.MIN_VALUE);
             bestMove = getBestMove(root,score,playerNbr);
@@ -67,8 +68,7 @@ public class MiniMax {
 
     private Move getpBestMove(MiniMaxNode root,float score,int rootPlayerNbr){
         for(MiniMaxNode c: root.getChildren()) {
-            System.out.println(c.getpScore());
-            if (c.getpScore()==score) return new Move(players[rootPlayerNbr-1],c.getMove().getPiece(), c.getMove().getPosition());
+            if (c.getpScore()==-score) return new Move(players[rootPlayerNbr-1],c.getMove().getPiece(), c.getMove().getPosition());
         }
         System.out.println("oops"+root.getChildren().size());
         return null;
@@ -202,8 +202,10 @@ public class MiniMax {
             //System.out.println("alpha = " + alpha + " , beta = " + beta);
             if(alpha>=beta){
                 //System.out.println("cutoff");
-                node.setKillerMoves(newNode.getMove());
-                checkToAddToCutOff(newNode.getMove());
+                if(playerNbr==rootPlayerNbr){
+                    node.setKillerMoves(newNode.getMove());
+                    checkToAddToCutOff(newNode.getMove());
+                }
                 node.setpScore(beta);
                 return beta;
             }
