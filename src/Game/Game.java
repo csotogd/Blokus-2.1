@@ -16,15 +16,14 @@ import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import DataBase.*;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -220,20 +219,30 @@ public class Game extends Application {
 
         if (state== GameState.END){
             countPoints();
-            System.out.println("THE GAME HAS ENDED");
-            VBox dialogVbox = new VBox(20);
-            Text end = new Text("GAME END");
-            end.setFill(Color.WHITE);
-            dialogVbox.getChildren().add(end);
+
+            int bestPts = Integer.MIN_VALUE;
+            String winner = "";
+            Color winnerColor = Color.WHITE;
+            for (Player player:players) {
+                if(player.getPoints()>bestPts){
+                    bestPts = player.getPoints();
+                    winner = player.getName();
+                    winnerColor = player.getColor();
+                }
+            }
+            Text win = new Text("GAME END - The winner is " + winner);
+            win.setFill(winnerColor);
+
+            VBox scores = new VBox(20);
             for (Player player:players) {
                 Text score = new Text();
                 score.setFill(player.getColor());
                 score.setText(player.getName() + " score: " + player.getPoints());
-                dialogVbox.getChildren().add(score);
+                scores.getChildren().add(score);
             }
+
             Button restartButton = new Button("Back to Menu");
             restartButton.setOnAction(new EventHandler<ActionEvent>() {
-
                 @Override
                 public void handle(ActionEvent event) {
                     try {
@@ -243,26 +252,30 @@ public class Game extends Application {
                     }
                 }
             });
-            GridPane pane = new GridPane();
-            pane.add(boardUI.pieceOfPlayer(0),0,0);
-            if(players.length==4){
-                pane.add(boardUI.pieceOfPlayer(1),0,1);
-                pane.add(boardUI.pieceOfPlayer(2),0,2);
-                pane.add(boardUI.pieceOfPlayer(3),0,3);
-            }else{
-                pane.add(boardUI.pieceOfPlayer(1),0,1);
-            }
-            pane.setDisable(true);
-            Pane pane1 = new FlowPane();
-            pane1.setBackground(Data.createBackGround());
-            pane1.getChildren().add(dialogVbox);
-            pane1.getChildren().add(restartButton);
-            pane1.getChildren().add(boardUI.principal);
-            pane1.getChildren().add(pane);
-            Scene dialogScene = new Scene(pane1, 1000, 1000);
-            stage.setScene(dialogScene);
-            stage.show();
 
+            GridPane pieces = new GridPane();
+            pieces.add(boardUI.pieceOfPlayer(0),0,0);
+            if(players.length==4){
+                pieces.add(boardUI.pieceOfPlayer(1),0,1);
+                pieces.add(boardUI.pieceOfPlayer(2),0,2);
+                pieces.add(boardUI.pieceOfPlayer(3),0,3);
+            }else{
+                pieces.add(boardUI.pieceOfPlayer(1),0,1);
+            }
+            pieces.setDisable(true);
+
+            BorderPane principal = new BorderPane();
+            principal.setBackground(Data.createBackGround());
+            principal.setTop(win);
+            principal.setLeft(scores);
+            principal.setCenter(boardUI.principal);
+            principal.setBottom(restartButton);
+            principal.setRight(pieces);
+
+            Scene endScene = new Scene(principal, 1000, 800);
+            stage.setScene(endScene);
+            stage.setMaximized(true);
+            stage.show();
         }
     }
 
