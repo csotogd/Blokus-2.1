@@ -15,6 +15,8 @@ public class GeneticPlayer extends BotPlayer {
     public static final int NUMBER_OF_PHASES = 2;
     private int turn = 1;
     private int phase = 0;
+    private int customDepth;
+    private boolean depthIsCustom = false;
 
     /*
     weights[0] = addMostCorners
@@ -144,7 +146,14 @@ public class GeneticPlayer extends BotPlayer {
         //System.out.println("Phase" +phase);
     }
 
+    public void setDepth(int depth){
+        customDepth = depth;
+        depthIsCustom = true;
+    }
 
+    public void setDepthToDefault(){
+        depthIsCustom = false;
+    }
 
     /*
      *
@@ -167,6 +176,9 @@ public class GeneticPlayer extends BotPlayer {
 
 
         int depth = phase+1;
+        if (depthIsCustom){
+            depth = customDepth;
+        }
 
         //New method test
         chosenMove = null;
