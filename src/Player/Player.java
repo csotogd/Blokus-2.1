@@ -408,7 +408,7 @@ public abstract class Player {
 
         ArrayList<Corner> cornersOnBoard = board.getCorner(this.getStartingCorner());
         for (Piece piecetoClone: this.getPiecesList()){
-            if(piecesList.size()>numMoves&&piecetoClone.getNumberOfBlocks()<=3) return moveSet;
+            if(moveSet.size()>numMoves && piecetoClone.getNumberOfBlocks()<=3) return moveSet;
             boolean notPlaced = true;
             if (!piecetoClone.isUsed()) {
                 Piece piece = piecetoClone.clone(); // we clone it cause we rotate it and we do not want that to affect the real piece displayed
