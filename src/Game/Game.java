@@ -7,6 +7,7 @@ import javafx.concurrent.Task;
 import GameBoard.Board;
 import GameBoard.BoardUI;
 import MonteCarlo.MonteCarlo;
+import MonteCarlo.MCTS;
 import Move.Move;
 import Player.*;
 import Tools.Vector2d;
@@ -22,8 +23,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import DataBase.*;
 
-import javax.swing.*;
-import java.awt.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,6 +91,7 @@ public class Game extends Application {
         miniMax = new MiniMax(players,board);
         for(Player p: players) if(p instanceof GAMCplayer) ((GAMCplayer) p).setMc(new MonteCarlo(players, board));
         else if(p instanceof MCPlayer)((MCPlayer) p).setMc(new MonteCarlo(players, board));
+        else if(p instanceof MCTSplayer)((MCTSplayer) p).setMcts(new MCTS(players, board));
         if (actualPlayer instanceof HumanPlayer)
             state = GameState.HUMAN_MOVE;
         else {
@@ -119,6 +120,8 @@ public class Game extends Application {
                 players[i-1]=new MiniMaxPlayer(i);
             }else if(playerType.equals("GAMC Player")){
                 players[i-1]=new GAMCplayer(i);
+            }else if(playerType.equals("Monte Carlo Tree Player")){
+                players[i-1]=new MCTSplayer(i);
             }
             players[i-1].setColor(colors[i-1]);
             players[i-1].setName(playersName[i-1]);
@@ -303,6 +306,8 @@ public class Game extends Application {
                             move = ((MCPlayer) actualPlayer).getMc().simulation(actualPlayer.getNumber()-1, timeLimit);
                         }else if(actualPlayer instanceof MiniMaxPlayer){
                             move = miniMax.getMove(actualPlayer.getPlayerNumber());
+                        }else if(actualPlayer instanceof MCTSplayer){
+                            move = ((MCTSplayer) actualPlayer).getMcts().simulation(actualPlayer.getNumber()-1, timeLimit);
                         }
                         return move;
                     }
