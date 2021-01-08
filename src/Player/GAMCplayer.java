@@ -54,7 +54,7 @@ public class GAMCplayer extends GeneticPlayer {
         for (Move move : super.possibleMoveSet(board)) { //compute the score of each possible move
             float score = 0;
             //the weights is what we will calculate in the genetic algorithm
-            score += addsMostCorners(currentWeights[0], move, board);
+            score += addsMostCorners(currentWeights[0], move, board, this);
             score += blocksMostCorners(currentWeights[1], move, board);
             score += closestToMiddle(currentWeights[2], move, board);
             score += biggestPiece(currentWeights[3], move, board);

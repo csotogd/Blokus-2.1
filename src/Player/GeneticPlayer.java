@@ -312,7 +312,7 @@ public class GeneticPlayer extends BotPlayer {
             //Scoring business
             //Have to check whether the scoring will still work when calculating for different players
             float score = 0;
-            score += addsMostCorners(currentWeights[0], move, board);
+            score += addsMostCorners(currentWeights[0], move, board, player);
             score += blocksMostCorners(currentWeights[1], move, board);
             score += closestToMiddle(currentWeights[2], move, board);
             score += biggestPiece(currentWeights[3], move, board);
@@ -554,7 +554,7 @@ public class GeneticPlayer extends BotPlayer {
     }
 
     //TODO TESTING
-    protected float addsMostCorners(float weight, Move move, Board board) {
+    protected float addsMostCorners(float weight, Move move, Board board, Player player) {
 
         //for every move, see how many corners would be added.
 
@@ -578,7 +578,7 @@ public class GeneticPlayer extends BotPlayer {
                     if (board.boardArray[toCornerPosition.get_y()][toCornerPosition.get_x()] == 0){
                         addedFreeCorners++; //if the corner is empty and free to use
                     }
-                    else if(board.boardArray[toCornerPosition.get_y()][toCornerPosition.get_x()]==this.number){
+                    else if(board.boardArray[toCornerPosition.get_y()][toCornerPosition.get_x()]==player.getPlayerNumber()){
                         addedFreeCorners--; //you blocked a self-corner, at least one is blocked to put the piece there
                         //you might be adding a piece with 6 blocking corners, then that is a negative score
                        // System.out.println("blocked self corner");
