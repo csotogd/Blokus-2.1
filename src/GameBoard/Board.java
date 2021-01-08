@@ -41,9 +41,6 @@ public class Board{
 
         Piece pieceCloned = piece.clone(); // we clone it cause we rotate it and we do not want that to affect the real piece displayed
         for (int i = 0; i < pieceCloned.getTotalConfig(); i++) { //TODO calculate only for permutations of a piece, for instance 1 instead of 4
-            pieceCloned.rotateLeft(); //try all possible rotations
-            //get all the corners for that piece.
-            if (i == pieceCloned.getNbRotation() - 1) pieceCloned.rotateUpsideDown(); //TODO is done, but have to be tested
             if (player.isFirstMove()) { //if we only need to check the starting corner:
                 Vector2d adjust = new Vector2d(0,0);
                 if(player.getStartingCorner().get_x()!=0) adjust.set_x(piece.getShape()[0].length-1);
@@ -53,7 +50,7 @@ public class Board{
                     return true;
                 }
             }else {
-                for (Corner pieceCorner : pieceCloned.getCornersContacts(new Vector2d(0, 0))) {
+                for (Corner pieceCorner : pieceCloned.getCorners().get(pieceCloned.getCurrentState())) {
                     //piece.printShape();
                     Move firstMove = new Move(player, pieceCloned, player.getStartingCorner());
                     if (firstMove.isAllowed(this))
@@ -77,6 +74,9 @@ public class Board{
                     }
                 }
             }
+            pieceCloned.rotateRight(); //try all possible rotations
+            //get all the corners for that piece.
+            if (i == pieceCloned.getNbRotation() - 1) pieceCloned.rotateUpsideDown(); //TODO is done, but have to be tested
         }
         return false;
     }

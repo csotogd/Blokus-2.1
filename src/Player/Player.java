@@ -1,6 +1,5 @@
 package Player;
 
-import DataBase.Data;
 import DataBase.Piece;
 import DataBase.PieceFactory;
 import GameBoard.Board;
@@ -23,6 +22,7 @@ public abstract class Player {
     protected int points=0;
     protected boolean firstMove; // first time the player plays, he can place a piece in his starting corner
     protected Stack <Move> moveLog = new Stack<>();
+    protected List<Piece> unplayablePiece;
 
     public boolean isFirstMove() {
         if(firstMove) return true;
@@ -399,5 +399,54 @@ public abstract class Player {
         if(number!=o.getNumber()) return false;
         if(piecesList.size()!=o.getPiecesList().size()) return false;
         return true;
+    }
+
+    public List<Move> possibleMoveSetUpdate(Board board, int numMoves) {
+        unplayablePiece = new ArrayList<>();
+        ArrayList<Move> moveSet=new ArrayList<>();
+
+        ArrayList<Corner> cornersOnBoard = board.getCorner(this.getStartingCorner());
+        for (Piece piecetoClone: this.getPiecesList()){
+            if(piecesList.size()>numMoves&&piecetoClone.getNumberOfBlocks()<=3) return moveSet;
+            boolean notPlaced = true;
+            if (!piecetoClone.isUsed()) {
+                Piece piece = piecetoClone.clone(); // we clone it cause we rotate it and we do not want that to affect the real piece displayed
+                for (int i = 0; i < piece.getTotalConfig(); i++) {
+                    //get all the corners for that piece.
+                    if(this.isFirstMove()) {
+                        Vector2d adjust = new Vector2d(0,0);
+                        if(startingCorner.get_x()!=0) adjust.set_x(piece.getShape()[0].length-1);
+                        if(startingCorner.get_y()!=0) adjust.set_y(piece.getShape().length-1);
+                        Move firstMove = new Move(this, piece.clone(), startingCorner.subtract(adjust));
+                        if (firstMove.isAllowed(board)) {
+                            moveSet.add(firstMove);
+                            notPlaced=false;
+                        }
+                    }else
+                        for (Corner pieceCorner : piece.getCorners().get(piece.getCurrentState())) {
+                            for (Corner corner : cornersOnBoard) {
+                                for (Vector2d emptyCorner : corner.getToCornerPositions()) { //for all the possible empty squares that would become corner contact
+                                    //move the piece so that it is contact with the corner with the part of it we want
+                                    Vector2d positionOfPiece= emptyCorner.subtract(pieceCorner.getPosition());
+                                    Move move = new Move(this, piece.clone(), positionOfPiece);
+                                    if (move.isAllowed(board)) {
+                                        moveSet.add(move);
+                                        notPlaced=false;
+                                    }
+                                }
+
+                            }
+                        }
+                    piece.rotateRight();
+                    if(i==piece.getNbRotation()-1) piece.rotateUpsideDown();
+                }
+            }
+            if(notPlaced) unplayablePiece.add(piecetoClone);
+        }
+        return moveSet;
+    }
+
+    public List<Piece> getUnplayablePiece() {
+        return unplayablePiece;
     }
 }

@@ -104,6 +104,22 @@ public class Node {
     }
 
     /**
+     * Expand with GA moves a state
+     * @param player the player for which we want to expand the moves
+     * @return true if it was successful, false otherwise
+     */
+    public boolean GAExpand(Player player, int numMoves){
+        Player p = players[player.getPlayerNumber()-1];
+        List<Move> moveset = p.possibleMoveSet(state);
+        for(int i=0;i<numMoves;i++){
+            Node n = new Node(this,p.randomPossibleMoveClone(state, p.getPiecesList()));
+            if(!children.contains(n)&&n.getMove()!=null) children.add(n);
+        }
+        if(children.size()>0) return true;
+        return false;
+    }
+
+    /**
      * Expand with random moves bias towards bigger piece
      * @param player the player for which we want to expand the moves
      * @return true if it was successful, false otherwise
@@ -199,7 +215,7 @@ public class Node {
     public double simulation(int playerturn, int playerOfInterest){
         initializeNode();// make the move, copy players
         int countPass=0; //number of time a player has passed during a simulation
-        Board board = state.clone(); //clone the board
+        Board board = state; //clone the board
         //   Player[] temp = new Player[players.length];//clone the players
         //   for(Player p : players) temp[p.getPlayerNumber()-1]=p.clone();
         boolean[] passed = new boolean[players.length];
@@ -255,6 +271,7 @@ public class Node {
         }
         result = parent.getPlayers();
         result[move.getPlayer().getPlayerNumber()-1].removePiece(move.getPiece().getLabel());
+        result[move.getPlayer().getPlayerNumber()-1].setFirstMove(false);
         return result;
     }
 
