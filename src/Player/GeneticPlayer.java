@@ -155,12 +155,11 @@ public class GeneticPlayer extends BotPlayer {
         depthIsCustom = false;
     }
 
-    /*
+    /**
      *
+     * @param board The state for which the ai will try to find a move
      * @return the move chosen by the ai
      */
-
-
     public Move calculateMove(Board board){
         determinePhase();
         //System.out.println("in turn "+turn + "weights");
@@ -188,7 +187,7 @@ public class GeneticPlayer extends BotPlayer {
         }
         chosenMove.print();
 
-
+        /*
         float bestScore = -1000;
         ArrayList<Move> bestMoves = new ArrayList<Move>();
 
@@ -208,7 +207,7 @@ public class GeneticPlayer extends BotPlayer {
             weights[2] = closestToMiddle
             weights[3] = biggestPiece
             weights[4] = farFromStartingPoint
-             */
+             *//*
 
             if (score == bestScore){
                 bestMoves.add(move);
@@ -228,18 +227,24 @@ public class GeneticPlayer extends BotPlayer {
             //System.out.println("There is no best move, or every moves' score is 0");
         } else {
             bestMove = bestMoves.get(0);
-        }
+        }*/
 
         return chosenMove;
     }
 
 
+    //This variable is used to track which move eventually gets chosen
     private Move chosenMove = null;
     /**
      * Recursive method
-     * ...
-     * @param player
-     * @param depth
+     * This method goes through all possible moves from the given player. For each move, it calculates a score.
+     * Then it performs this move and tries to find the score of the best move of the next player on this newly acquired board.
+     * If the score for this best move is high, then that is bad for the current player. So we subtract this score from
+     * the score of the move of the current player. Then, the performed move will be undone and it tries the next move.
+     * When all moves have been tried, the move with the best score gets chosen.
+     * @param board The state for which this method tries to find the best move
+     * @param player the player for which this method tries to find the best move
+     * @param depth The depth this method will go into the search tree
      */
     protected float expandAndEvaluate(Board board, Player player, int depth){
 
