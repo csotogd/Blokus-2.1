@@ -59,8 +59,8 @@ public class Node {
      * @param player
      */
     public boolean expand(Player player){
-        for(Player p:players) if(p.getPlayerNumber()==player.getPlayerNumber()) player = p;
-        for(Move m : player.possibleMoveSet(state)) children.add(new Node(this,m));
+        Player pl = players[player.getPlayerNumber()-1];
+        for(Move m : pl.possibleMoveSet(state)) children.add(new Node(this,m));
         if(children.size()>0) return true;
         return false;
     }

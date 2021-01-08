@@ -99,7 +99,7 @@ public class MCTS {
                     for(Piece piece: p.getUnplayablePiece()){
                         if(bclone.fitOnBoard(piece,p)) score[i]+=1;
                     }
-
+                    unwrite(moves.get(i),bclone);
                 }
             }
             if(p.getPiecesList().size()<18){
@@ -255,6 +255,7 @@ public class MCTS {
     }
 
     public static void main(String[] args){
+        int time = 1500;
         Player p1 = new MiniMaxPlayer(1);
         Player p2 = new MCPlayer(2, "notJo");
         Player p3 = new HumanPlayer(3, "jo2");
@@ -273,19 +274,19 @@ public class MCTS {
         int i= 0;
         while(i<15){
             //mc = new MonteCarlo(mc.players,b);
-            Move move1 = mc.simulation(0,3000);
+            Move move1 = mc.simulation(0,time);
             if(move1.makeMove(b)) p1.removePiece(move1.getPiece().getLabel());
 
             //mc = new MonteCarlo(mc.players,b);
-            Move move2 = mc.simulation(1,3000);
+            Move move2 = mc.simulation(1,time);
             if(move2.makeMove(b)) p2.removePiece(move2.getPiece().getLabel());
 
             //mc = new MonteCarlo(mc.players,b);
-            Move move3 = mc.simulation(2,3000);
+            Move move3 = mc.simulation(2,time);
             if(move3.makeMove(b)) p3.removePiece(move3.getPiece().getLabel());
 
             //mc = new MonteCarlo(mc.players,b);
-            Move move4 = mc.simulation(3,3000);
+            Move move4 = mc.simulation(3,time);
             if(move4.makeMove(b)) p4.removePiece(move4.getPiece().getLabel());
 
             b.print();

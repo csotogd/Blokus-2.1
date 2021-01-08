@@ -32,6 +32,11 @@ public class MonteCarlo {
         root = new Node(board, players);
         if(players[player].getPiecesList().size()>17) root.randomExpandBias(players[player], numMoves);
         else root.randomExpand(this.players[player], numMoves);// expand will append a children of every possible move to the root
+        if(root.getChildren().size()==0) {
+            root.expand(players[player]);
+            System.out.println("full expansion "+root.getChildren().size());
+            if(root.getChildren().size()==0) return null;
+        }
 
         while(System.currentTimeMillis()-start<timeLimit){ // while there is still time
             //chose one of the possible move
@@ -87,6 +92,7 @@ public class MonteCarlo {
     }
 
     public static void main(String[] args){
+        int time = 1500;
         Player p1 = new MiniMaxPlayer(1);
         Player p2 = new MCPlayer(2, "notJo");
         Player p3 = new HumanPlayer(3, "jo2");
@@ -103,22 +109,45 @@ public class MonteCarlo {
         MonteCarlo mc = new MonteCarlo(new Player[]{p1,p2,p3,p4},b);
 
         int i= 0;
-        while(i<15){
+        boolean[] passed = new boolean[4];
+        int passcount =0;
+        while(passcount<4){
             //mc = new MonteCarlo(mc.players,b);
-            Move move1 = mc.simulation(0,3000);
-            if(move1.makeMove(b)) p1.removePiece(move1.getPiece().getLabel());
+            if(!passed[0]) {
+                Move move1 = mc.simulation(0, time);
+                if (move1.makeMove(b)) p1.removePiece(move1.getPiece().getLabel());
+                else {
+                    passed[0]=true;
+                    passcount++;
+                }
+            }
 
             //mc = new MonteCarlo(mc.players,b);
-            Move move2 = mc.simulation(1,3000);
+            if(!passed[1]) {
+            Move move2 = mc.simulation(1,time);
             if(move2.makeMove(b)) p2.removePiece(move2.getPiece().getLabel());
+            else {
+                passed[1]=true;
+                passcount++;
+            }
+            }
 
             //mc = new MonteCarlo(mc.players,b);
-            Move move3 = mc.simulation(2,3000);
+                if(!passed[2]) {
+            Move move3 = mc.simulation(2,time);
             if(move3.makeMove(b)) p3.removePiece(move3.getPiece().getLabel());
+            else passed[2]=true;
+                }
 
             //mc = new MonteCarlo(mc.players,b);
-            Move move4 = mc.simulation(3,3000);
+                    if(!passed[3]) {
+            Move move4 = mc.simulation(3,time);
             if(move4.makeMove(b)) p4.removePiece(move4.getPiece().getLabel());
+            else {
+                passed[3]=true;
+                passcount++;
+            }
+                    }
 
             b.print();
             i++;
