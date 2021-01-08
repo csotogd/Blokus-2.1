@@ -32,6 +32,11 @@ public class MCTS {
 //        if(players[player].getPiecesList().size()>17) root.randomExpandBias(players[player], numMoves);
 //        else root.randomExpand(this.players[player], numMoves);// expand will append a children of every possible move to the root
         expandGreedily(root,player,numMoves);
+        if(root.getChildren().size()==0){
+            root.expand(players[player]);
+            System.out.println("full expand"+ root.getChildren().size());
+            if(root.getChildren().size()==0) return null;
+        }
         List<Node> toExpand=new ArrayList<Node>();
         toExpand.addAll(root.getChildren());
         while(System.currentTimeMillis()-start<timeLimit){ // while there is still time
@@ -45,7 +50,7 @@ public class MCTS {
             }else{
                 choosen = toExpand.remove(0);
             }
-            while(choosen.getChildren()!=null){
+            while(choosen.getChildren()!=null&&choosen.getChildren().size()!=0){
                 Node old = choosen;
                 choosen = choosen.getChildren().get(0); //choose one node to simulate
                 for (Node children : old.getChildren()) {
@@ -78,6 +83,7 @@ public class MCTS {
     public boolean expandGreedily(Node n, int player,int numMoves){
         Player p = n.getPlayers()[(n.getDepth()+1+player)%players.length];
         List<Move> moves = p.possibleMoveSetUpdate(n.getState(), numMoves);
+//        System.out.println(moves.size());
         if(moves.size()>numMoves){
             double[] score= new double[moves.size()];
             int counter=0;
@@ -272,22 +278,52 @@ public class MCTS {
         MCTS mc = new MCTS(new Player[]{p1,p2,p3,p4},b);
 
         int i= 0;
-        while(i<15){
+        boolean[] passed = new boolean[4];
+        int passcount =0;
+        while(passcount<4){
             //mc = new MonteCarlo(mc.players,b);
-            Move move1 = mc.simulation(0,time);
-            if(move1.makeMove(b)) p1.removePiece(move1.getPiece().getLabel());
+            if(!passed[0]) {
+                Move move1 = mc.simulation(0, time);
+                if (move1!=null&&move1.makeMove(b)) p1.removePiece(move1.getPiece().getLabel());
+                else {
+                    passed[0]=true;
+                    passcount++;
+                }
+                if (move1==null) System.out.println(p1.possibleMove(b));
+            }
 
             //mc = new MonteCarlo(mc.players,b);
-            Move move2 = mc.simulation(1,time);
-            if(move2.makeMove(b)) p2.removePiece(move2.getPiece().getLabel());
+            if(!passed[1]) {
+                Move move2 = mc.simulation(1,time);
+                if(move2!=null&&move2.makeMove(b)) p2.removePiece(move2.getPiece().getLabel());
+                else {
+                    passed[1]=true;
+                    passcount++;
+                }
+                if (move2==null) System.out.println(p2.possibleMove(b));
+            }
 
             //mc = new MonteCarlo(mc.players,b);
-            Move move3 = mc.simulation(2,time);
-            if(move3.makeMove(b)) p3.removePiece(move3.getPiece().getLabel());
+            if(!passed[2]) {
+                Move move3 = mc.simulation(2,time);
+                if(move3!=null&&move3.makeMove(b)) p3.removePiece(move3.getPiece().getLabel());
+                else {
+                    passed[2]=true;
+                    passcount++;
+                }
+                if (move3==null) System.out.println(p3.possibleMove(b));
+            }
 
             //mc = new MonteCarlo(mc.players,b);
-            Move move4 = mc.simulation(3,time);
-            if(move4.makeMove(b)) p4.removePiece(move4.getPiece().getLabel());
+            if(!passed[3]) {
+                Move move4 = mc.simulation(3,time);
+                if(move4!=null&&move4.makeMove(b)) p4.removePiece(move4.getPiece().getLabel());
+                else {
+                    passed[3]=true;
+                    passcount++;
+                }
+                if (move4==null) System.out.println(p4.possibleMove(b));
+            }
 
             b.print();
             i++;

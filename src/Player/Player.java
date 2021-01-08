@@ -220,12 +220,12 @@ public abstract class Player {
                         if(startingCorner.get_y()!=0) adjust.set_y(piece.getShape().length-1);
                         Move firstMove = new Move(this, piece.clone(), startingCorner.subtract(adjust));
                         if (firstMove.isAllowed(board)) moveSet.add(firstMove);
-                    }else
+                    }else {
                         for (Corner pieceCorner : piece.getCorners().get(piece.getCurrentState())) {
                             for (Corner corner : cornersOnBoard) {
                                 for (Vector2d emptyCorner : corner.getToCornerPositions()) { //for all the possible empty squares that would become corner contact
                                     //move the piece so that it is contact with the corner with the part of it we want
-                                    Vector2d positionOfPiece= emptyCorner.subtract(pieceCorner.getPosition());
+                                    Vector2d positionOfPiece = emptyCorner.subtract(pieceCorner.getPosition());
                                     Move move = new Move(this, piece.clone(), positionOfPiece);
                                     if (move.isAllowed(board))
                                         moveSet.add(move);
@@ -233,6 +233,7 @@ public abstract class Player {
 
                             }
                         }
+                    }
                     piece.rotateRight();
                     if(i==piece.getNbRotation()-1) piece.rotateUpsideDown();
                 }
