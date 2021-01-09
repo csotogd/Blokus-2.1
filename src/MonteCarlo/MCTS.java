@@ -10,10 +10,10 @@ import Tools.Vector2d;
 import java.util.*;
 
 public class MCTS {
-    Player[] players;
-    Node root;
-    Board board;
-    int numMoves;
+    Player[] players; //players of the current game
+    Node root; // root node
+    Board board; // board of the game
+    int numMoves; // brancing factor allowed due to simulations length
 
     /**
      * COnstructor
@@ -27,42 +27,45 @@ public class MCTS {
         numMoves=10;
     }
 
+    /**
+     * Constructing the tree from the root node
+     * @param player index of the player you want to find a move for
+     * @param timeLimit in ms
+     * @return approximation of the best move in the given timelimit
+     */
     public Move simulation(int player, long timeLimit){
         long start = System.currentTimeMillis(); //start of the timer
         root = new Node(board, players);
-//        if(players[player].getPiecesList().size()>17) root.randomExpandBias(players[player], numMoves);
-//        else root.randomExpand(this.players[player], numMoves);// expand will append a children of every possible move to the root
-        expandGreedily(root,player,numMoves);
-        if(root.getChildren().size()==0){
-            root.expand(players[player]);
+        expandGreedily(root,player,numMoves);// expand the best moves according to some heuristics
+        if(root.getChildren().size()==0){ // if the expansion failed, something went wrong?
+            root.expand(players[player]); //full expansion?
             System.out.println("full expand"+ root.getChildren().size());
-            if(root.getChildren().size()==0) return null;
+            if(root.getChildren().size()==0) return null;// if no move was found return null
         }
-        List<Node> toExpand=new ArrayList<Node>();
+        List<Node> toExpand=new ArrayList<Node>(); //shortcut for ucb1 formula -> all new node have ucb1 = infinity
         toExpand.addAll(root.getChildren());
         while(System.currentTimeMillis()-start<timeLimit){ // while there is still time
             //chose one of the possible move
-            Node choosen =null;
+            Node choosen;
             if(toExpand.size()==0) {
-                choosen = root.getChildren().get(0); //choose one node to simulate
+                choosen = root.getChildren().get(0); // get the node with highest ucb1
                 for (Node children : root.getChildren()) {
                     if (children.getUCB1() > choosen.getUCB1()) choosen = children;
                 }
-            }else{
+            }else{ //those infinity ucb1:
                 choosen = toExpand.remove(0);
             }
-            while(choosen.getChildren()!=null&&choosen.getChildren().size()!=0){
+            while(choosen.getChildren()!=null&&choosen.getChildren().size()!=0){ //if it is not a leaf node, find the leaf node with highest ucb1
                 Node old = choosen;
-                choosen = choosen.getChildren().get(0); //choose one node to simulate
+                choosen = choosen.getChildren().get(0);
                 for (Node children : old.getChildren()) {
                     if (children.getUCB1() > choosen.getUCB1()) choosen = children;
                 }
             }
-            if(choosen.getVisitedNum()!=0){
+            if(choosen.getVisitedNum()!=0){ //if it has already been visited, we need to expand it
                 choosen.initChildren();
-//                choosen.randomExpand(players[(choosen.getDepth()+1)%players.length],numMoves);//expandOne
-                expandGreedily(choosen, player,numMoves/3);
-                toExpand.addAll(choosen.getChildren());
+                expandGreedily(choosen, player,numMoves/3); //expansion of fewer moves according to heuristics
+                toExpand.addAll(choosen.getChildren()); // ucb1 of those will be again infinity
 //                System.out.println(choosen.getDepth()+"  "+player);
                 if(toExpand.size()!=0) choosen = toExpand.remove(0);
             }
@@ -70,55 +73,71 @@ public class MCTS {
             choosen.addVisitiedNum(); // update the count of the visited number
             choosen.addScore(choosen.simulation((choosen.getDepth()+player+1)%players.length,player));//if we get a win update the score as well
         }
+        /**
+         * Here we chose the node with the most visited count
+         * break the ties with ratio of win/loss, and numblocks
+         */
         Node res = root.getChildren().get(0);//choose the most visited node move
         for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
         for(Node children : root.getChildren()) if(children.getVisitedNum()>res.getVisitedNum()|| // choose the node according to number of time visited, if equals, check if ratio win/loss is higher
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()>res.getScore())||// if equal again, choose biggest piece
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()==res.getScore()&&children.getMove().getPiece().getNumberOfBlocks()>res.getMove().getPiece().getNumberOfBlocks())) res=children;
+
         numMoves = root.getVisitedNum()/7; // next time we do simulations, we will explore a number of moves such that we can visit 7 times each
 //        System.out.println("visit:"+res.getVisitedNum()+"\nscore:"+res.getScore()+"\nmove:"+res.getMove().getPiece()+"@"+res.getMove().getPosition());
         for(Player p: players) if(p.getPlayerNumber()==res.getMove().getPlayer().getPlayerNumber()) return new Move(p,res.getMove().getPiece(), res.getMove().getPosition());
         return res.getMove();
     }
 
+    /**
+     * choose some moves to expand a certain node, with some heuristics:
+     * number of blocks, closest to the middle under 4 turns, number of
+     * moves increase (if we can't play a piece, is it playable with this
+     * move?), number of piece playable on the corner (similar to number
+     * of corner, but actually trying to put piece on it)
+     * @param n node to expand
+     * @param player player number concerned (at the root)
+     * @param numMoves number of moves (branching factor)
+     * @return true
+     */
     public boolean expandGreedily(Node n, int player,int numMoves){
         Player p = n.getPlayers()[(n.getDepth()+1+player)%players.length];
         List<Move> moves = p.possibleMoveSetUpdate(n.getState(), numMoves);
-//        System.out.println(moves.size());
-        if(moves.size()>numMoves){
-            double[] score= new double[moves.size()];
-            int counter=0;
-            for(Move m: moves) score[counter++]=((double)m.getPiece().getNumberOfBlocks());
+        if(moves.size()>numMoves) { // if there are too many moves, we need to score them and take the best
+            double[] score = new double[moves.size()];
+            int counter = 0;
+            for (Move m : moves) score[counter++] = (m.getPiece().getNumberOfBlocks());
             //score with closest to middle under 4-5 turns
-            if(p.getPiecesList().size()>17){
-                double maxDist = Math.sqrt(Math.pow(board.getDIMENSION()/2,2)*2);
+            if (p.getPiecesList().size() > 17) {
+                double maxDist = Math.sqrt(Math.pow(board.getDIMENSION() / 2, 2) * 2);
                 for (int i = 0; i < moves.size(); i++) {
-                    score[i]+= maxDist-Math.sqrt(Math.pow(board.getDIMENSION()/2-(moves.get(i).getPosition().get_x()+(moves.get(i).getPiece().getShape()[0].length)/2.0),2)+
-                            Math.pow(board.getDIMENSION()/2-(moves.get(i).getPosition().get_y()+(moves.get(i).getPiece().getShape().length)/2.0),2));
+                    score[i] += maxDist - Math.sqrt(Math.pow(board.getDIMENSION() / 2 - (moves.get(i).getPosition().get_x() + (moves.get(i).getPiece().getShape()[0].length) / 2.0), 2) +
+                            Math.pow(board.getDIMENSION() / 2 - (moves.get(i).getPosition().get_y() + (moves.get(i).getPiece().getShape().length) / 2.0), 2));
                 }
             }
             //score with numMoves increase
-            if(!p.isFirstMove()&&p.getUnplayablePiece().size()>0){
-                Board bclone = n.getState().clone();
-                for (int i = 0; i < moves.size(); i++) {
-                    write(moves.get(i),bclone);
-                    //score with numMoves increase
-                    for(Piece piece: p.getUnplayablePiece()){
-                        if(bclone.fitOnBoard(piece,p)) score[i]+=1;
+            if (!p.isFirstMove() ) {
+                if (p.getUnplayablePiece().size() > 0){
+                    Board bclone = n.getState().clone();
+                    for (int i = 0; i < moves.size(); i++) {
+                        write(moves.get(i), bclone);
+                        //score with numMoves increase
+                        for (Piece piece : p.getUnplayablePiece()) { //TODO: use fits in there instead
+                            if (bclone.fitOnBoard(piece, p)) score[i] += 1;
+                        }
+                        unwrite(moves.get(i), bclone);
                     }
-                    unwrite(moves.get(i),bclone);
-                }
-            }else if(p.getUnplayablePiece().size()==0){
+                } else if ( p.getUnplayablePiece().size() == 0) {
                 Board bclone = n.getState().clone();
                 for (int i = 0; i < moves.size(); i++) {
                     write(moves.get(i), bclone);
                     //score with numMoves increase
-                    for(Corner c: moves.get(i).getPiece().getCornersContacts(moves.get(i).getPosition())) {
+                    for (Corner c : moves.get(i).getPiece().getCornersContacts(moves.get(i).getPosition())) {
                         for (Piece piece : p.getPiecesList()) {
                             if (!piece.getLabel().equals(moves.get(i).getPiece().getLabel())) {
                                 //if it fits in that corner: score of move += numBlocks of the biggest piece that fits / 5.0
-                                if(fitsInThere(bclone, piece, c, player+1)){
-                                    score[i]+=(piece.getNumberOfBlocks()/5.0);
+                                if (fitsInThere(bclone, piece, c, player + 1)) {
+                                    score[i] += (piece.getNumberOfBlocks() / 2.0);
                                     break;
                                 }
                             }
@@ -127,6 +146,7 @@ public class MCTS {
                     unwrite(moves.get(i), bclone);
                 }
             }
+        }
             if(p.getPiecesList().size()<18){
                 //block corners
                 Board bclone = n.getState().clone();
@@ -149,6 +169,14 @@ public class MCTS {
         return true;
     }
 
+    /**
+     * Checks if the piece fits on the corner given
+     * @param bclone board on which operations are made
+     * @param piece piece to be fit
+     * @param c corner where to fit the piece
+     * @param playerNumber identification of the block of the player
+     * @return true if it fits at least with one configuration
+     */
     private boolean fitsInThere(Board bclone, Piece piece, Corner c, int playerNumber) {
         for (int i = 0; i < piece.getTotalConfig(); i++) {
             for(Vector2d emptyC:c.getToCornerPositions()){
@@ -178,6 +206,13 @@ public class MCTS {
         return false;
     }
 
+    /**
+     * given a list of moves, a list of score, return the numMoves best moves
+     * @param moves list of moves
+     * @param score score of moves
+     * @param numMoves number of best moves to return
+     * @return list of best moves
+     */
     public List<Move> getBest(List<Move> moves,double[] score, int numMoves){
         final int size = moves.size();
 
@@ -206,6 +241,12 @@ public class MCTS {
         return best;
     }
 
+    /**
+     * temporarly write the piece on the board without changing
+     * anything else
+     * @param m move to be written
+     * @param b board on which to write
+     */
     public void write(Move m, Board b){
         for (int i = 0; i < m.getPiece().getShape().length; i++) {
             for (int j = 0; j < m.getPiece().getShape()[0].length; j++) {
@@ -213,6 +254,13 @@ public class MCTS {
             }
         }
     }
+
+    /**
+     * delete the piece on the board without changing
+     * anything else
+     * @param m move to be erase
+     * @param b board
+     */
     public void unwrite(Move m, Board b){
         for (int i = 0; i < m.getPiece().getShape().length; i++) {
             for (int j = 0; j < m.getPiece().getShape()[0].length; j++) {
@@ -221,7 +269,14 @@ public class MCTS {
         }
     }
 
-
+    /**
+     * get the "empty" corners of the opponents in a HashSet (so that the contains operation
+     * is only O(1)
+     * @param startingPosition starting position not to consider
+     * @param board board game
+     * @param players
+     * @return HashSet of Vector2d (positions) of empty opponents corners
+     */
     public HashSet<Vector2d> getOpponentsCorners(Vector2d startingPosition, Board board, Player[] players){
         HashSet<Vector2d> corners = new HashSet<>();
         for(Player p: players){
@@ -237,9 +292,6 @@ public class MCTS {
         return corners;
     }
 
-
-
-//Dont spend too much time trying to understand it, just know what it is used for
     /**
      * helper method to find corners and add them to the arraylist
      * @param checked position on the board that is already checked
@@ -247,7 +299,6 @@ public class MCTS {
      * @param corners arraylist that contains the corners
      * @param player id of the player
      */
-//TODO : not use inboard function as it takes twice as many evaluations as necessary
     private void findCorners(Board board,boolean[][] checked, Vector2d position, HashSet<Vector2d> corners, int player) {
 
         if(board.inBoard(position) && !checked[position.get_y()][position.get_x()]){
