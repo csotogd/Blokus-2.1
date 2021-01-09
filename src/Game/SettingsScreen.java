@@ -95,7 +95,7 @@ public class SettingsScreen extends Application {
         Text opt4 = new Text("Player 3 name :");
         Text opt5 = new Text("Player 4 name :");
 
-        String optionsP[] = {"Human Player", "Monte Carlo Player", "Monte Carlo Tree Player", "Genetic Player","MiniMax-MaxN Player", "MiniMax-Paranoid Player","GAMC Player" };
+        String optionsP[] = {"Human Player", "Monte Carlo Player", "Monte Carlo Tree Player", "Genetic Player","MiniMax-MaxN Player", "MiniMax-Paranoid Player","GAMC Player", "Genetic Monte Carlo Tree Player" };
 
         grid.add(opt2, 0, 2);
 

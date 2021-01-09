@@ -91,6 +91,7 @@ public class Game extends Application {
         boardUI = new BoardUI(this);
         miniMax = new MiniMax(players,board);
         for(Player p: players) if(p instanceof GAMCplayer) ((GAMCplayer) p).setMc(new MonteCarlo(players, board));
+        else if(p instanceof GaMcTplayer) ((GaMcTplayer) p).setMc(new MCTS(players, board));
         else if(p instanceof MCPlayer)((MCPlayer) p).setMc(new MonteCarlo(players, board));
         else if(p instanceof MCTSplayer)((MCTSplayer) p).setMcts(new MCTS(players, board));
         if (actualPlayer instanceof HumanPlayer)
@@ -123,6 +124,8 @@ public class Game extends Application {
                 players[i-1]=new GAMCplayer(i);
             }else if(playerType.equals("Monte Carlo Tree Player")){
                 players[i-1]=new MCTSplayer(i);
+            }else if(playerType.equals("Genetic Monte Carlo Tree Player")) {
+                players[i - 1] = new GaMcTplayer(i);
             }
             players[i-1].setColor(colors[i-1]);
             players[i-1].setName(playersName[i-1]);
@@ -302,6 +305,11 @@ public class Game extends Application {
                         if( actualPlayer instanceof  GAMCplayer){
                             move = ((GAMCplayer) actualPlayer).getBestMove(board,timeLimit);
                             ((GAMCplayer)actualPlayer).addTurn();
+                        }else if(actualPlayer instanceof MCTSplayer){
+                            move = ((MCTSplayer) actualPlayer).getMcts().simulation(actualPlayer.getNumber()-1, timeLimit);
+                        }else if(actualPlayer instanceof GaMcTplayer){
+                            move = ((GaMcTplayer) actualPlayer).getBestMove(board,timeLimit);
+                            ((GeneticPlayer) actualPlayer).addTurn();
                         }else if(actualPlayer instanceof GeneticPlayer){
                             move = ((GeneticPlayer) actualPlayer).calculateMove(board);
                             ((GeneticPlayer) actualPlayer).addTurn();
@@ -309,8 +317,6 @@ public class Game extends Application {
                             move = ((MCPlayer) actualPlayer).getMc().simulation(actualPlayer.getNumber()-1, timeLimit);
                         }else if(actualPlayer instanceof MiniMaxPlayer){
                             move = miniMax.getMove(actualPlayer.getPlayerNumber());
-                        }else if(actualPlayer instanceof MCTSplayer){
-                            move = ((MCTSplayer) actualPlayer).getMcts().simulation(actualPlayer.getNumber()-1, timeLimit);
                         }
                         return move;
                     }

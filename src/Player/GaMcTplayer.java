@@ -2,22 +2,21 @@ package Player;
 
 import DataBase.Piece;
 import GameBoard.Board;
-import MonteCarlo.MonteCarlo;
+import MonteCarlo.*;
 import Move.Move;
 
 import java.util.*;
 
+public class GaMcTplayer extends GeneticPlayer {
 
-public class GAMCplayer extends GeneticPlayer {
-
-    private MonteCarlo mc;
+    private MCTS mc;
 
 
     /**
      * Constructor
      * @param number number of the player
      */
-    public GAMCplayer(int number) {
+    public GaMcTplayer(int number) {
         super(number);
         setDepth(1);
     }
@@ -83,7 +82,7 @@ public class GAMCplayer extends GeneticPlayer {
     public static ArrayList<Move> sortByValue(HashMap<Move, Float> hm) {
         List<Map.Entry<Move, Float> > list = new LinkedList<>(hm.entrySet());
 
-        // Sort the list 
+        // Sort the list
         Collections.sort(list, (o1, o2) -> (o1.getValue()).compareTo(o2.getValue()));
 
         // put data from sorted list to ArrayList
@@ -94,7 +93,7 @@ public class GAMCplayer extends GeneticPlayer {
         return best_moves;
     }
 
-    public void setMc(MonteCarlo mc) {
+    public void setMc(MCTS mc) {
         this.mc = mc;
     }
 

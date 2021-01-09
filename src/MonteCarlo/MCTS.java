@@ -94,7 +94,7 @@ public class MCTS {
      * number of blocks, closest to the middle under 4 turns, number of
      * moves increase (if we can't play a piece, is it playable with this
      * move?), number of piece playable on the corner (similar to number
-     * of corner, but actually trying to put piece on it)
+     * of corner, but actually trying to put piece on it), blocks most corners
      * @param n node to expand
      * @param player player number concerned (at the root)
      * @param numMoves number of moves (branching factor)
@@ -358,6 +358,72 @@ public class MCTS {
 
         }
     }
+
+
+
+
+    /**
+     * Constructing the tree from the root node
+     * @param player index of the player you want to find a move for
+     * @param timeLimit in ms
+     * @return approximation of the best move in the given timelimit
+     */
+    public Move simulation(int player, long timeLimit, ArrayList<Move> moves){
+        long start = System.currentTimeMillis(); //start of the timer
+        root = new Node(board, players);
+        root.expandGA(moves, numMoves);// expand the best moves according to some heuristics
+        if(root.getChildren().size()==0){ // if the expansion failed, something went wrong?
+            root.expand(players[player]); //full expansion?
+            System.out.println("full expand"+ root.getChildren().size());
+            if(root.getChildren().size()==0) return null;// if no move was found return null
+        }
+        List<Node> toExpand=new ArrayList<Node>(); //shortcut for ucb1 formula -> all new node have ucb1 = infinity
+        toExpand.addAll(root.getChildren());
+        while(System.currentTimeMillis()-start<timeLimit){ // while there is still time
+            //chose one of the possible move
+            Node choosen;
+            if(toExpand.size()==0) {
+                choosen = root.getChildren().get(0); // get the node with highest ucb1
+                for (Node children : root.getChildren()) {
+                    if (children.getUCB1() > choosen.getUCB1()) choosen = children;
+                }
+            }else{ //those infinity ucb1:
+                choosen = toExpand.remove(0);
+            }
+            while(choosen.getChildren()!=null&&choosen.getChildren().size()!=0){ //if it is not a leaf node, find the leaf node with highest ucb1
+                Node old = choosen;
+                choosen = choosen.getChildren().get(0);
+                for (Node children : old.getChildren()) {
+                    if (children.getUCB1() > choosen.getUCB1()) choosen = children;
+                }
+            }
+            if(choosen.getVisitedNum()!=0){ //if it has already been visited, we need to expand it
+                choosen.initChildren();
+                root.expandGA(moves, numMoves/3); //expansion of fewer moves according to heuristics
+                toExpand.addAll(choosen.getChildren()); // ucb1 of those will be again infinity
+//                System.out.println(choosen.getDepth()+"  "+player);
+                if(toExpand.size()!=0) choosen = toExpand.remove(0);
+            }
+            //simulate turn by turn until the end -> back propagate score
+            choosen.addVisitiedNum(); // update the count of the visited number
+            choosen.addScore(choosen.simulation((choosen.getDepth()+player+1)%players.length,player));//if we get a win update the score as well
+        }
+        /**
+         * Here we chose the node with the most visited count
+         * break the ties with ratio of win/loss, and numblocks
+         */
+        Node res = root.getChildren().get(0);//choose the most visited node move
+        for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
+        for(Node children : root.getChildren()) if(children.getVisitedNum()>res.getVisitedNum()|| // choose the node according to number of time visited, if equals, check if ratio win/loss is higher
+                (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()>res.getScore())||// if equal again, choose biggest piece
+                (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()==res.getScore()&&children.getMove().getPiece().getNumberOfBlocks()>res.getMove().getPiece().getNumberOfBlocks())) res=children;
+
+        numMoves = root.getVisitedNum()/7; // next time we do simulations, we will explore a number of moves such that we can visit 7 times each
+//        System.out.println("visit:"+res.getVisitedNum()+"\nscore:"+res.getScore()+"\nmove:"+res.getMove().getPiece()+"@"+res.getMove().getPosition());
+        for(Player p: players) if(p.getPlayerNumber()==res.getMove().getPlayer().getPlayerNumber()) return new Move(p,res.getMove().getPiece(), res.getMove().getPosition());
+        return res.getMove();
+    }
+
 
     public static void main(String[] args){
         int time = 3500;
