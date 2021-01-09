@@ -123,10 +123,9 @@ public class MiniMax {
         //list of the best score for each player
         float[] best =new float[players.length];
         for (int i = 0; i < best.length; i++) best[i] = Float.MIN_VALUE;
-        //check for each child of the current node
+        //check for each child of the current node using the killer moves strategy
         ArrayList<Move>possibleMoves = getPossibleMoves(playerNbr);
         for (Move possibleMove : possibleMoves){
-            //TODO compute first the moves that have been cutoff earlier
             boolean firstTurn = players[playerNbr-1].isFirstMove();
             //create new child
             MiniMaxNode newNode = new MiniMaxNode(node,possibleMove,players[playerNbr-1],board);
@@ -170,6 +169,7 @@ public class MiniMax {
      * @return the best score of the root player
      */
     private float paranoidSearch(MiniMaxNode node, int depth, int playerNbr, float alpha, float beta) {
+        //if we reach the leaves, we set the score as the heuristics and then backtrack
         if(depth<=0){
             if(playerNbr==rootPlayerNbr) {
                 node.setpScore(getPScore(node));
@@ -181,16 +181,20 @@ public class MiniMax {
                 return node.getpScore();
             }
         }
+        //check for each child of the current node using the killer moves strategy
         ArrayList<Move>possibleMoves = getPossibleMovesP(playerNbr);
         for (Move possibleMove : possibleMoves){
             boolean firstTurn = players[playerNbr-1].isFirstMove();
+            //create new child
             MiniMaxNode newNode = new MiniMaxNode(node,possibleMove,players[playerNbr-1],board);
+            //calculate the next player nbr
             int nextPlayerNbr;
             if(playerNbr>=players.length){
                 nextPlayerNbr = 1;
             }else{
                 nextPlayerNbr = playerNbr+1;
             }
+            //check whether the current or next player are the root player, and then calculate the new alpha value
             if(playerNbr==rootPlayerNbr || nextPlayerNbr==rootPlayerNbr){
                 alpha = Math.max(alpha, -paranoidSearch(newNode,depth-1,nextPlayerNbr,-beta,-alpha));
             }else{
@@ -200,9 +204,8 @@ public class MiniMax {
             if(firstTurn){
                 players[playerNbr-1].setFirstMove(true);
             }
-            //System.out.println("alpha = " + alpha + " , beta = " + beta);
+            //cutoff
             if(alpha>=beta){
-                //System.out.println("cutoff");
                 node.setKillerMoves(newNode.getMove());
                 checkToAddToCutOffP(newNode.getMove());
                 node.setpScore(beta);
