@@ -13,15 +13,16 @@ import Player.*;
 import java.util.*;
 
 public class MiniMax {
-    Player[] players;
-    Board boardOrigin;
-    Board board;
-    private final int NBR_OF_TURNS = 1;
-    private int maxDepth;
-    int rootPlayerNbr;
-    ArrayList<Move> cutOffMoveOccurence;
-    float u = 30;
-    int killerMovesLength = 10;
+    Player[] players;//list of the players in the game
+    Board boardOrigin;//origin object of the board
+    Board board;//board being being "modified"
+    private final int NBR_OF_TURNS = 1;//nbr of turn for the depth of the tree
+    private int maxDepth;//max depth of the tree
+    int rootPlayerNbr;//nbr of the player that needs to move
+    float u = 30;//MAX-N SEARCH - upperbound of the sum of the score of each player (in order to cutoff nodes)
+    ArrayList<Move> cutOffMoveOccurence;//KILLER MOVE STRATEGY (max-N) - list of the moves being cutoff the most during the pruning
+    ArrayList<Move>[] cutOffMoveOccurenceP;//KILLER MOVE STRATEGY (Paranoid) - list of the moves of each player being cutoff the most during the pruning
+    int killerMovesLength = 10;//KILLER MOVE STRATEGY - nbr max of cutoff moves
 
     /**
      * constructor of the algo class
@@ -40,32 +41,44 @@ public class MiniMax {
      * @return
      */
     public Move getMove(int playerNbr){
-        //long start = System.currentTimeMillis(); //start of the timer
         this.rootPlayerNbr = playerNbr;
-        this.cutOffMoveOccurence = new ArrayList<Move>(killerMovesLength);
         this.board = boardOrigin.clone();
         MiniMaxNode root = new MiniMaxNode(board,players[playerNbr-1].clone());
-        Move bestMove = null;
 
+        Move bestMove = null;
         long start = System.currentTimeMillis(); //start of the timer
         if(Data.getPlayerTypes()[rootPlayerNbr-1]=="MiniMax-MaxN Player"){
             //maxN
+            this.cutOffMoveOccurence = new ArrayList<Move>(killerMovesLength);
             float[] score = maxN(root,maxDepth,playerNbr,Float.MIN_VALUE);
             bestMove = getBestMove(root,score,playerNbr);
             System.out.println("MOVE DONE USING MAX-N");
         }else{
             //paranoid
+            this.cutOffMoveOccurenceP = new ArrayList[players.length];
+            for (int i = 0; i < cutOffMoveOccurenceP.length; i++) {
+                cutOffMoveOccurenceP[i] = new ArrayList<Move>();
+            }
             float score = paranoidSearch(root,maxDepth,playerNbr,Float.MIN_VALUE,Float.MAX_VALUE);
             System.out.println("best score = " + score);
             bestMove = getpBestMove(root,score,playerNbr);
             System.out.println("MOVE DONE USING PARANOID");
         }
-        long stop = System.currentTimeMillis()-start ;//start of the timer
+        long stop = System.currentTimeMillis()-start ;//end of the timer
         System.out.println(stop + "millisecond(s)");
 
         return bestMove;
     }
+    /////////////////////////////////////
+    //SEARCHES
 
+    /**FOR THE PARANOID SEARCH
+     * method used to get the best move for the root player after performing the pruning
+     * @param root
+     * @param score
+     * @param rootPlayerNbr
+     * @return
+     */
     private Move getpBestMove(MiniMaxNode root,float score,int rootPlayerNbr){
         for(MiniMaxNode c: root.getChildren()) {
             if (c.getpScore()==-score) return new Move(players[rootPlayerNbr-1],c.getMove().getPiece(), c.getMove().getPosition());
@@ -74,8 +87,8 @@ public class MiniMax {
         return null;
     }
 
-    /**
-     *
+    /** FOR THE MAX-N SEARCH
+     * method used to get the best move for the root player after performing the pruning
      * @param root - root node
      * @param score - best score
      * @param rootPlayerNbr - nbr of the player that has to make a move
@@ -94,25 +107,7 @@ public class MiniMax {
     }
 
     /**
-     * METHOD USED FOR THE KILLER MOVE STRATEGY THAT MINIMIZES THE NUMBER OF ITERATIONS
-     * @param playerNbr - nbr of the player that has to make a move
-     * @return a list of first the cutoff nodes (KILLER MOVES STARTEGY) and then all the other possible moves of that player
-     */
-    private ArrayList<Move> getPossibleMoves(int playerNbr){
-        ArrayList<Move> possibleMovesBoosted = new ArrayList<Move>();
-        ArrayList<Move> possibleMoves = players[playerNbr-1].possibleMoveSet(board);
-        for (Move move:cutOffMoveOccurence) {
-            if(possibleMoves.contains(move)){
-                possibleMovesBoosted.add(move);
-                possibleMoves.remove(move);
-            }
-        }
-        possibleMovesBoosted.addAll(possibleMoves);
-        return possibleMovesBoosted;
-    }
-
-    /**
-     * maxN mutliplayer minimax algorithm
+     * maxN multiplayer minimax algorithm
      * @param node - current node being investigated
      * @param depth - current depth of the algo
      * @param playerNbr - current player nbr
@@ -165,7 +160,15 @@ public class MiniMax {
 
     }
 
-
+    /** PARANOID SEARCH
+     * Paranoid multiplayer minimax algorithm
+     * @param node - current node being investigated
+     * @param depth - current depth of the algo
+     * @param playerNbr - current player nbr
+     * @param alpha - current alpha of the minimax algo
+     * @param beta - current beta of the algo
+     * @return the best score of the root player
+     */
     private float paranoidSearch(MiniMaxNode node, int depth, int playerNbr, float alpha, float beta) {
         if(depth<=0){
             if(playerNbr==rootPlayerNbr) {
@@ -178,11 +181,9 @@ public class MiniMax {
                 return node.getpScore();
             }
         }
-        ArrayList<Move>possibleMoves = getPossibleMoves(playerNbr);
-        //TODO order the move so that the worst ones are at the end and are pruned faster
+        ArrayList<Move>possibleMoves = getPossibleMovesP(playerNbr);
         for (Move possibleMove : possibleMoves){
             boolean firstTurn = players[playerNbr-1].isFirstMove();
-            //TODO compute first the moves that have been cutoff earlier
             MiniMaxNode newNode = new MiniMaxNode(node,possibleMove,players[playerNbr-1],board);
             int nextPlayerNbr;
             if(playerNbr>=players.length){
@@ -202,10 +203,8 @@ public class MiniMax {
             //System.out.println("alpha = " + alpha + " , beta = " + beta);
             if(alpha>=beta){
                 //System.out.println("cutoff");
-                if(playerNbr==rootPlayerNbr){
-                    node.setKillerMoves(newNode.getMove());
-                    checkToAddToCutOff(newNode.getMove());
-                }
+                node.setKillerMoves(newNode.getMove());
+                checkToAddToCutOffP(newNode.getMove());
                 node.setpScore(beta);
                 return beta;
             }
@@ -218,7 +217,25 @@ public class MiniMax {
     /////////////////////////////////
     //KILLER MOVE STRATEGY
 
-    /**
+    /** FOR THE MAX-N SEARCH
+     * METHOD USED FOR THE KILLER MOVE STRATEGY THAT MINIMIZES THE NUMBER OF ITERATIONS
+     * @param playerNbr - nbr of the player that has to make a move
+     * @return a list of first the cutoff nodes (KILLER MOVES STARTEGY) and then all the other possible moves of that player
+     */
+    private ArrayList<Move> getPossibleMoves(int playerNbr){
+        ArrayList<Move> possibleMovesBoosted = new ArrayList<Move>();
+        ArrayList<Move> possibleMoves = players[playerNbr-1].possibleMoveSet(board);
+        for (Move move:cutOffMoveOccurence) {
+            if(possibleMoves.contains(move)){
+                possibleMovesBoosted.add(move);
+                possibleMoves.remove(move);
+            }
+        }
+        possibleMovesBoosted.addAll(possibleMoves);
+        return possibleMovesBoosted;
+    }
+
+    /** FOR THE MAX-N SEARCH
      * METHOD USED FOR THE KILLER MOVE STRATEGY THAT UPDATE THE LIST OF THE CUTOFF MOVE OCCURENCE
      * @param move that is a cutoff in our algo
      */
@@ -238,7 +255,7 @@ public class MiniMax {
         }
     }
 
-    /**
+    /** FOR THE MAX-N SEARCH
      * delete the move in the cutoff list that has the fewest occurence (will be replaced by a new one)
      */
     public void deleteSmallestOccMove(){
@@ -253,10 +270,64 @@ public class MiniMax {
         cutOffMoveOccurence.remove(smallestMove);
     }
 
+
+    /** FOR THE PARANOID SEARCH
+     * METHOD USED FOR THE KILLER MOVE STRATEGY THAT MINIMIZES THE NUMBER OF ITERATIONS
+     * @param playerNbr - nbr of the player that has to make a move
+     * @return a list of first the cutoff nodes (KILLER MOVES STARTEGY) and then all the other possible moves of that player
+     */
+    private ArrayList<Move> getPossibleMovesP(int playerNbr){
+        ArrayList<Move> possibleMovesBoosted = new ArrayList<Move>();
+        ArrayList<Move> possibleMoves = players[playerNbr-1].possibleMoveSet(board);
+        for (Move move:cutOffMoveOccurenceP[playerNbr-1]) {
+            if(possibleMoves.contains(move)){
+                possibleMovesBoosted.add(move);
+                possibleMoves.remove(move);
+            }
+        }
+        possibleMovesBoosted.addAll(possibleMoves);
+        return possibleMovesBoosted;
+    }
+
+    /** FOR THE PARANOID SEARCH
+     * METHOD USED FOR THE KILLER MOVE STRATEGY THAT UPDATE THE LIST OF THE CUTOFF MOVE OCCURENCE
+     * @param move that is a cutoff in our algo
+     */
+    public void checkToAddToCutOffP(Move move){
+        if(cutOffMoveOccurenceP[move.getPlayer().getNumber()-1].isEmpty()){
+            cutOffMoveOccurenceP[move.getPlayer().getNumber()-1].add(move);
+        }else{
+            if (cutOffMoveOccurenceP[move.getPlayer().getNumber()-1].contains(move)) {
+                move.setOccurence(move.getOccurence() + 1);
+            }else if (cutOffMoveOccurenceP[move.getPlayer().getNumber()-1].size() < killerMovesLength) {
+                cutOffMoveOccurenceP[move.getPlayer().getNumber()-1].add(move);
+            }else{
+                deleteSmallestOccMoveP(move.getPlayer().getNumber()-1);
+                //replace the move in the cutoff list that has the fewest occurence with the current cutoff move
+                cutOffMoveOccurenceP[move.getPlayer().getNumber()-1].add(move);
+            }
+        }
+    }
+
+    /** FOR THE PARANOID SEARCH
+     * delete the move in the cutoff list that has the fewest occurence (will be replaced by a new one)
+     */
+    public void deleteSmallestOccMoveP(int playerNbr){
+        Move smallestMove = null;
+        int min = Integer.MAX_VALUE;
+        for(Move m : cutOffMoveOccurenceP[playerNbr]){
+            if(m.getOccurence()<min){
+                min = m.getOccurence();
+                smallestMove = m;
+            }
+        }
+        cutOffMoveOccurenceP[playerNbr].remove(smallestMove);
+    }
+
     ///////////////////////////////////////////////
     //HEURISTICS
 
-    /**
+    /** FOR THE MAX-N SEARCH
      * method used to get the nbr of corner blocked by the move of the node for each player
      * @param node current node being scored
      * @return the nbr of corner blocked by the move of the node for each player
@@ -283,7 +354,7 @@ public class MiniMax {
         return score;
     }
 
-    /**
+    /** FOR THE MAX-N SEARCH
      * This method checks whether a certain coordinate is a toCorner of a different player.
      * So it checks if on that square, a different player could make a move
      * @param YPos y position of the square
@@ -362,7 +433,7 @@ public class MiniMax {
         return nbrOfBlocks;
     }
 
-    /**
+    /** FOR THE MAX-N SEARCH
      * Checks whether a toCorner is actually valid (a piece can be placed there)
      * @param YPos y position of the square
      * @param XPos x position of the square
@@ -378,7 +449,7 @@ public class MiniMax {
     }
 
 
-    /**
+    /** FOR THE MAX-N SEARCH
      * method used to calculate the area of each player after the current move
      * @param board - board of the game
      * @return the area of each player after the current move
@@ -399,7 +470,7 @@ public class MiniMax {
     }
 
 
-    /**
+    /** FOR THE MAX-N SEARCH
      *used to get the nbr of blocks for each player
      * @param board - board of the game
      * @return the nbr of blocks for each player
@@ -413,7 +484,7 @@ public class MiniMax {
         return res;
     }
 
-    /**
+    /** FOR THE MAX-N SEARCH
      * method used to normalize each heursitics
      * @param score - score of each player at the current node being scored
      * @param heuristics - heuristics that is being normalized
@@ -431,6 +502,48 @@ public class MiniMax {
         return score;
     }
 
+    /** FOR THE MAX-N SEARCH
+     * used to get the Score of the node for each player
+     * @param node - node currently being scored
+     * @return the score of the node move for each player
+     */
+    //TODO add the heursitcs that if the move piece is small then try to predict future moves with highest score
+    public float[] getScore(MiniMaxNode node) {
+        int state = node.getPlayer().getPiecesUsed().size();
+        float maxBlockScore=10, maxCornerScore=7, maxAreaScore = 4, maxCornerBlocked = 9;// *weight* of different attribute
+
+        if(state<6){
+            maxBlockScore=15; maxCornerScore=8; maxAreaScore = 4; maxCornerBlocked = 3;
+        }else if(state>=6&&state<13){
+            maxBlockScore=7; maxCornerScore=10; maxAreaScore = 3; maxCornerBlocked = 10;
+        }else{
+            maxBlockScore=5; maxCornerScore=10; maxAreaScore = 5; maxCornerBlocked = 10;
+        }
+
+
+        float[] score = new float[players.length];
+
+        score = normalize(score,getBlocksScore(node.getBoard()),maxBlockScore); //total number of block TODO: count only new pieces placed?
+
+        score = normalize(score,getArea(node.getBoard()),maxAreaScore);
+
+        float[] nbrOfCorner = new float[players.length];
+        for(int i=0; i<players.length;i++) nbrOfCorner[i]=board.getCorner(players[i].getStartingCorner()).size();
+        score = normalize(score,nbrOfCorner,maxCornerScore);
+
+        float[] nbrOfCornerBlocked = blocksMostCorners(node);
+        score = normalize(score,nbrOfCornerBlocked,maxCornerBlocked);
+
+        node.setScore(score);
+        return score;
+    }
+
+
+    /** FOR THE PARANOID SEARCH
+     * method returns and set the heuristic score to the current node
+     * @param node current node being scored
+     * @return the heuristic score of the current node
+     */
     public float getPScore(MiniMaxNode node){
         int state = players[rootPlayerNbr-1].getPiecesUsed().size();
         float blockScoreW, cornerScoreW, areaScoreW, cornerBlockedW;// *weight* of different attribute
@@ -492,43 +605,6 @@ public class MiniMax {
         return (nbrOfBlocks*blockScoreW)+(nbrOfCorners*cornerScoreW)+(area*areaScoreW)+(blockedCorner*cornerBlockedW);
 
     }
-
-
-    /**
-     * used to get the Score of the node for each player
-     * @param node - node currently being scored
-     * @return the score of the node move for each player
-     */
-    //TODO add the heursitcs that if the move piece is small then try to predict future moves with highest score
-    public float[] getScore(MiniMaxNode node) {
-        int state = node.getPlayer().getPiecesUsed().size();
-        float maxBlockScore=10, maxCornerScore=7, maxAreaScore = 4, maxCornerBlocked = 9;// *weight* of different attribute
-
-        if(state<6){
-            maxBlockScore=15; maxCornerScore=8; maxAreaScore = 4; maxCornerBlocked = 3;
-        }else if(state>=6&&state<13){
-            maxBlockScore=7; maxCornerScore=10; maxAreaScore = 3; maxCornerBlocked = 10;
-        }else{
-            maxBlockScore=5; maxCornerScore=10; maxAreaScore = 5; maxCornerBlocked = 10;
-        }
-
-
-        float[] score = new float[players.length];
-
-        score = normalize(score,getBlocksScore(node.getBoard()),maxBlockScore); //total number of block TODO: count only new pieces placed?
-
-        score = normalize(score,getArea(node.getBoard()),maxAreaScore);
-
-        float[] nbrOfCorner = new float[players.length];
-        for(int i=0; i<players.length;i++) nbrOfCorner[i]=board.getCorner(players[i].getStartingCorner()).size();
-        score = normalize(score,nbrOfCorner,maxCornerScore);
-
-        float[] nbrOfCornerBlocked = blocksMostCorners(node);
-        score = normalize(score,nbrOfCornerBlocked,maxCornerBlocked);
-
-        node.setScore(score);
-        return score;
-    }
     ////////////////////////////////
     //TESTING
 
@@ -546,6 +622,8 @@ public class MiniMax {
         p2.setPiecesList(PieceFactory.get().getAllPieces());
         p3.setPiecesList(PieceFactory.get().getAllPieces());
         p4.setPiecesList(PieceFactory.get().getAllPieces());
+
+        Data.setPlayerTypes(new String[]{"MiniMax-MaxN Player","MiniMax-Paranoid Player"});
 
         Board b = new Board(new Player[]{p1, p2});
         MiniMax m = new MiniMax(new Player[]{p1,p2},b);

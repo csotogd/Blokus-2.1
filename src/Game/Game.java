@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 import DataBase.*;
 
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -270,9 +271,11 @@ public class Game extends Application {
             BorderPane principal = new BorderPane();
             principal.setBackground(Data.createBackGround());
             principal.setTop(win);
-            principal.setLeft(scores);
+            FlowPane left = new FlowPane();
+            left.getChildren().add(scores);
+            left.getChildren().add(restartButton);
+            principal.setLeft(left);
             principal.setCenter(boardUI.principal);
-            principal.setBottom(restartButton);
             principal.setRight(pieces);
 
             Scene endScene = new Scene(principal, 1000, 800);
