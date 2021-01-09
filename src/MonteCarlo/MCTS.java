@@ -114,6 +114,15 @@ public class MCTS {
                     score[i] += maxDist - Math.sqrt(Math.pow(board.getDIMENSION() / 2 - (moves.get(i).getPosition().get_x() + (moves.get(i).getPiece().getShape()[0].length) / 2.0), 2) +
                             Math.pow(board.getDIMENSION() / 2 - (moves.get(i).getPosition().get_y() + (moves.get(i).getPiece().getShape().length) / 2.0), 2));
                 }
+            }else{
+                for (int i = 0; i < moves.size(); i++) {
+                    double maxDist = 0;
+                    for(Corner c: moves.get(i).getPiece().getCornersContacts(moves.get(i).getPosition())){
+                        double dist = Math.sqrt(Math.pow(c.getPosition().get_x()-players[player].getStartingCorner().get_x(),2)+Math.pow(c.getPosition().get_y()-players[player].getStartingCorner().get_y(),2));
+                        if(dist>maxDist) maxDist=dist;
+                    }
+                    score[i]+=maxDist/Math.sqrt(board.getDIMENSION()*2);
+                }
             }
             //score with numMoves increase
             if (!p.isFirstMove() ) {
@@ -122,9 +131,16 @@ public class MCTS {
                     for (int i = 0; i < moves.size(); i++) {
                         write(moves.get(i), bclone);
                         //score with numMoves increase
-                        for (Piece piece : p.getUnplayablePiece()) { //TODO: use fits in there instead
-                            if (bclone.fitOnBoard(piece, p)) score[i] += 1;
+                        for (Corner c : moves.get(i).getPiece().getCornersContacts(moves.get(i).getPosition())) {
+                            for (Piece piece : p.getUnplayablePiece()) {
+                                    //if it fits in that corner: score of move += numBlocks of the biggest piece that fits / 5.0
+                                    if (fitsInThere(bclone, piece, c, player + 1)) {
+                                        score[i] += (piece.getNumberOfBlocks() / 2.0);
+                                        break;
+                                    }
+                            }
                         }
+
                         unwrite(moves.get(i), bclone);
                     }
                 } else if ( p.getUnplayablePiece().size() == 0) {
@@ -137,7 +153,7 @@ public class MCTS {
                             if (!piece.getLabel().equals(moves.get(i).getPiece().getLabel())) {
                                 //if it fits in that corner: score of move += numBlocks of the biggest piece that fits / 5.0
                                 if (fitsInThere(bclone, piece, c, player + 1)) {
-                                    score[i] += (piece.getNumberOfBlocks() / 2.0);
+                                    score[i] += (piece.getNumberOfBlocks() / 5.0);
                                     break;
                                 }
                             }
@@ -161,6 +177,8 @@ public class MCTS {
 
                 }
             }
+
+
             moves= getBest(moves,score,numMoves);
         }
         List<Node> children = n.getChildren();
