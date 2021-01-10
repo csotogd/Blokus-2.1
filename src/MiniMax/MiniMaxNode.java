@@ -16,7 +16,6 @@ public class MiniMaxNode {
     private float[] score;
     private float pScore;
     private Player player;
-    private Move killerMoves;
 
     /**
      * CONSTRUCTOR for the root (parent point to itself)
@@ -96,13 +95,5 @@ public class MiniMaxNode {
 
     public Player getPlayer() {
         return player;
-    }
-
-    public Move getKillerMoves() {
-        return killerMoves;
-    }
-
-    public void setKillerMoves(Move killerMoves) {
-        this.killerMoves = killerMoves;
     }
 }

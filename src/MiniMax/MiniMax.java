@@ -72,15 +72,15 @@ public class MiniMax {
             this.u = 0;
             if (state >= phasesStartTurns[0] && state < phasesStartTurns[1]){
                 for (int i = 0; i < weights[0].length; i++) {
-                    this.u+=weights[0][i]*maxHeuristics[i];
+                    this.u+=weights[1][i]*maxHeuristics[i];
                 }
             }else if (state >= phasesStartTurns[1]){
                 for (int i = 0; i < weights[0].length; i++) {
-                    this.u+=weights[1][i]*maxHeuristics[i];
+                    this.u+=weights[2][i]*maxHeuristics[i];
                 }
             }else {
                 for (int i = 0; i < weights[0].length; i++) {
-                    this.u+=weights[2][i]*maxHeuristics[i];
+                    this.u+=weights[0][i]*maxHeuristics[i];
                 }
             }
             //maxN
@@ -97,7 +97,7 @@ public class MiniMax {
             //paranoid
             this.cutOffMoveOccurenceP = new ArrayList[players.length];
             for (int i = 0; i < cutOffMoveOccurenceP.length; i++) {
-                cutOffMoveOccurenceP[i] = new ArrayList<Move>();
+                cutOffMoveOccurenceP[i] = new ArrayList<>();
             }
             float score = paranoidSearch(root,maxDepth,playerNbr,Float.MIN_VALUE,Float.MAX_VALUE);
             System.out.println("best score = " + score);
@@ -158,6 +158,14 @@ public class MiniMax {
         //if we have reached a terminal node (leaf) we set the score as the heuristics and then backtrack
         if(depth<=0) {
             node.setScore(getScore(node));
+            /*
+            System.out.print("score = ");
+            for (int i = 0; i < node.getScore().length; i++) {
+                System.out.print(node.getScore()[i] + ",");
+            }
+            System.out.println();
+
+             */
             return node.getScore();
         }
         //list of the best score for each player
@@ -188,7 +196,6 @@ public class MiniMax {
             //then we set the score of the current node as the one of the child
             //cutoff
             if(result[playerNbr-1]>=this.u-alpha) {
-                node.setKillerMoves(newNode.getMove());
                 checkToAddToCutOff(newNode.getMove());
                 node.setScore(result);
                 return result;
@@ -212,6 +219,7 @@ public class MiniMax {
         if(depth<=0){
             if(playerNbr==rootPlayerNbr) {
                 node.setpScore(getPScore(node));
+                //System.out.println(node.getpScore());
                 return node.getpScore();
             }else{
                 System.out.println("STOP RECURSION COND., not possible, smth wrong");
@@ -245,7 +253,6 @@ public class MiniMax {
             }
             //cutoff
             if(alpha>=beta){
-                node.setKillerMoves(newNode.getMove());
                 checkToAddToCutOffP(newNode.getMove());
                 node.setpScore(beta);
                 return beta;
@@ -519,9 +526,6 @@ public class MiniMax {
                     Math.pow(board.getDIMENSION() / 2 - (move.getPosition().get_y() + (move.getPiece().getShape().length) / 2.0), 2)))/maxDist);
             current = current.getParent();
         }
-
-
-
         return score;
     }
 
@@ -559,8 +563,10 @@ public class MiniMax {
         for (int i = 0;i<heuristics.length;i++) {
             total+= heuristics[i];
         }
-        for (int i = 0;i<heuristics.length;i++) {
-            score[i]+=heuristics[i]*maximum/total;
+        if(total!=0){
+            for (int i = 0;i<heuristics.length;i++) {
+                score[i]+=heuristics[i]*maximum/total;
+            }
         }
         return score;
     }
@@ -574,13 +580,13 @@ public class MiniMax {
         float[] score = new float[players.length];
         //GET THE BEST WEIGHT
         float[] wei;
-        int state = node.getPlayer().getPiecesUsed().size();
+        int state = node.getPlayer().getPiecesList().size();
         if (state >= phasesStartTurns[0] && state < phasesStartTurns[1]){
-            wei = this.weights[0];
-        }else if (state >= phasesStartTurns[1]){
             wei = this.weights[1];
-        }else {
+        }else if (state >= phasesStartTurns[1]){
             wei = this.weights[2];
+        }else {
+            wei = this.weights[0];
         }
 
         //ADD MOST CORNERS
@@ -616,45 +622,62 @@ public class MiniMax {
         float[] heuristics = new float[5];
 
         //ADD MOST CORNERS
-        heuristics[0] = (board.getCorner(players[rootPlayerNbr-1].getStartingCorner()).size())/6;
+        heuristics[0] += (board.getCorner(players[rootPlayerNbr-1].getStartingCorner()).size())/(maxHeuristics[0]*maxDepth);
 
-        Piece piece = node.getMove().getPiece();
-        int[][] shape = piece.getShape();
-        Vector2d position = node.getMove().getPosition();
+        //BLOCK MOST CORNERS
         int blockCornerNumber = 0;
-        for (int i = 0; i < shape.length; i++){
-            for (int j = 0; j < shape[0].length; j++){
-                if (shape[i][j] != 0){
-                    int nbrCornersBlocked = isDiffPlayerToCorner(i + position.get_y(), j + position.get_x(), board,players[rootPlayerNbr-1].getPlayerNumber());
-                    blockCornerNumber+=nbrCornersBlocked;
+        MiniMaxNode current = node;
+        while(current!=root){
+            if(current.getPlayer()==root.getPlayer()){
+                Move move = current.getMove();
+                Piece piece = move.getPiece();
+                int[][] shape = piece.getShape();
+                Vector2d position = move.getPosition();
+                for (int i = 0; i < shape.length; i++){
+                    for (int j = 0; j < shape[0].length; j++){
+                        if (shape[i][j] != 0){
+                            int nbrCornersBlocked = isDiffPlayerToCorner(i + position.get_y(), j + position.get_x(), board,players[rootPlayerNbr-1].getPlayerNumber());
+                            blockCornerNumber+=nbrCornersBlocked;
+                        }
+                    }
                 }
             }
+            current = current.getParent();
         }
-        //BLOCK MOST CORNERS
-        heuristics[1] =  blockCornerNumber/15;
+        heuristics[1] =  blockCornerNumber/(15*maxDepth);
 
         //CLOSEST TO MIDDLE
-        Move move = node.getMove();
+        current = node;
+        while(current.getPlayer()!=players[rootPlayerNbr-1]){
+            current = current.getParent();
+        }
+        Move move = current.getMove();
         double maxDist = Math.sqrt(Math.pow(board.getDIMENSION() / 2, 2) * 2);
         heuristics[2] =  (float) ((maxDist - Math.sqrt(Math.pow(board.getDIMENSION() / 2 - (move.getPosition().get_x() + (move.getPiece().getShape()[0].length) / 2.0), 2) +
                 Math.pow(board.getDIMENSION() / 2 - (move.getPosition().get_y() + (move.getPiece().getShape().length) / 2.0), 2)))/maxDist);
 
         //BIGGEST PIECE
+        current = node;
         float nbrOfBlocks = 0;
-        for (int i = 0; i < board.boardArray.length; i++) {
-            for (int j = 0; j < board.boardArray[i].length; j++) {
-                if(board.boardArray[i][j]==players[rootPlayerNbr-1].getPlayerNumber()){
-                    nbrOfBlocks++;
-                }
+        while(current!=root) {
+            if (current.getPlayer() == root.getPlayer()) {
+                move = current.getMove();
+                Piece piece = move.getPiece();
+                nbrOfBlocks+=piece.getNumberOfBlocks();
             }
+            current = current.getParent();
         }
-        heuristics[3]=nbrOfBlocks/5;
+        heuristics[3]=nbrOfBlocks/(5*maxDepth);
 
         //FAR FROM STARTING POINT
-        Player p = node.getPlayer();
+        current = node;
+        while(current.getPlayer()!=players[rootPlayerNbr-1]){
+            current = current.getParent();
+        }
+        move = current.getMove();
         double maxDist1 = 0;
         for(Corner c: move.getPiece().getCornersContacts(move.getPosition())){
-            double dist = Math.sqrt(Math.pow(c.getPosition().get_x()-p.getStartingCorner().get_x(),2)+Math.pow(c.getPosition().get_y()-p.getStartingCorner().get_y(),2));
+            double dist = Math.sqrt(Math.pow(c.getPosition().get_x()-move.getPlayer().getStartingCorner().get_x(),2)+Math.pow(c.getPosition().get_y()-move.getPlayer().getStartingCorner().get_y(),2));
             if(dist>maxDist1) maxDist1=dist;
         }
         heuristics[4] = (float)(maxDist1/Math.sqrt(board.getDIMENSION()*2));
@@ -663,15 +686,15 @@ public class MiniMax {
         float score = 0;
         if (state >= phasesStartTurns[0] && state < phasesStartTurns[1]){
             for (int i = 0; i < weights[0].length; i++) {
-                score+=weights[0][i]*heuristics[i];
+                score+=weights[1][i]*heuristics[i];
             }
         }else if (state >= phasesStartTurns[1]){
             for (int i = 0; i < weights[1].length; i++) {
-                score+=weights[1][i]*heuristics[i];
+                score+=weights[2][i]*heuristics[i];
             }
         }else {
             for (int i = 0; i < weights[2].length; i++) {
-                score+=weights[2][i]*heuristics[i];
+                score+=weights[0][i]*heuristics[i];
             }
         }
         return score;
