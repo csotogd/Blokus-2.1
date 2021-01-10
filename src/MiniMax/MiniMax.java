@@ -576,20 +576,20 @@ public class MiniMax {
         //ADD MOST CORNERS
         float[] nbrOfCorner = new float[players.length];
         for(int i=0; i<players.length;i++) nbrOfCorner[i]=board.getCorner(players[i].getStartingCorner()).size();
-        score = normalize(score,nbrOfCorner,6/wei[0]);
+        score = normalize(score,nbrOfCorner,wei[0]/6);
 
         //BLOCK MOST CORNERS
         float[] nbrOfCornerBlocked = blocksMostCorners(node);
-        score = normalize(score,nbrOfCornerBlocked,15/wei[1]);
+        score = normalize(score,nbrOfCornerBlocked,wei[1]/15);
 
         //CLOSEST TO MIDDLE
-        score = normalize(score,getCloseToCenter(node),1/wei[2]);
+        score = normalize(score,getCloseToCenter(node),wei[2]);
 
         //BIGGEST PIECE
-        score = normalize(score,getBlocksScore(node.getBoard()),5/wei[3]);
+        score = normalize(score,getBlocksScore(node.getBoard()),wei[3]/5);
 
         //FAR FROM STARTING POINT
-        score = normalize(score,getFarest(node),1/wei[4]);
+        score = normalize(score,getFarest(node),wei[4]);
 
         node.setScore(score);
         return score;
