@@ -16,7 +16,7 @@ public class MiniMax {
     Player[] players;//list of the players in the game
     Board boardOrigin;//origin object of the board
     Board board;//board being being "modified"
-    private final int NBR_OF_TURNS = 2;//nbr of turn for the depth of the tree
+    private final int NBR_OF_TURNS = 1;//nbr of turn for the depth of the tree
     private int maxDepth;//max depth of the tree
     int rootPlayerNbr;//nbr of the player that needs to move
     float u = 0;//MAX-N SEARCH - upperbound of the sum of the score of each player (in order to cutoff nodes)
@@ -499,10 +499,10 @@ public class MiniMax {
         return res;
     }
 
-    /**
-     *
+    /** FOR THE MAX-N SEARCH
+     * method used to get the area between the move and the center for each player
      * @param node - node currently being scored
-     * @return
+     * @return the area between the move and the center for each player
      */
     private float[] getCloseToCenter(MiniMaxNode node){
         MiniMaxNode current = node;
@@ -520,6 +520,11 @@ public class MiniMax {
         return score;
     }
 
+    /** FOR THE MAX-N SEARCH
+     * method used to get the area between the move and the starting point for each player
+     * @param node - node currently being scored
+     * @return the area between the move and the starting point for each player
+     */
     private float[] getFarest(MiniMaxNode node){
         MiniMaxNode current = node;
         float[]score = new float[players.length];
@@ -576,20 +581,20 @@ public class MiniMax {
         //ADD MOST CORNERS
         float[] nbrOfCorner = new float[players.length];
         for(int i=0; i<players.length;i++) nbrOfCorner[i]=board.getCorner(players[i].getStartingCorner()).size();
-        score = normalize(score,nbrOfCorner,wei[0]/6);
+        score = normalize(score,nbrOfCorner,wei[0]/maxHeuristics[0]);
 
         //BLOCK MOST CORNERS
         float[] nbrOfCornerBlocked = blocksMostCorners(node);
-        score = normalize(score,nbrOfCornerBlocked,wei[1]/15);
+        score = normalize(score,nbrOfCornerBlocked,wei[1]/maxHeuristics[1]);
 
         //CLOSEST TO MIDDLE
-        score = normalize(score,getCloseToCenter(node),wei[2]);
+        score = normalize(score,getCloseToCenter(node),wei[2]/maxHeuristics[2]);
 
         //BIGGEST PIECE
-        score = normalize(score,getBlocksScore(node.getBoard()),wei[3]/5);
+        score = normalize(score,getBlocksScore(node.getBoard()),wei[3]/maxHeuristics[3]);
 
         //FAR FROM STARTING POINT
-        score = normalize(score,getFarest(node),wei[4]);
+        score = normalize(score,getFarest(node),wei[4]/maxHeuristics[4]);
 
         node.setScore(score);
         return score;
