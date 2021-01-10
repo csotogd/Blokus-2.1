@@ -86,6 +86,11 @@ public class MiniMax {
             //maxN
             this.cutOffMoveOccurence = new ArrayList<Move>(killerMovesLength);
             float[] score = maxN(root,maxDepth,playerNbr,Float.MIN_VALUE);
+            System.out.print("best score = ");
+            for (int i = 0; i < score.length; i++) {
+                System.out.print(score[i] + ",");
+            }
+            System.out.println();
             bestMove = getBestMove(root,score,playerNbr);
             System.out.println("MOVE DONE USING MAX-N");
         }else{
