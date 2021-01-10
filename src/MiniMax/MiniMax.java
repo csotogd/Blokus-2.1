@@ -16,13 +16,33 @@ public class MiniMax {
     Player[] players;//list of the players in the game
     Board boardOrigin;//origin object of the board
     Board board;//board being being "modified"
-    private final int NBR_OF_TURNS = 1;//nbr of turn for the depth of the tree
+    private final int NBR_OF_TURNS = 2;//nbr of turn for the depth of the tree
     private int maxDepth;//max depth of the tree
     int rootPlayerNbr;//nbr of the player that needs to move
-    float u = 30;//MAX-N SEARCH - upperbound of the sum of the score of each player (in order to cutoff nodes)
+    float u = 0;//MAX-N SEARCH - upperbound of the sum of the score of each player (in order to cutoff nodes)
     ArrayList<Move> cutOffMoveOccurence;//KILLER MOVE STRATEGY (max-N) - list of the moves being cutoff the most during the pruning
     ArrayList<Move>[] cutOffMoveOccurenceP;//KILLER MOVE STRATEGY (Paranoid) - list of the moves of each player being cutoff the most during the pruning
     int killerMovesLength = 10;//KILLER MOVE STRATEGY - nbr max of cutoff moves
+    private MiniMaxNode root;
+
+    /*
+    weights[0] = addMostCorners
+    weights[1] = blocksMostCorners
+    weights[2] = closestToMiddle
+    weights[3] = biggestPiece
+    weights[4] = farFromStartingPoint
+    */
+    protected float[][] weights = new float[][]{
+            {0.5312532f, 0.38739195f, 0.6310179f, 0.80074483f, 0.43988678f},
+            { 0.03257805f, 0.21643633f, 0.56497073f, 0.8927979f, 0.68175447f},
+            {0.06342363f, 0.5615145f, 0.099959135f, 0.94023997f, 0.013810515f},
+    };
+    protected float[] maxHeuristics = new float[]{
+            6,15,1,5,1
+    };
+
+
+    protected int[] phasesStartTurns = {5,12};
 
     /**
      * constructor of the algo class
@@ -43,11 +63,26 @@ public class MiniMax {
     public Move getMove(int playerNbr){
         this.rootPlayerNbr = playerNbr;
         this.board = boardOrigin.clone();
-        MiniMaxNode root = new MiniMaxNode(board,players[playerNbr-1].clone());
+        this.root = new MiniMaxNode(board,players[playerNbr-1].clone());
 
-        Move bestMove = null;
+        Move bestMove;
         long start = System.currentTimeMillis(); //start of the timer
         if(Data.getPlayerTypes()[rootPlayerNbr-1]=="MiniMax-MaxN Player"){
+            int state = players[playerNbr-1].getPiecesUsed().size();
+            this.u = 0;
+            if (state >= phasesStartTurns[0] && state < phasesStartTurns[1]){
+                for (int i = 0; i < weights[0].length; i++) {
+                    this.u+=weights[0][i]*maxHeuristics[i];
+                }
+            }else if (state >= phasesStartTurns[1]){
+                for (int i = 0; i < weights[0].length; i++) {
+                    this.u+=weights[1][i]*maxHeuristics[i];
+                }
+            }else {
+                for (int i = 0; i < weights[0].length; i++) {
+                    this.u+=weights[2][i]*maxHeuristics[i];
+                }
+            }
             //maxN
             this.cutOffMoveOccurence = new ArrayList<Move>(killerMovesLength);
             float[] score = maxN(root,maxDepth,playerNbr,Float.MIN_VALUE);
@@ -156,7 +191,6 @@ public class MiniMax {
         }
         node.setScore(best);
         return best;
-
     }
 
     /** PARANOID SEARCH
@@ -451,28 +485,6 @@ public class MiniMax {
                 (YPos + 1 >= grid.length || grid[YPos + 1][XPos] != playerNumber);//check bottom
     }
 
-
-    /** FOR THE MAX-N SEARCH
-     * method used to calculate the area of each player after the current move
-     * @param board - board of the game
-     * @return the area of each player after the current move
-     */
-    public float[] getArea(Board board){
-        float[] res = new float[players.length];
-        for(int i=0;i<players.length;i++) {
-            int farestX = Integer.MIN_VALUE;
-            int farestY = Integer.MIN_VALUE;
-
-            for (Corner corner : board.getCorner(players[i].getStartingCorner())) {
-                if (corner.getPosition().get_x() > farestX) farestX = corner.getPosition().get_x();
-                if (corner.getPosition().get_y() > farestY) farestY = corner.getPosition().get_y();
-            }
-            res[i]= (float) Math.sqrt((Math.pow(farestX - players[i].getStartingCorner().get_x(), 2) + Math.pow(farestY - players[i].getStartingCorner().get_y(), 2)));
-        }
-        return res;
-    }
-
-
     /** FOR THE MAX-N SEARCH
      *used to get the nbr of blocks for each player
      * @param board - board of the game
@@ -487,12 +499,50 @@ public class MiniMax {
         return res;
     }
 
+    /**
+     *
+     * @param node - node currently being scored
+     * @return
+     */
+    private float[] getCloseToCenter(MiniMaxNode node){
+        MiniMaxNode current = node;
+        float[]score = new float[players.length];
+        while(current!=root){
+            Move move = current.getMove();
+            double maxDist = Math.sqrt(Math.pow(board.getDIMENSION() / 2, 2) * 2);
+            score[current.getPlayer().getNumber()-1] = (float) ((maxDist - Math.sqrt(Math.pow(board.getDIMENSION() / 2 - (move.getPosition().get_x() + (move.getPiece().getShape()[0].length) / 2.0), 2) +
+                    Math.pow(board.getDIMENSION() / 2 - (move.getPosition().get_y() + (move.getPiece().getShape().length) / 2.0), 2)))/maxDist);
+            current = current.getParent();
+        }
+
+
+
+        return score;
+    }
+
+    private float[] getFarest(MiniMaxNode node){
+        MiniMaxNode current = node;
+        float[]score = new float[players.length];
+        while(current!=root) {
+            Player p = current.getPlayer();
+            Move move = current.getMove();
+            double maxDist = 0;
+            for (Corner c : move.getPiece().getCornersContacts(move.getPosition())) {
+                double dist = Math.sqrt(Math.pow(c.getPosition().get_x() - p.getStartingCorner().get_x(), 2) + Math.pow(c.getPosition().get_y() - p.getStartingCorner().get_y(), 2));
+                if (dist > maxDist) maxDist = dist;
+            }
+            score[current.getPlayer().getNumber()-1] = (float) (maxDist / Math.sqrt(board.getDIMENSION() * 2));
+            current = current.getParent();
+        }
+        return score;
+    }
+
     /** FOR THE MAX-N SEARCH
-     * method used to normalize each heursitics
+     * method used to normalize each heuristics
      * @param score - score of each player at the current node being scored
      * @param heuristics - heuristics that is being normalized
-     * @param maximum - maximum of the heursitcs
-     * @return the score with the heuristics normlized
+     * @param maximum - maximum of the heuristics
+     * @return the score with the heuristics normalized
      */
     public float[] normalize(float[]score,float[]heuristics,float maximum){
         float total = 0;
@@ -510,32 +560,36 @@ public class MiniMax {
      * @param node - node currently being scored
      * @return the score of the node move for each player
      */
-    //TODO add the heursitcs that if the move piece is small then try to predict future moves with highest score
     public float[] getScore(MiniMaxNode node) {
+        float[] score = new float[players.length];
+        //GET THE BEST WEIGHT
+        float[] wei;
         int state = node.getPlayer().getPiecesUsed().size();
-        float maxBlockScore=10, maxCornerScore=7, maxAreaScore = 4, maxCornerBlocked = 9;// *weight* of different attribute
-
-        if(state<6){
-            maxBlockScore=15; maxCornerScore=8; maxAreaScore = 4; maxCornerBlocked = 3;
-        }else if(state>=6&&state<13){
-            maxBlockScore=7; maxCornerScore=10; maxAreaScore = 3; maxCornerBlocked = 10;
-        }else{
-            maxBlockScore=5; maxCornerScore=10; maxAreaScore = 5; maxCornerBlocked = 10;
+        if (state >= phasesStartTurns[0] && state < phasesStartTurns[1]){
+            wei = this.weights[0];
+        }else if (state >= phasesStartTurns[1]){
+            wei = this.weights[1];
+        }else {
+            wei = this.weights[2];
         }
 
-
-        float[] score = new float[players.length];
-
-        score = normalize(score,getBlocksScore(node.getBoard()),maxBlockScore); //total number of block TODO: count only new pieces placed?
-
-        score = normalize(score,getArea(node.getBoard()),maxAreaScore);
-
+        //ADD MOST CORNERS
         float[] nbrOfCorner = new float[players.length];
         for(int i=0; i<players.length;i++) nbrOfCorner[i]=board.getCorner(players[i].getStartingCorner()).size();
-        score = normalize(score,nbrOfCorner,maxCornerScore);
+        score = normalize(score,nbrOfCorner,6/wei[0]);
 
+        //BLOCK MOST CORNERS
         float[] nbrOfCornerBlocked = blocksMostCorners(node);
-        score = normalize(score,nbrOfCornerBlocked,maxCornerBlocked);
+        score = normalize(score,nbrOfCornerBlocked,15/wei[1]);
+
+        //CLOSEST TO MIDDLE
+        score = normalize(score,getCloseToCenter(node),1/wei[2]);
+
+        //BIGGEST PIECE
+        score = normalize(score,getBlocksScore(node.getBoard()),5/wei[3]);
+
+        //FAR FROM STARTING POINT
+        score = normalize(score,getFarest(node),1/wei[4]);
 
         node.setScore(score);
         return score;
@@ -549,39 +603,14 @@ public class MiniMax {
      */
     public float getPScore(MiniMaxNode node){
         int state = players[rootPlayerNbr-1].getPiecesUsed().size();
-        float blockScoreW, cornerScoreW, areaScoreW, cornerBlockedW;// *weight* of different attribute
+        float[] heuristics = new float[5];
 
-        if(state<6){
-            blockScoreW=0.5f; cornerScoreW=0.3f; areaScoreW = 0.15f; cornerBlockedW = 0.05f;
-        }else if(state>=6&&state<13){
-            blockScoreW=0.15f; cornerScoreW=0.4f; areaScoreW = 0.05f; cornerBlockedW = 0.4f;
-        }else{
-            blockScoreW=0.2f; cornerScoreW=0.4f; areaScoreW = 0.2f; cornerBlockedW = 0.4f;
-        }
-        float nbrOfBlocks = 0;
-        for (int i = 0; i < board.boardArray.length; i++) {
-            for (int j = 0; j < board.boardArray[i].length; j++) {
-                if(board.boardArray[i][j]==players[rootPlayerNbr-1].getPlayerNumber()){
-                    nbrOfBlocks++;
-                }
-            }
-        }
-
-        float nbrOfCorners = board.getCorner(players[rootPlayerNbr-1].getStartingCorner()).size();
-
-        int farestX = Integer.MIN_VALUE;
-        int farestY = Integer.MIN_VALUE;
-
-        for (Corner corner : board.getCorner(players[rootPlayerNbr-1].getStartingCorner())) {
-            if (corner.getPosition().get_x() > farestX) farestX = corner.getPosition().get_x();
-            if (corner.getPosition().get_y() > farestY) farestY = corner.getPosition().get_y();
-        }
-        float area = (float) Math.sqrt((Math.pow(farestX - players[rootPlayerNbr-1].getStartingCorner().get_x(), 2) + Math.pow(farestY - players[rootPlayerNbr-1].getStartingCorner().get_y(), 2)));
+        //ADD MOST CORNERS
+        heuristics[0] = (board.getCorner(players[rootPlayerNbr-1].getStartingCorner()).size())/6;
 
         Piece piece = node.getMove().getPiece();
         int[][] shape = piece.getShape();
         Vector2d position = node.getMove().getPosition();
-
         int blockCornerNumber = 0;
         for (int i = 0; i < shape.length; i++){
             for (int j = 0; j < shape[0].length; j++){
@@ -591,23 +620,53 @@ public class MiniMax {
                 }
             }
         }
-        float blockedCorner = blockCornerNumber;
+        //BLOCK MOST CORNERS
+        heuristics[1] =  blockCornerNumber/15;
 
-        /*//NORMALIZATION
-        float[] scores = {nbrOfBlocks,nbrOfCorners,area,blockedCorner};
-        float max = Float.MAX_VALUE;
-        for (int i = 0; i < scores.length; i++) {
-            if(scores[i]>max){
-                max = scores[i];
+        //CLOSEST TO MIDDLE
+        Move move = node.getMove();
+        double maxDist = Math.sqrt(Math.pow(board.getDIMENSION() / 2, 2) * 2);
+        heuristics[2] =  (float) ((maxDist - Math.sqrt(Math.pow(board.getDIMENSION() / 2 - (move.getPosition().get_x() + (move.getPiece().getShape()[0].length) / 2.0), 2) +
+                Math.pow(board.getDIMENSION() / 2 - (move.getPosition().get_y() + (move.getPiece().getShape().length) / 2.0), 2)))/maxDist);
+
+        //BIGGEST PIECE
+        float nbrOfBlocks = 0;
+        for (int i = 0; i < board.boardArray.length; i++) {
+            for (int j = 0; j < board.boardArray[i].length; j++) {
+                if(board.boardArray[i][j]==players[rootPlayerNbr-1].getPlayerNumber()){
+                    nbrOfBlocks++;
+                }
             }
         }
-        for (int i = 0; i < scores.length; i++) {
-            scores[i] = scores[i]/max;
-        }*/
+        heuristics[3]=nbrOfBlocks/5;
 
-        return (nbrOfBlocks*blockScoreW)+(nbrOfCorners*cornerScoreW)+(area*areaScoreW)+(blockedCorner*cornerBlockedW);
+        //FAR FROM STARTING POINT
+        Player p = node.getPlayer();
+        double maxDist1 = 0;
+        for(Corner c: move.getPiece().getCornersContacts(move.getPosition())){
+            double dist = Math.sqrt(Math.pow(c.getPosition().get_x()-p.getStartingCorner().get_x(),2)+Math.pow(c.getPosition().get_y()-p.getStartingCorner().get_y(),2));
+            if(dist>maxDist1) maxDist1=dist;
+        }
+        heuristics[4] = (float)(maxDist1/Math.sqrt(board.getDIMENSION()*2));
 
+        //PUT THE HEURISTICS TOGETHER DEPENDING ON THE STATE OF THE GAME
+        float score = 0;
+        if (state >= phasesStartTurns[0] && state < phasesStartTurns[1]){
+            for (int i = 0; i < weights[0].length; i++) {
+                score+=weights[0][i]*heuristics[i];
+            }
+        }else if (state >= phasesStartTurns[1]){
+            for (int i = 0; i < weights[1].length; i++) {
+                score+=weights[1][i]*heuristics[i];
+            }
+        }else {
+            for (int i = 0; i < weights[2].length; i++) {
+                score+=weights[2][i]*heuristics[i];
+            }
+        }
+        return score;
     }
+
     ////////////////////////////////
     //TESTING
 
