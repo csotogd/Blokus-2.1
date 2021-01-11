@@ -450,34 +450,27 @@ public class GeneticPlayer extends BotPlayer {
         //playerBlocked[i] will store true if a corner of player numbered i+1 is a happened at the given square.
         //at most we can have 3 corners, one for each player except the current one
 
-        try {
+        if (YPos - 1 >= 0 && XPos - 1 >= 0){
             int topLeft = grid[YPos - 1][XPos - 1];
             if (topLeft != 0 && topLeft != number && checkSides(YPos, XPos, grid, topLeft))
                 playerBlocked[topLeft-1]=true;
-        } catch (ArrayIndexOutOfBoundsException e){
-
         }
-        try {
+        if (YPos - 1 >= 0 && XPos + 1 < grid[0].length){
             int topRight = grid[YPos - 1][XPos + 1];
             if (topRight != 0 && topRight != number && checkSides(YPos, XPos, grid, topRight))
                 playerBlocked[topRight-1]=true;
-        } catch (ArrayIndexOutOfBoundsException e){
-
         }
-        try {
+        if (YPos + 1 < grid.length && XPos - 1 >= 0){
             int bottomLeft = grid[YPos + 1][XPos - 1];
             if (bottomLeft != 0 && bottomLeft != number && checkSides(YPos, XPos, grid, bottomLeft))
                 playerBlocked[bottomLeft-1]=true;
-        } catch (ArrayIndexOutOfBoundsException e){
-
         }
-        try {
+        if (YPos + 1 < grid.length && XPos + 1 < grid[0].length) {
             int bottomRight = grid[YPos + 1][XPos + 1];
             if (bottomRight != 0 && bottomRight != number && checkSides(YPos, XPos, grid, bottomRight))
                 playerBlocked[bottomRight-1]=true;
-        } catch (ArrayIndexOutOfBoundsException e){
-
         }
+
         int nbrOfBlocks = 0;
         for(int i = 0; i < playerBlocked.length; i++)
             if (playerBlocked[i])
