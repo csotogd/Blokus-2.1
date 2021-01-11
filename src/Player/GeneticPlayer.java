@@ -182,10 +182,11 @@ public class GeneticPlayer extends BotPlayer {
         //New method test
         chosenMove = null;
         expandAndEvaluate(board.clone(), this, depth);
-        if (chosenMove.getPlayer() != this){
-            System.out.println("huh, maybe this player has no moves left?");
+        if (chosenMove == null || chosenMove.getPlayer() != this){
+            //System.out.println("huh, maybe this player has no moves left?");
+            chosenMove = null;
         }
-        chosenMove.print();
+        //chosenMove.print();
 
         /*
         float bestScore = -1000;
@@ -356,7 +357,7 @@ public class GeneticPlayer extends BotPlayer {
     }
 
     public int countPointsPlayer(Player player){
-        System.out.println("sim end");
+        //System.out.println("sim end");
         int points=0;
         int piecesPlaced=0;
         for (Piece piece : player.getPiecesList()){
