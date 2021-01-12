@@ -5,11 +5,12 @@ import DataBase.Piece;
 import Game.Game;
 import GameBoard.Board;
 import GameBoard.BoardUI;
+import MonteCarlo.MonteCarlo;
 import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
 import javafx.scene.layout.Pane;
-import Player.GeneticPlayer;
+import Player.*;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -30,10 +31,12 @@ public class SimulatedGame {
 
     public SimulatedGame(int dimension, Player[] players){
         String[] playersName= new String[players.length];
-        this.players = this.initializePlayers(playersName, dimension, players);
+        this.players = initializePlayers(playersName, dimension, players);
          this.board = new Board(this.players, dimension);
          state = Game.GameState.AI_MOVE;
 
+        for(Player p: players) if(p instanceof GAMCplayer) ((GAMCplayer) p).setMc(new MonteCarlo(players, board));
+        else if(p instanceof MCPlayer)((MCPlayer) p).setMc(new MonteCarlo(players, board));
         //game state of human move not considered
     }
 
@@ -89,12 +92,23 @@ public class SimulatedGame {
             //TODO make it so that no action can be taken while ai is taking its turn
             //TODO handle logic and animation for ai move
             Move move = null;
-            if (actualPlayer instanceof GeneticPlayer) {
+             if( actualPlayer instanceof  GAMCplayer){
+                 move = ((GAMCplayer) actualPlayer).getBestMove(board,3000);
+                 ((GAMCplayer)actualPlayer).addTurn();
+             }else if(actualPlayer instanceof GeneticPlayer){
+                 move = ((GeneticPlayer) actualPlayer).calculateMove(board);
+                 ((GeneticPlayer) actualPlayer).addTurn();
+             }else if(actualPlayer instanceof MCPlayer) {
+                 move = ((MCPlayer) actualPlayer).getMc().simulation(actualPlayer.getNumber()-1, 3000);
+             }else if(actualPlayer instanceof MiniMaxPlayer){
+                 //move = miniMax.getMove(actualPlayer.getPlayerNumber());
+             }
+            //if (actualPlayer instanceof GeneticPlayer) {
                 //System.out.println("move: " + nbrMoves);
                 //board.print();
 
-                move = ((GeneticPlayer) actualPlayer).calculateMove(board);
-                ((GeneticPlayer) actualPlayer).addTurn();
+                //move = ((GeneticPlayer) actualPlayer).calculateMove(board);
+                //((GeneticPlayer) actualPlayer).addTurn();
                 if(move !=null) {
                     makeMove(move);
                     moveAllowed(move.getPiece());
@@ -104,7 +118,7 @@ public class SimulatedGame {
 
 
 
-            }
+            //}
         }
     }
 
@@ -249,13 +263,25 @@ public class SimulatedGame {
     public static void main(String[] args) {
         //testing
 
-        int dimension= 8;
+        int dimension= 20;
         Player [] players = new Player[4];
-        for (int i=0; i<4; i++){
-            players[i]=new GeneticPlayer(i+1);
-        }
+        //for (int i=0; i<4; i++){
+        //    players[i]=new GeneticPlayer(i+1);
+        //}
+        players[0] = new GeneticPlayer(1);
+        ((GeneticPlayer)players[0]).setWeightsAsArray(new float[][]{{0.113416076f, 0.95335865f, 1.2278169f, 1.1148115f, 1.0720679f},
+                {0.42453498f, 2.178557f, 0.6315803f, 1.7912272f, 0.9422162f},
+                {0.32048786f, 0.92160666f, -0.11593586f, 1.6816598f, 0.18177348f}});
+        ((GeneticPlayer)players[0]).setPhasesStartTurns(new int[]{5, 13});
+        ((GeneticPlayer)players[0]).setDepth(1);
+        players[1] = new MCPlayer(2, "2");
+        players[2] = new GAMCplayer(3);
+        players[3] = new MCPlayer(4, "4");
+
+
         SimulatedGame simulation= new SimulatedGame(dimension, players);
         simulation.simulate();
+
 
     }
 
