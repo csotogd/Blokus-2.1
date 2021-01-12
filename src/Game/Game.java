@@ -27,6 +27,7 @@ import DataBase.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 
 public class Game extends Application {
@@ -209,6 +210,10 @@ public class Game extends Application {
                 System.out.println("In game status:  mo one moved");
             }else{
                 System.out.println(actualPlayer.getName()+ " skipped last move?: "+actualPlayer.getSkippedLastMove());
+                boolean playerSkippedLastMove = false;
+                if (actualPlayer.getSkippedLastMove()){
+                    playerSkippedLastMove = true;
+                }
                 //System.out.println("In game status:  someone did move moved");
                 nextTurn();
                 if (actualPlayer instanceof HumanPlayer)
@@ -216,7 +221,9 @@ public class Game extends Application {
                 else {
                     if(state!=GameState.END){
                         state = GameState.AI_MOVE;
-                        handleAITurn();
+                        if (!playerSkippedLastMove) {
+                            handleAITurn();
+                        }
                     }
                 }
             }
@@ -323,6 +330,8 @@ public class Game extends Application {
                 };
             }
         };
+//        System.out.println("\nTurn of player: " + actualPlayer.getPlayerNumber());
+//        System.out.println("calculateMove.start()");
         calculateMove.start();
 
         calculateMove.setOnSucceeded(e -> {
@@ -332,6 +341,13 @@ public class Game extends Application {
 
             Move move = calculateMove.getValue();
             if (move!=null&&move.makeMove(board)) {
+//                System.out.println("\nTurn of player: " + actualPlayer.getPlayerNumber());
+//                System.out.println(actualPlayer.getPiecesList());
+//
+//                move.print();
+//                //Scanner s = new Scanner(System.in);
+//                //s.nextLine();
+//                System.out.println("press enter\n");
                 Transition transition = boardUI.animateAIMove(move);
                 transition.setOnFinished(f -> moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]));
                 transition.play();
@@ -380,7 +396,7 @@ public class Game extends Application {
         for(Piece piece : player.getPiecesUsed()){
             //in board ui, pieces are not marked as used
             piecesPlaced++;
-            System.out.println("piece used");
+            //System.out.println("piece used");
         }
         for(Piece piece : player.getPiecesList()) {
             blocksNotPlaced += piece.getNumberOfBlocks();

@@ -182,6 +182,9 @@ public class GeneticPlayer extends BotPlayer {
         //New method test
         chosenMove = null;
         expandAndEvaluate(board.clone(), this, depth);
+        if (chosenMove.getPlayer().getPlayerNumber() != getPlayerNumber()){
+            System.out.println("wtf");
+        }
         if (chosenMove == null || chosenMove.getPlayer() != this){
             //System.out.println("huh, maybe this player has no moves left?");
             chosenMove = null;
@@ -248,9 +251,6 @@ public class GeneticPlayer extends BotPlayer {
      * @param depth The depth this method will go into the search tree
      */
     protected float expandAndEvaluate(Board board, Player player, int depth){
-
-        //TODO: Make it able to be reused by Carlos
-
         //Recursion business
         depth--;
         if (depth == -1){
