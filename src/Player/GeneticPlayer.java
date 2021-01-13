@@ -182,7 +182,7 @@ public class GeneticPlayer extends BotPlayer {
         //New method test
         chosenMove = null;
         expandAndEvaluate(board.clone(), this, depth);
-        if (chosenMove.getPlayer().getPlayerNumber() != getPlayerNumber()){
+        if (chosenMove != null && chosenMove.getPlayer().getPlayerNumber() != getPlayerNumber()){
             System.out.println("wtf");
         }
         if (chosenMove == null || chosenMove.getPlayer() != this){

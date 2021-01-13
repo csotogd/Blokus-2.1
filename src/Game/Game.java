@@ -330,8 +330,6 @@ public class Game extends Application {
                 };
             }
         };
-//        System.out.println("\nTurn of player: " + actualPlayer.getPlayerNumber());
-//        System.out.println("calculateMove.start()");
         calculateMove.start();
 
         calculateMove.setOnSucceeded(e -> {
@@ -341,13 +339,6 @@ public class Game extends Application {
 
             Move move = calculateMove.getValue();
             if (move!=null&&move.makeMove(board)) {
-//                System.out.println("\nTurn of player: " + actualPlayer.getPlayerNumber());
-//                System.out.println(actualPlayer.getPiecesList());
-//
-//                move.print();
-//                //Scanner s = new Scanner(System.in);
-//                //s.nextLine();
-//                System.out.println("press enter\n");
                 Transition transition = boardUI.animateAIMove(move);
                 transition.setOnFinished(f -> moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]));
                 transition.play();

@@ -5,7 +5,8 @@ import DataBase.Piece;
 import Game.Game;
 import GameBoard.Board;
 import GameBoard.BoardUI;
-import MonteCarlo.MonteCarlo;
+import MiniMax.MiniMax;
+import MonteCarlo.*;
 import Move.Move;
 import Player.Player;
 import Tools.Vector2d;
@@ -28,15 +29,30 @@ public class SimulatedGame {
     private ArrayList<Move> movesLog=new ArrayList<>();
     private  int nbrMoves=0;
     private int moveLimit=100;
+    private int timeLimit = 3500; // timelimit for MC player and GAMC player
+    private MiniMax miniMax;
 
     public SimulatedGame(int dimension, Player[] players){
         String[] playersName= new String[players.length];
         this.players = initializePlayers(playersName, dimension, players);
          this.board = new Board(this.players, dimension);
          state = Game.GameState.AI_MOVE;
+        miniMax = new MiniMax(this.players,board);
 
-        for(Player p: players) if(p instanceof GAMCplayer) ((GAMCplayer) p).setMc(new MonteCarlo(players, board));
-        else if(p instanceof MCPlayer)((MCPlayer) p).setMc(new MonteCarlo(players, board));
+        for(Player p: players) {
+            if(p instanceof GAMCplayer){
+                ((GAMCplayer) p).setMc(new MonteCarlo(players, board));
+            }
+            else if(p instanceof GaMcTplayer){
+                ((GaMcTplayer) p).setMc(new MCTS(players, board));
+            }
+            else if(p instanceof MCPlayer){
+                ((MCPlayer) p).setMc(new MonteCarlo(players, board));
+            }
+            else if(p instanceof MCTSplayer){
+                ((MCTSplayer) p).setMcts(new MCTS(players, board));
+            }
+        }
         //game state of human move not considered
     }
 
@@ -67,19 +83,24 @@ public class SimulatedGame {
                 //System.out.println("In game status:  mo one moved");
             }
             else {
-                //System.out.println(actualPlayer.getName()+ " skipped last move?: "+actualPlayer.getSkippedLastMove());
-                //System.out.println("In game status:  someone did move moved");
+                System.out.println(actualPlayer.getName() + " skipped last move?: " + actualPlayer.getSkippedLastMove());
+                boolean playerSkippedLastMove = false;
+                if (actualPlayer.getSkippedLastMove()){
+                    playerSkippedLastMove = true;
+                }
                 nextTurn();
 
-                    state = Game.GameState.AI_MOVE;
+                state = Game.GameState.AI_MOVE;
+                if (!playerSkippedLastMove && !actualPlayer.getSkippedLastMove()) {
                     handleAITurn();
+                }
 
             }
            // debuggingPiecesUsed();
         }
         if (state== Game.GameState.END){
             countPoints();
-            //System.out.println("THE GAME HAS ENDED");
+            System.out.println("THE GAME HAS ENDED");
         }
     }
 
@@ -93,32 +114,31 @@ public class SimulatedGame {
             //TODO handle logic and animation for ai move
             Move move = null;
              if( actualPlayer instanceof  GAMCplayer){
-                 move = ((GAMCplayer) actualPlayer).getBestMove(board,3000);
+                 move = ((GAMCplayer) actualPlayer).getBestMove(board,timeLimit);
                  ((GAMCplayer)actualPlayer).addTurn();
+             }else if(actualPlayer instanceof MCTSplayer){
+                 move = ((MCTSplayer) actualPlayer).getMcts().simulation(actualPlayer.getNumber()-1, timeLimit);
+             }else if(actualPlayer instanceof GaMcTplayer){
+                 move = ((GaMcTplayer) actualPlayer).getBestMove(board,timeLimit);
+                 ((GeneticPlayer) actualPlayer).addTurn();
              }else if(actualPlayer instanceof GeneticPlayer){
                  move = ((GeneticPlayer) actualPlayer).calculateMove(board);
                  ((GeneticPlayer) actualPlayer).addTurn();
              }else if(actualPlayer instanceof MCPlayer) {
-                 move = ((MCPlayer) actualPlayer).getMc().simulation(actualPlayer.getNumber()-1, 3000);
+                 move = ((MCPlayer) actualPlayer).getMc().simulation(actualPlayer.getNumber()-1, timeLimit);
              }else if(actualPlayer instanceof MiniMaxPlayer){
-                 //move = miniMax.getMove(actualPlayer.getPlayerNumber());
+                 move = miniMax.getMove(actualPlayer.getPlayerNumber());
              }
-            //if (actualPlayer instanceof GeneticPlayer) {
-                //System.out.println("move: " + nbrMoves);
-                //board.print();
+             System.out.println("turn of: " + actualPlayer.getPlayerNumber());
 
-                //move = ((GeneticPlayer) actualPlayer).calculateMove(board);
-                //((GeneticPlayer) actualPlayer).addTurn();
-                if(move !=null) {
-                    makeMove(move);
-                    moveAllowed(move.getPiece());
-                }
-                else
-                    actualPlayer.setSkippedLastMove(true);
+            if(move !=null) {
+                makeMove(move);
+                moveAllowed(move.getPiece());
+            }
+            else{
+                actualPlayer.setSkippedLastMove(true);
+            }
 
-
-
-            //}
         }
     }
 
@@ -139,7 +159,7 @@ public class SimulatedGame {
         for(Player player: players) {
             countPointsPlayer(player);
 
-            //System.out.println(player.getName()+"has "+player.getPoints()+" points");
+            System.out.println(player.getName()+" has "+player.getPoints()+" points");
         }
     }
 
@@ -242,7 +262,7 @@ public class SimulatedGame {
         Color[] colors = {Color.RED,Color.YELLOW,Color.GREEN,Color.BLUE};
         for(int i=1; i<= playersName.length; i++){
             players[i-1].setColor(colors[i-1]);
-            players[i-1].setName(playersName[i-1]);
+            //players[i-1].setName(playersName[i-1]);
             //players[i-1].setNumber(i);//need to test this line
         }
         Game.initializePlayerPieces(playersName, players);
@@ -278,10 +298,14 @@ public class SimulatedGame {
         players[2] = new GAMCplayer(3);
         players[3] = new MCPlayer(4, "4");
 
+        players[0].setName("GA1");
+        players[1].setName("MC2");
+        players[2].setName("GAMC3");
+        players[3].setName("MC4");
 
         SimulatedGame simulation= new SimulatedGame(dimension, players);
         simulation.simulate();
-
+        System.out.println(simulation.getWinner());
 
     }
 

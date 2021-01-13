@@ -450,4 +450,16 @@ public abstract class Player {
     public List<Piece> getUnplayablePiece() {
         return unplayablePiece;
     }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "number=" + number +
+                ", name='" + name + '\'' +
+                ", humanPlayer=" + humanPlayer +
+                ", color=" + color +
+                ", startingCorner=" + startingCorner +
+                ", points=" + points +
+                '}';
+    }
 }
