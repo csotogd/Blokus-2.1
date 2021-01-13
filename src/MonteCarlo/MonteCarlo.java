@@ -170,7 +170,7 @@ public class MonteCarlo {
                                 if (!piece.getLabel().equals(moves.get(i).getPiece().getLabel())) {
                                     //if it fits in that corner: score of move += numBlocks of the biggest piece that fits / 5.0
                                     if (fitsInThere(bclone, piece, c, player + 1)) {
-                                        score[i] += (piece.getNumberOfBlocks() / 5.0);
+                                        score[i] += (piece.getNumberOfBlocks() / 25.0);
                                         break;
                                     }
                                 }
@@ -217,22 +217,22 @@ public class MonteCarlo {
             for(Vector2d emptyC:c.getToCornerPositions()){
                 for (int j = 0; j < piece.getCorners().get(0).size(); j++){
                     Vector2d position =emptyC.subtract(piece.getCorners().get(piece.getCurrentState()).get(j).getPosition());
-                    if(piece.getCornersContacts(position).contains(emptyC) &&
-                            bclone.inBoard(position) && bclone.inBoard(position.add(new Vector2d(piece.getShape()[0].length,piece.getShape().length))) ){
-                        boolean fit = true;
-                        for (int k = 0; k < piece.getShape().length&&fit; k++) {
-                            for (int l = 0; l < piece.getShape()[0].length&&fit; l++) {
-                                if(piece.getShape()[k][l]!=0){
-                                    if(bclone.boardArray[position.get_y()+k][position.get_x()+l]!=0||
-                                            (position.get_x()+l-1>0&&bclone.boardArray[position.get_y()+k][position.get_x()+l-1]==playerNumber)||
-                                            (position.get_x()+l+1<bclone.getDIMENSION()&&bclone.boardArray[position.get_y()+k][position.get_x()+l+1]==playerNumber)||
-                                            (position.get_y()+l-1>0&&bclone.boardArray[position.get_y()+k-1][position.get_x()+l]==playerNumber)||
-                                            (position.get_y()+l+1<bclone.getDIMENSION()&&bclone.boardArray[position.get_y()+k+1][position.get_x()+l]==playerNumber)) fit=false;
+                    for(Corner corner:piece.getCornersContacts(position)) if(corner.getPosition().equals(emptyC))
+                        if(bclone.inBoard(position) && bclone.inBoard(position.add(new Vector2d(piece.getShape()[0].length,piece.getShape().length))) ){
+                            boolean fit = true;
+                            for (int k = 0; k < piece.getShape().length&&fit; k++) {
+                                for (int l = 0; l < piece.getShape()[0].length&&fit; l++) {
+                                    if(piece.getShape()[k][l]!=0){
+                                        if(bclone.boardArray[position.get_y()+k][position.get_x()+l]!=0||
+                                                (position.get_x()+l-1>0&&bclone.boardArray[position.get_y()+k][position.get_x()+l-1]==playerNumber)||
+                                                (position.get_x()+l+1<bclone.getDIMENSION()&&bclone.boardArray[position.get_y()+k][position.get_x()+l+1]==playerNumber)||
+                                                (position.get_y()+k-1>0&&bclone.boardArray[position.get_y()+k-1][position.get_x()+l]==playerNumber)||
+                                                (position.get_y()+k+1<bclone.getDIMENSION()&&bclone.boardArray[position.get_y()+k+1][position.get_x()+l]==playerNumber)) fit=false;
+                                    }
                                 }
                             }
+                            if(fit) return true;
                         }
-                        if(fit) return true;
-                    }
                 }
             }
             piece.rotateRight();
