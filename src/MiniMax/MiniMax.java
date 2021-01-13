@@ -31,18 +31,27 @@ public class MiniMax {
     weights[2] = closestToMiddle
     weights[3] = biggestPiece
     weights[4] = farFromStartingPoint
-    */
+
+    WEIGHTS FOR 4 PLAYERS MODE
     protected float[][] weights = new float[][]{
             {0.5312532f, 0.38739195f, 0.6310179f, 0.80074483f, 0.43988678f},
             { 0.03257805f, 0.21643633f, 0.56497073f, 0.8927979f, 0.68175447f},
             {0.06342363f, 0.5615145f, 0.099959135f, 0.94023997f, 0.013810515f},
     };
+    protected int[] phasesStartTurns = {5,12};
+
+     */
+    //WEIGHTS FOR 2 PLAYERS MODE
+    protected float[][] weights = new float[][]{
+            {0.5312532f, 0.38739195f, 0.6310179f, 0.80074483f, 0.43988678f},
+            {0.35296708f, 0.98730946f, 0.050320804f, 0.73727065f, 0.014046907f},
+            {0.2961447f, 0.87143975f, 0.40821207f, 0.8513078f, 0.49246377f},
+    };
+    protected int[] phasesStartTurns = {4,10};
+
     protected float[] maxHeuristics = new float[]{
             6,15,1,5,1
     };
-
-
-    protected int[] phasesStartTurns = {5,12};
 
     /**
      * constructor of the algo class
@@ -447,34 +456,27 @@ public class MiniMax {
         //playerBlocked[i] will store true if a corner of player numbered i+1 is a happened at the given square.
         //at most we can have 3 corners, one for each player except the current one
 
-        try {
+        if (YPos - 1 >= 0 && XPos - 1 >= 0){
             int topLeft = grid[YPos - 1][XPos - 1];
             if (topLeft != 0 && topLeft != playerNbr && checkSides(YPos, XPos, grid, topLeft))
                 playerBlocked[topLeft-1]=true;
-        } catch (ArrayIndexOutOfBoundsException e){
-
         }
-        try {
+        if (YPos - 1 >= 0 && XPos + 1 < grid[0].length){
             int topRight = grid[YPos - 1][XPos + 1];
             if (topRight != 0 && topRight != playerNbr && checkSides(YPos, XPos, grid, topRight))
                 playerBlocked[topRight-1]=true;
-        } catch (ArrayIndexOutOfBoundsException e){
-
         }
-        try {
+        if (YPos + 1 < grid.length && XPos - 1 >= 0){
             int bottomLeft = grid[YPos + 1][XPos - 1];
             if (bottomLeft != 0 && bottomLeft != playerNbr && checkSides(YPos, XPos, grid, bottomLeft))
                 playerBlocked[bottomLeft-1]=true;
-        } catch (ArrayIndexOutOfBoundsException e){
-
         }
-        try {
+        if (YPos + 1 < grid.length && XPos + 1 < grid[0].length) {
             int bottomRight = grid[YPos + 1][XPos + 1];
             if (bottomRight != 0 && bottomRight != playerNbr && checkSides(YPos, XPos, grid, bottomRight))
                 playerBlocked[bottomRight-1]=true;
-        } catch (ArrayIndexOutOfBoundsException e){
-
         }
+
         int nbrOfBlocks = 0;
         for(int i = 0; i < playerBlocked.length; i++)
             if (playerBlocked[i])
