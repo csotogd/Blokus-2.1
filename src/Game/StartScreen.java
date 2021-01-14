@@ -54,15 +54,18 @@ public class StartScreen extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        this.stage = primaryStage;
         root.setId("start-screen-pane");
         Background background = Data.createBackGround();
         root.setBackground(background);
         Scene scene = new Scene(root, 800, 800);
         addContent();
         scene.setFill(Color.BLACK);
-        primaryStage.setTitle("Blokus Start Screen");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        this.stage.setTitle("Blokus Start Screen");
+        this.stage.setScene(scene);
+        this.stage.sizeToScene();
+        this.stage.show();
+        this.stage.centerOnScreen();
         stage = primaryStage;
     }
 

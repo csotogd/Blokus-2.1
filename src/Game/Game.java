@@ -1,7 +1,10 @@
 package Game;
 
 import MiniMax.MiniMax;
+import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
+import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import GameBoard.Board;
@@ -14,18 +17,27 @@ import Tools.Vector2d;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import DataBase.*;
+import javafx.stage.Window;
+import javafx.util.Duration;
+import javafx.util.Pair;
+import menu.MenuItem;
 
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -48,6 +60,8 @@ public class Game extends Application {
     public Board board;
 
     private int timeLimit = 3500; // timelimit for MC player and GAMC player
+
+    Scene scene;
 
 
     /**
@@ -72,12 +86,22 @@ public class Game extends Application {
      */
     @Override
     public void start(Stage stage){
+        stage = this.stage;
         Parent root = this.boardUI.gameBoard;
-        stage.setTitle("Blokus Game Group 15");
-        Scene scene = new Scene(root, 1000, 1000);
-        stage.setScene(scene);
-        stage.setMaximized(true);
-        stage.show();
+        this.stage.setTitle("Blokus Game Group 15");
+        scene = new Scene(root, 1000, 800);
+        this.stage.setScene(scene);
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bounds = screen.getVisualBounds();
+
+        this.stage.centerOnScreen();
+        this.stage.setX(bounds.getMinX());
+        this.stage.setY(bounds.getMinY());
+        this.stage.setWidth(bounds.getWidth());
+        this.stage.setHeight(bounds.getHeight());
+        this.stage.setMaximized(false);
+        this.stage.show();
+
     }
 
     /**
@@ -233,66 +257,114 @@ public class Game extends Application {
 
         if (state== GameState.END){
             countPoints();
+            endPage();
+        }
+    }
 
-            int bestPts = Integer.MIN_VALUE;
-            String winner = "";
-            Color winnerColor = Color.WHITE;
-            for (Player player:players) {
-                if(player.getPoints()>bestPts){
-                    bestPts = player.getPoints();
-                    winner = player.getName();
-                    winnerColor = player.getColor();
-                }
-            }
-            Text win = new Text("GAME END - The winner is " + winner);
-            win.setFill(winnerColor);
+    public void endPage(){
+        List<Pair<String, Runnable>> menuData = Arrays.asList(
+                new Pair<String, Runnable>("Restart", () -> {
+                    new Game(stage);
+                }),
+                new Pair<String, Runnable>("Game Board", () -> {
+                    try {
+                        if(boardUI.principal.isVisible()){
+                            boardUI.principal.setVisible(false);
+                        }else{
+                            boardUI.principal.setVisible(true);
+                        }
 
-            VBox scores = new VBox(20);
-            for (Player player:players) {
-                Text score = new Text();
-                score.setFill(player.getColor());
-                score.setText(player.getName() + " score: " + player.getPoints());
-                scores.getChildren().add(score);
-            }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }),
 
-            Button restartButton = new Button("Back to Menu");
-            restartButton.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
+                new Pair<String, Runnable>("Exit to Menu", () -> {
                     try {
                         new StartScreen().start(stage);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }
-            });
+                })
+        );
+        VBox menuBox = new VBox(-5);
 
-            GridPane pieces = new GridPane();
-            pieces.add(boardUI.pieceOfPlayer(0),0,0);
-            if(players.length==4){
-                pieces.add(boardUI.pieceOfPlayer(1),0,1);
-                pieces.add(boardUI.pieceOfPlayer(2),0,2);
-                pieces.add(boardUI.pieceOfPlayer(3),0,3);
-            }else{
-                pieces.add(boardUI.pieceOfPlayer(1),0,1);
+        int bestPts = Integer.MIN_VALUE;
+        String winner = "";
+        Color winnerColor = Color.WHITE;
+        for (Player player:players) {
+            if(player.getPoints()>bestPts){
+                bestPts = player.getPoints();
+                winner = player.getName();
+                winnerColor = player.getColor();
             }
-            pieces.setDisable(true);
-
-            BorderPane principal = new BorderPane();
-            principal.setBackground(Data.createBackGround());
-            principal.setTop(win);
-            FlowPane left = new FlowPane();
-            left.getChildren().add(scores);
-            left.getChildren().add(restartButton);
-            principal.setLeft(left);
-            principal.setCenter(boardUI.principal);
-            principal.setRight(pieces);
-
-            Scene endScene = new Scene(principal, 1000, 800);
-            stage.setScene(endScene);
-            stage.setMaximized(true);
-            stage.show();
         }
+        Text win = new Text("GAME END - The winner is " + winner);
+        win.setFill(winnerColor);
+
+        VBox scores = new VBox(20);
+        for (Player player:players) {
+            Text score = new Text();
+            score.setFill(player.getColor());
+            score.setText(player.getName() + " score: " + player.getPoints());
+            scores.getChildren().add(score);
+        }
+
+        menuData.forEach(data -> {
+            menu.MenuItem item = new MenuItem(data.getKey());
+            item.setOnAction(data.getValue());
+            //item.setTranslateX(-300);
+
+            javafx.scene.shape.Rectangle clip = new Rectangle(300, 30);
+            clip.translateXProperty().bind(item.translateXProperty().negate());
+
+            item.setClip(clip);
+
+            menuBox.getChildren().addAll(item);
+        });
+        ScaleTransition st = new ScaleTransition(Duration.seconds(1));
+        st.setToY(1);
+        st.setOnFinished(e -> {
+
+            for (int i = 0; i < menuBox.getChildren().size(); i++) {
+                Node n = menuBox.getChildren().get(i);
+
+                TranslateTransition tt = new TranslateTransition(Duration.seconds(1 + i * 0.15), n);
+                tt.setToX(0);
+                tt.setOnFinished(e2 -> n.setClip(null));
+                tt.play();
+            }
+        });
+        st.play();
+
+        GridPane pieces = new GridPane();
+        pieces.add(boardUI.pieceOfPlayer(0),0,0);
+        if(players.length==4){
+            pieces.add(boardUI.pieceOfPlayer(1),0,1);
+            pieces.add(boardUI.pieceOfPlayer(2),0,2);
+            pieces.add(boardUI.pieceOfPlayer(3),0,3);
+        }else{
+            pieces.add(boardUI.pieceOfPlayer(1),0,1);
+        }
+        pieces.setDisable(true);
+
+        BorderPane principal = new BorderPane();
+        principal.setBackground(Data.createBackGround());
+        principal.setTop(win);
+        FlowPane left = new FlowPane();
+        left.getChildren().add(scores);
+        left.getChildren().add(menuBox);
+        principal.setLeft(left);
+        principal.setCenter(boardUI.principal);
+        boardUI.principal.setVisible(false);
+        //boardUI.principal.setScaleX(5);boardUI.principal.setScaleY(5);
+        principal.setRight(pieces);
+
+        scene = new Scene(principal, 1400, 800);
+        stage.setScene(scene);
+        stage.setMaximized(true);
+        stage.show();
+        stage.centerOnScreen();
     }
 
     /**

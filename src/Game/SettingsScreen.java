@@ -45,6 +45,7 @@ public class SettingsScreen extends Application {
         primaryStage.setTitle("Blokus Settings Screen");
         primaryStage.setScene(scene);
         primaryStage.show();
+        primaryStage.centerOnScreen();
         stage = primaryStage;
     }
 
