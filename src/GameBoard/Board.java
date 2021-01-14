@@ -86,7 +86,7 @@ public class Board{
      * @return an exact copy of the board (the players are the SAME)
      */
     public Board clone(){
-        Board result = new Board(players);
+        Board result = new Board(players, getDIMENSION());
         for (int i = 0; i < boardArray.length; i++) {
             System.arraycopy(boardArray[i], 0,result.boardArray[i],0, boardArray[0].length);
         }
