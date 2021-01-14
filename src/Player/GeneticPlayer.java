@@ -568,18 +568,15 @@ public class GeneticPlayer extends BotPlayer {
 
             for(Vector2d toCornerPosition : corner.getToCornerPositions()){
 
-                try {
-                    if (board.boardArray[toCornerPosition.get_y()][toCornerPosition.get_x()] == 0){
+                if (toCornerPosition.get_y() >= 0 && toCornerPosition.get_y() < board.getDIMENSION() &&
+                    toCornerPosition.get_x() >= 0 && toCornerPosition.get_x() < board.getDIMENSION()) {
+                    if (board.boardArray[toCornerPosition.get_y()][toCornerPosition.get_x()] == 0) {
                         addedFreeCorners++; //if the corner is empty and free to use
-                    }
-                    else if(board.boardArray[toCornerPosition.get_y()][toCornerPosition.get_x()]==player.getPlayerNumber()){
+                    } else if (board.boardArray[toCornerPosition.get_y()][toCornerPosition.get_x()] == player.getPlayerNumber()) {
                         addedFreeCorners--; //you blocked a self-corner, at least one is blocked to put the piece there
                         //you might be adding a piece with 6 blocking corners, then that is a negative score
-                       // System.out.println("blocked self corner");
+                        // System.out.println("blocked self corner");
                     }
-
-                }catch (IndexOutOfBoundsException e){
-                    ;//a free corner outside of the board makes no sense
                 }
             }
         }
