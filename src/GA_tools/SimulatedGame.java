@@ -84,7 +84,7 @@ public class SimulatedGame {
                 //System.out.println("In game status:  mo one moved");
             }
             else {
-                System.out.println(actualPlayer.getName() + " skipped last move?: " + actualPlayer.getSkippedLastMove());
+                //System.out.println(actualPlayer.getName() + " skipped last move?: " + actualPlayer.getSkippedLastMove());
                 boolean playerSkippedLastMove = false;
                 if (actualPlayer.getSkippedLastMove()){
                     playerSkippedLastMove = true;
@@ -101,7 +101,7 @@ public class SimulatedGame {
         }
         if (state== Game.GameState.END){
             countPoints();
-            System.out.println("THE GAME HAS ENDED");
+            //System.out.println("THE GAME HAS ENDED");
         }
     }
 
@@ -130,7 +130,7 @@ public class SimulatedGame {
              }else if(actualPlayer instanceof MiniMaxPlayer){
                  move = miniMax.getMove(actualPlayer.getPlayerNumber());
              }
-             System.out.println("turn of: " + actualPlayer.getPlayerNumber());
+             //System.out.println("turn of: " + actualPlayer.getPlayerNumber());
 
             if(move !=null) {
                 makeMove(move);
@@ -284,8 +284,8 @@ public class SimulatedGame {
     public static void main(String[] args) {
         //testing
 
-        int dimension= 14;//20;
-        Player [] players = new Player[2];
+        int dimension = 20;
+        Player [] players = new Player[4];
         //for (int i=0; i<4; i++){
         //    players[i]=new GeneticPlayer(i+1);
         //}
@@ -295,14 +295,14 @@ public class SimulatedGame {
         //        {0.32048786f, 0.92160666f, -0.11593586f, 1.6816598f, 0.18177348f}});
         //((GeneticPlayer)players[0]).setPhasesStartTurns(new int[]{5, 13});
         ((GeneticPlayer)players[0]).setDepth(1);
-        players[1] = new MiniMaxPlayer(2);
-        //players[2] = new GAMCplayer(3);
-        //players[3] = new GaMcTplayer(4);
+        players[1] = new MCPlayer(2, "2");
+        players[2] = new GAMCplayer(3);
+        players[3] = new GaMcTplayer(4);
 
         players[0].setName("GA1");
-        players[1].setName("MiniMax2");
-        //players[2].setName("GAMC3");
-        //players[3].setName("GaMcT4");
+        players[1].setName("MC2");
+        players[2].setName("GAMC3");
+        players[3].setName("GaMcT4");
 
         SimulatedGame simulation= new SimulatedGame(dimension, players);
         simulation.simulate();
