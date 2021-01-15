@@ -1,5 +1,6 @@
 package Experiments;
 
+import DataBase.Data;
 import GA_tools.SimulatedGame;
 import Player.*;
 import java.io.FileWriter;
@@ -27,6 +28,7 @@ public class Experiment {
         p3.setName("GA depth 1");
         Player p4 = new GaMcTplayer(4);
         Player[] players = {p, p2, p3, p4};
+        //Data.setPlayerTypes(new String[]{"", "", "MiniMax-MaxN Player", ""});
         Experiment exp = new Experiment(1, 4, 20, 1000, players, true);
         exp.run();
         exp.logExperiment("src/Experiments/resultLog.txt");
