@@ -39,7 +39,7 @@ public class MCTS {
         expandGreedily(root,player,numMoves);// expand the best moves according to some heuristics
         if(root.getChildren().size()==0){ // if the expansion failed, something went wrong?
             root.expand(players[player]); //full expansion?
-            System.out.println("full expand"+ root.getChildren().size());
+//            System.out.println("full expand"+ root.getChildren().size());
             if(root.getChildren().size()==0) return null;// if no move was found return null
         }
         List<Node> toExpand=new ArrayList<Node>(); //shortcut for ucb1 formula -> all new node have ucb1 = infinity
@@ -78,14 +78,14 @@ public class MCTS {
          * break the ties with ratio of win/loss, and numblocks
          */
         Node res = root.getChildren().get(0);//choose the most visited node move
-        for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
+//        for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
         for(Node children : root.getChildren()) if(children.getVisitedNum()>res.getVisitedNum()|| // choose the node according to number of time visited, if equals, check if ratio win/loss is higher
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()>res.getScore())||// if equal again, choose biggest piece
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()==res.getScore()&&children.getMove().getPiece().getNumberOfBlocks()>res.getMove().getPiece().getNumberOfBlocks())) res=children;
 
         numMoves = root.getVisitedNum()/7; // next time we do simulations, we will explore a number of moves such that we can visit 7 times each
 //        System.out.println("visit:"+res.getVisitedNum()+"\nscore:"+res.getScore()+"\nmove:"+res.getMove().getPiece()+"@"+res.getMove().getPosition());
-        System.out.println("MCTS number of simulations: "+root.getVisitedNum());
+//        System.out.println("MCTS number of simulations: "+root.getVisitedNum());
         for(Player p: players) if(p.getPlayerNumber()==res.getMove().getPlayer().getPlayerNumber()) return new Move(p,res.getMove().getPiece(), res.getMove().getPosition());
         return res.getMove();
     }
@@ -154,7 +154,6 @@ public class MCTS {
                             if (!piece.getLabel().equals(moves.get(i).getPiece().getLabel())) {
                                 //if it fits in that corner: score of move += numBlocks of the biggest piece that fits / 5.0
                                 if (fitsInThere(bclone, piece, c, player+1)) {
-                                    System.out.println("yes");
                                     score[i] += (piece.getNumberOfBlocks() / 25.0);
                                     break;
                                 }
@@ -394,7 +393,7 @@ public class MCTS {
         root.expandGA(moves, numMoves);// expand the best moves according to some heuristics
         if(root.getChildren().size()==0){ // if the expansion failed, something went wrong?
             root.expand(players[player]); //full expansion?
-            System.out.println("full expand"+ root.getChildren().size());
+//            System.out.println("full expand"+ root.getChildren().size());
             if(root.getChildren().size()==0) return null;// if no move was found return null
         }
         List<Node> toExpand=new ArrayList<Node>(); //shortcut for ucb1 formula -> all new node have ucb1 = infinity
@@ -433,14 +432,14 @@ public class MCTS {
          * break the ties with ratio of win/loss, and numblocks
          */
         Node res = root.getChildren().get(0);//choose the most visited node move
-        for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
+//        for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
         for(Node children : root.getChildren()) if(children.getVisitedNum()>res.getVisitedNum()|| // choose the node according to number of time visited, if equals, check if ratio win/loss is higher
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()>res.getScore())||// if equal again, choose biggest piece
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()==res.getScore()&&children.getMove().getPiece().getNumberOfBlocks()>res.getMove().getPiece().getNumberOfBlocks())) res=children;
 
         numMoves = root.getVisitedNum()/7; // next time we do simulations, we will explore a number of moves such that we can visit 7 times each
 //        System.out.println("visit:"+res.getVisitedNum()+"\nscore:"+res.getScore()+"\nmove:"+res.getMove().getPiece()+"@"+res.getMove().getPosition());
-        System.out.println("GaMcT number of simulations: "+root.getVisitedNum());
+//        System.out.println("GaMcT number of simulations: "+root.getVisitedNum());
         for(Player p: players) if(p.getPlayerNumber()==res.getMove().getPlayer().getPlayerNumber()) return new Move(p,res.getMove().getPiece(), res.getMove().getPosition());
         return res.getMove();
     }

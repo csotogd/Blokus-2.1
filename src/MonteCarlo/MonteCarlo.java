@@ -40,7 +40,7 @@ public class MonteCarlo {
         expandGreedily(root,player,numMoves);
         if(root.getChildren().size()==0) {
             root.expand(players[player]);
-            System.out.println("full expansion "+root.getChildren().size());
+//            System.out.println("full expansion "+root.getChildren().size());
             if(root.getChildren().size()==0) return null;
         }
         List<Node> toExpand = new LinkedList<>();
@@ -62,13 +62,13 @@ public class MonteCarlo {
             choosen.addScore(choosen.simulation((player+1)%players.length,player));//if we get a win update the score as well
         }
         Node res = root.getChildren().get(0);//choose the most visited node move
-        for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
+//        for(Node children : root.getChildren()) System.out.println("player"+(player+1)+": "+children.getMove().getPiece().getLabel()+" "+children.getScore()+" "+ children.getVisitedNum());
         for(Node children : root.getChildren()) if(children.getVisitedNum()>res.getVisitedNum()|| // choose the node according to number of time visited, if equals, check if ratio win/loss is higher
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()>res.getScore())||// if equal again, choose biggest piece
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()==res.getScore()&&children.getMove().getPiece().getNumberOfBlocks()>res.getMove().getPiece().getNumberOfBlocks())) res=children;
         numMoves = root.getVisitedNum()/7; // next time we do simulations, we will explore a number of moves such that we can visit 7 times each
 //        System.out.println("visit:"+res.getVisitedNum()+"\nscore:"+res.getScore()+"\nmove:"+res.getMove().getPiece()+"@"+res.getMove().getPosition());
-        System.out.println("MC number of simulations: "+root.getVisitedNum());
+//        System.out.println("MC number of simulations: "+root.getVisitedNum());
         for(Player p: players) if(p.getPlayerNumber()==res.getMove().getPlayer().getPlayerNumber()) return new Move(p,res.getMove().getPiece(), res.getMove().getPosition());
         return res.getMove();
     }
@@ -100,7 +100,7 @@ public class MonteCarlo {
         for(Node children : root.getChildren()) if(children.getVisitedNum()>res.getVisitedNum()||
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()>res.getScore())||
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()==res.getScore() && score_move.indexOf(children.getMove())<score_move.indexOf(res.getMove()))) res=children;
-        System.out.println("GAMC number of simulations: "+root.getVisitedNum());
+//        System.out.println("GAMC number of simulations: "+root.getVisitedNum());
         numMoves = root.getVisitedNum()/7;
         for(Player p: players) if(p.getPlayerNumber()==res.getMove().getPlayer().getPlayerNumber()) return new Move(p,res.getMove().getPiece(), res.getMove().getPosition());
         return res.getMove();
