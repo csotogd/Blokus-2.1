@@ -62,10 +62,10 @@ public class Experiment {
         if (nbrOfPlayers == 2){
             playerOrder[0] = players[0];
             playerOrder[1] = players[1];
-            doSimulations(playerOrder);
+            doSimulations(playerOrder.clone());
             playerOrder[0] = players[1];
             playerOrder[1] = players[0];
-            doSimulations(playerOrder);
+            doSimulations(playerOrder.clone());
         } else if (nbrOfPlayers == 4){
             for (int i = 0; i < 4; i++){
                 for (int j = 0; j < 4; j++){
