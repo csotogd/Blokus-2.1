@@ -15,6 +15,7 @@ import Player.*;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 // there is a lot of code duplication with respect to class Board UI, if we had coded better in phase 1 this would not be
@@ -55,6 +56,13 @@ public class SimulatedGame {
             }
         }
         //game state of human move not considered
+    }
+
+    public static SimulatedGame makeSimGame(int dimension, Player[] players, int timeLimit){
+        SimulatedGame sim = new SimulatedGame(dimension, players);
+        sim.timeLimit = timeLimit;
+
+        return sim;
     }
 
     public void simulate(){
@@ -108,6 +116,7 @@ public class SimulatedGame {
 
     private void handleAITurn(){
          {
+             //System.out.println("turn of: " + actualPlayer.getPlayerNumber() + " (" + actualPlayer.getName() + ")");
             //System.out.println("handle");
             //So far this will only print the current piece into the board,
             //then the user will drag it manually into there
@@ -130,7 +139,6 @@ public class SimulatedGame {
              }else if(actualPlayer instanceof MiniMaxPlayer){
                  move = miniMax.getMove(actualPlayer.getPlayerNumber());
              }
-             //System.out.println("turn of: " + actualPlayer.getPlayerNumber());
 
             if(move !=null) {
                 makeMove(move);
@@ -264,7 +272,7 @@ public class SimulatedGame {
         for(int i=1; i<= playersName.length; i++){
             players[i-1].setColor(colors[i-1]);
             //players[i-1].setName(playersName[i-1]);
-            //players[i-1].setNumber(i);//need to test this line
+            players[i-1].setNumber(i);//need to test this line
         }
         Game.initializePlayerPieces(playersName, players);
         players[0].setStartingCorner(new Vector2d(0,0));
@@ -310,6 +318,26 @@ public class SimulatedGame {
 
     }
 
+    /**
+     * Also deals with draws
+     * @return List of the winner(s)
+     */
+    public ArrayList<Player> getWinners(){
+        int winnerScore = -30000;
+        ArrayList<Player> winners = new ArrayList<>();
+
+        for (Player player : players){
+            if (player.getPoints() > winnerScore){
+                winnerScore = player.getPoints();
+                winners.clear();
+                winners.add(player);
+            }
+            if (player.getPoints() == winnerScore){
+                winners.add(player);
+            }
+        }
+        return winners;
+    }
 
     public Player getWinner(){
         int winnerScore = -30000 ;

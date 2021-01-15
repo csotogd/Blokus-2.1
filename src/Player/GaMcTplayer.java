@@ -97,12 +97,22 @@ public class GaMcTplayer extends GeneticPlayer {
         this.mc = mc;
     }
 
-    public GAMCplayer clone(){
-        GAMCplayer player = new GAMCplayer(number);
-        player.startingCorner=startingCorner;
-        player.setWeightsAsArray(weights.clone());
-        for(Piece p:piecesList) player.getPiecesList().add(p.clone());
-        player.setFirstMove(isFirstMove());
+    public GaMcTplayer clone(){
+        GaMcTplayer player = new GaMcTplayer(this.number);
+        player.setName(this.name);
+        player.setStartingCorner(this.startingCorner);
+        for(Piece piece : this.piecesList) player.getPiecesList().add(piece.getPiece());
+        player.setFirstMove(this.firstMove);
+        player.humanPlayer = false;
+        player.setColor(this.color);
+        player.setPoints(this.points);
+
+        for (int i = 0; i < player.getWeightsAsArray().length; i++){
+            player.getWeightsAsArray()[i] = this.weights[i].clone();
+        }
+        player.setCustomDepth(this.getCustomDepth());
+        player.setDepthIsCustom(this.getDepthIsCuston());
+        player.setMc(this.mc);
 
         return player;
     }

@@ -22,6 +22,7 @@ public  class BotPlayer extends Player{
             this.number = number;
             this.humanPlayer=false;
             this.firstMove= true;
+            this.name = name;
 
         }
 
@@ -30,13 +31,17 @@ public  class BotPlayer extends Player{
         return null;
         }
 
-    public Player clone(){
-        Player p = new BotPlayer(this.number);
-        p.setStartingCorner(this.startingCorner);
-        for(Piece piece : this.piecesList) p.getPiecesList().add(piece.getPiece());
-        if(this.firstMove) p.setFirstMove(true);
-        else p.setNotFirstMove();
-        return p;
+    public BotPlayer clone(){
+        BotPlayer player = new BotPlayer(this.number);
+        player.setName(this.name);
+        player.setStartingCorner(this.startingCorner);
+        for(Piece piece : this.piecesList) player.getPiecesList().add(piece.getPiece());
+        player.setFirstMove(this.firstMove);
+        player.humanPlayer = false;
+        player.setColor(this.color);
+        player.setPoints(this.points);
+
+        return player;
     }
 
 }

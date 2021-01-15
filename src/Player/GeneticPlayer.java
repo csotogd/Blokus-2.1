@@ -111,7 +111,7 @@ public class GeneticPlayer extends BotPlayer {
         this.weights[phase][3]=weight;
     }
 
-    public float getWeightBiggestPiece(float weight, int phase){
+    public float getWeightBiggestPiece(int phase){
         return this.weights[phase][3];
     }
 
@@ -119,7 +119,7 @@ public class GeneticPlayer extends BotPlayer {
         this.weights[phase][4]=weight;
     }
 
-    public float getWeightFarFromStartingPoint(float weight, int phase){
+    public float getWeightFarFromStartingPoint(int phase){
         return this.weights[phase][4];
     }
 
@@ -153,6 +153,22 @@ public class GeneticPlayer extends BotPlayer {
 
     public void setDepthToDefault(){
         depthIsCustom = false;
+    }
+
+    public boolean getDepthIsCuston(){
+        return depthIsCustom;
+    }
+
+    public void setDepthIsCustom(boolean depthIsCustom) {
+        this.depthIsCustom = depthIsCustom;
+    }
+
+    public int getCustomDepth() {
+        return customDepth;
+    }
+
+    public void setCustomDepth(int customDepth) {
+        this.customDepth = customDepth;
     }
 
     /**
@@ -682,11 +698,24 @@ public class GeneticPlayer extends BotPlayer {
     @Override
     public GeneticPlayer clone() {
         GeneticPlayer player = new GeneticPlayer(number);
-        player.startingCorner=startingCorner;
-        player.setWeightsAsArray(weights.clone());
-        for(Piece p:piecesList) player.getPiecesList().add(p.clone());
-        player.setFirstMove(isFirstMove());
+        player.setName(this.name);
+        player.setStartingCorner(this.startingCorner);
+        for(Piece piece : this.piecesList) player.getPiecesList().add(piece.getPiece());
+        player.setFirstMove(this.firstMove);
+        player.humanPlayer = false;
+        player.setColor(this.color);
+        player.setPoints(this.points);
+
+        for (int i = 0; i < player.getWeightsAsArray().length; i++){
+            player.getWeightsAsArray()[i] = this.weights[i].clone();
+        }
+        player.turn = this.turn;
+        player.phase = this.phase;
+        player.customDepth = this.customDepth;
+        player.depthIsCustom = this.depthIsCustom;
 
         return player;
     }
+
+
 }

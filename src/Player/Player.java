@@ -25,8 +25,7 @@ public abstract class Player {
     protected List<Piece> unplayablePiece;
 
     public boolean isFirstMove() {
-        if(firstMove) return true;
-        return false;
+        return firstMove;
     }
 
     public void setFirstMove(boolean firstMove) {
