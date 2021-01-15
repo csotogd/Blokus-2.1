@@ -76,7 +76,8 @@ public class MiniMax {
 
         Move bestMove;
         long start = System.currentTimeMillis(); //start of the timer
-        if(Data.getPlayerTypes()[rootPlayerNbr-1]=="MiniMax-MaxN Player"){
+        if("MiniMax-MaxN Player".equals(Data.getPlayerTypes()[rootPlayerNbr-1])){
+            System.out.println("Yessss");
             int state = players[playerNbr-1].getPiecesUsed().size();
             this.u = 0;
             if (state >= phasesStartTurns[0] && state < phasesStartTurns[1]){

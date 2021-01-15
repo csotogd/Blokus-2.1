@@ -21,15 +21,13 @@ public class Experiment {
     private LocalDateTime startTime;
 
     public static void main(String[] args) {
-        Player p = new GAMCplayer(1);//new GeneticPlayer(1);
-        Player p2 = new MCPlayer(2);
-        Player p3 = new GeneticPlayer(7);
-        ((GeneticPlayer)p3).setDepth(1);
-        p3.setName("GA depth 1");
-        Player p4 = new GaMcTplayer(4);
-        Player[] players = {p, p2, p3, p4};
-        //Data.setPlayerTypes(new String[]{"", "", "MiniMax-MaxN Player", ""});
-        Experiment exp = new Experiment(1, 4, 20, 1000, players, true);
+        MiniMaxPlayer p = new MiniMaxPlayer(1);
+        GeneticPlayer p2 = new GeneticPlayer(2);
+        p.setName("Max-n");
+        p2.setName("GA depth 1");
+        p.setPlayerType("MiniMax-MaxN Player");
+        Player[] players = {p, p2};
+        Experiment exp = new Experiment(1, 2, 14, 1000, players, true);
         exp.run();
         exp.logExperiment("src/Experiments/resultLog.txt");
     }
@@ -96,6 +94,15 @@ public class Experiment {
 
     private void doSimulations(Player[] players){
         Result result = new Result(players, this);
+
+        //Some minimax preparation for the simulations
+        String[] playerTypes = new String[players.length];
+        for (int i = 0; i < players.length; i++){
+            if (players[i] instanceof MiniMaxPlayer){
+                playerTypes[i] = ((MiniMaxPlayer)players[i]).getPlayerType();
+            }
+        }
+        Data.setPlayerTypes(playerTypes);
 
         for (int i = 0; i < runs; i++){
             //Clone the players so they don't keep info from previous games
