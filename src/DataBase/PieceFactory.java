@@ -55,4 +55,25 @@ public class PieceFactory {
 
         return result;
     }
+
+    public ArrayList<Piece> getSomePieces(){
+        ArrayList<Piece> result = new ArrayList<>();
+        for(Piece p : prototype) {
+            if(p.getNumberOfBlocks()!=5){
+                result.add(p.getPiece());
+            }
+        }
+
+        return result;
+    }
+    public ArrayList<Piece> getSomePieces1(){
+        ArrayList<Piece> result = new ArrayList<>();
+        for(Piece p : prototype) {
+            if(p.getNumberOfBlocks()!=5){
+                result.add(p.getPiece());
+            }
+        }
+        result.remove(0);result.remove(0);result.remove(0);result.remove(0);result.remove(0);
+        return result;
+    }
 }

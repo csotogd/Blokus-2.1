@@ -12,8 +12,8 @@ import java.util.ArrayList;
 public class Experiment {
     private int runs = 100; //The number of times this experiment will be performed
     private int nbrOfPlayers = 4;
-    private int dimension = 20;
-    private int timeLimit = 3500;//Time limit for MC related bots (in ms)
+    private int dimension = 10;
+    private int timeLimit = 10;//Time limit for MC related bots (in ms)
     private Player[] players;
     private boolean allPlayerCombinations = false;//Does *runs* number of runs with every possible player combination:
                                                   //So for example, 100 runs of [player1, player2] and 100 runs of [player2, player1]
@@ -21,15 +21,15 @@ public class Experiment {
     private LocalDateTime startTime;
 
     public static void main(String[] args) {
-        Player p = new GAMCplayer(1);//new GeneticPlayer(1);
+        Player p = new MiniMaxPlayer(1);//new GeneticPlayer(1);
         Player p2 = new MCPlayer(2);
-        Player p3 = new GeneticPlayer(7);
+        Player p3 = new GeneticPlayer(3);
         ((GeneticPlayer)p3).setDepth(1);
         p3.setName("GA depth 1");
         Player p4 = new GaMcTplayer(4);
         Player[] players = {p, p2, p3, p4};
-        //Data.setPlayerTypes(new String[]{"", "", "MiniMax-MaxN Player", ""});
-        Experiment exp = new Experiment(1, 4, 20, 1000, players, true);
+        Data.setPlayerTypes(new String[]{"MiniMax-MaxN Player", "", "", ""});
+        Experiment exp = new Experiment(20, 4, 10, 1000, players, true);
         exp.run();
         exp.logExperiment("src/Experiments/resultLog.txt");
     }

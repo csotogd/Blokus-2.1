@@ -91,9 +91,9 @@ public class Game extends Application {
         this.stage.setTitle("Blokus Game Group 15");
         scene = new Scene(root, 1000, 800);
         this.stage.setScene(scene);
+
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
-
         this.stage.centerOnScreen();
         this.stage.setX(bounds.getMinX());
         this.stage.setY(bounds.getMinY());
@@ -110,8 +110,8 @@ public class Game extends Application {
     public void initializeGame(){
         players=initializePlayers(Data.getPlayersName(), DIMENSION, players);
         actualPlayer = players[0];
-        for(Player player:players)
-            System.out.println(player.getPlayerNumber());
+        //for(Player player:players)
+            //System.out.println(player.getPlayerNumber());
         board = new Board(players);
         boardUI = new BoardUI(this);
         miniMax = new MiniMax(players,board);
@@ -176,8 +176,8 @@ public class Game extends Application {
 
         for(int i=1; i<= playersName.length; i++){
             PieceFactory pieceFactory= PieceFactory.get();
-            List<Piece> pieces = pieceFactory.getAllPieces();
-
+            List<Piece> pieces = pieceFactory.getSomePieces();
+            //List<Piece> pieces = pieceFactory.getAllPieces();
             players[i-1].setPiecesList(pieces);
 
         }
@@ -362,9 +362,19 @@ public class Game extends Application {
 
         scene = new Scene(principal, 1400, 800);
         stage.setScene(scene);
-        stage.setMaximized(true);
-        stage.show();
-        stage.centerOnScreen();
+
+        /*
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bounds = screen.getVisualBounds();
+        this.stage.centerOnScreen();
+        this.stage.setX(bounds.getMinX());
+        this.stage.setY(bounds.getMinY());
+        this.stage.setWidth(bounds.getWidth());
+        this.stage.setHeight(bounds.getHeight());
+
+         */
+        this.stage.show();
+        this.stage.setMaximized(false);
     }
 
     /**

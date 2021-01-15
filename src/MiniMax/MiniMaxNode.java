@@ -39,9 +39,9 @@ public class MiniMaxNode {
      * @param board board of the game
      */
     public MiniMaxNode(MiniMaxNode parent, Move move,Player player,Board board){
-        this.children = new ArrayList<>();
         this.parent = parent;
         this.parent.getChildren().add(this);
+        this.children = new ArrayList<>();
         this.move = move;
         this.board = board;
         this.player = player;

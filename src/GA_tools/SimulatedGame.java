@@ -25,7 +25,7 @@ public class SimulatedGame {
     public Board board;
     public Player[] players; //Initialize in game object
     private Player actualPlayer;
-    private final int NUMBER_OF_PIECES_PER_PLAYER=21;
+    private final int NUMBER_OF_PIECES_PER_PLAYER=9;
     private Game.GameState state;
     private ArrayList<Move> movesLog=new ArrayList<>();
     private  int nbrMoves=0;
@@ -292,25 +292,25 @@ public class SimulatedGame {
     public static void main(String[] args) {
         //testing
 
-        int dimension = 20;
+        int dimension = 10;
         Player [] players = new Player[4];
         //for (int i=0; i<4; i++){
         //    players[i]=new GeneticPlayer(i+1);
         //}
-        players[0] = new GeneticPlayer(1);
+        players[0] = new MiniMaxPlayer(1);
         //((GeneticPlayer)players[0]).setWeightsAsArray(new float[][]{{0.113416076f, 0.95335865f, 1.2278169f, 1.1148115f, 1.0720679f},
         //        {0.42453498f, 2.178557f, 0.6315803f, 1.7912272f, 0.9422162f},
         //        {0.32048786f, 0.92160666f, -0.11593586f, 1.6816598f, 0.18177348f}});
         //((GeneticPlayer)players[0]).setPhasesStartTurns(new int[]{5, 13});
-        ((GeneticPlayer)players[0]).setDepth(1);
-        players[1] = new MCPlayer(2, "2");
-        players[2] = new GAMCplayer(3);
+        players[1] = new GeneticPlayer(2);
+        ((GeneticPlayer)players[1]).setDepth(1);
+        players[2] = new MCPlayer(3);
         players[3] = new GaMcTplayer(4);
 
-        players[0].setName("GA1");
-        players[1].setName("MC2");
-        players[2].setName("GAMC3");
-        players[3].setName("GaMcT4");
+        players[0].setName("Max-N");
+        players[1].setName("GA");
+        players[2].setName("MC");
+        players[3].setName("GAMCT");
 
         SimulatedGame simulation= new SimulatedGame(dimension, players);
         simulation.simulate();
