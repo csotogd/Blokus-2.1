@@ -1,0 +1,154 @@
+EXPERIMENT:
+Start time: 2021-01-15T17:34:06.422958
+End time: 2021-01-15T17:55:23.273375100
+Number of runs: 1
+Board dimension: 20
+Time limit for MC-related bots: 1000
+
+RESULTS: 
+Player 1: Name=GAMCplayer, Nr of wins=0.0, Avg score=-16.0
+Player 2: Name=MCPlayer, Nr of wins=1.0, Avg score=-8.0
+Player 3: Name=GA depth 1, Nr of wins=0.0, Avg score=-11.0
+Player 4: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-25.0
+Avg time per game=0.8642333 minutes
+
+Player 1: Name=GAMCplayer, Nr of wins=1.0, Avg score=-13.0
+Player 2: Name=MCPlayer, Nr of wins=0.0, Avg score=-21.0
+Player 3: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-18.0
+Player 4: Name=GA depth 1, Nr of wins=0.0, Avg score=-16.0
+Avg time per game=0.84578335 minutes
+
+Player 1: Name=GAMCplayer, Nr of wins=1.0, Avg score=-3.0
+Player 2: Name=GA depth 1, Nr of wins=0.0, Avg score=-19.0
+Player 3: Name=MCPlayer, Nr of wins=0.0, Avg score=-29.0
+Player 4: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-11.0
+Avg time per game=0.8778167 minutes
+
+Player 1: Name=GAMCplayer, Nr of wins=1.0, Avg score=-5.0
+Player 2: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-11.0
+Player 3: Name=MCPlayer, Nr of wins=0.0, Avg score=-16.0
+Player 4: Name=GA depth 1, Nr of wins=0.0, Avg score=-23.0
+Avg time per game=0.9288 minutes
+
+Player 1: Name=GAMCplayer, Nr of wins=1.0, Avg score=-10.0
+Player 2: Name=GA depth 1, Nr of wins=0.0, Avg score=-17.0
+Player 3: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-18.0
+Player 4: Name=MCPlayer, Nr of wins=0.0, Avg score=-13.0
+Avg time per game=0.87881666 minutes
+
+Player 1: Name=GAMCplayer, Nr of wins=0.0, Avg score=-22.0
+Player 2: Name=GaMcTplayer, Nr of wins=1.0, Avg score=-11.0
+Player 3: Name=GA depth 1, Nr of wins=0.0, Avg score=-24.0
+Player 4: Name=MCPlayer, Nr of wins=0.0, Avg score=-25.0
+Avg time per game=0.81226665 minutes
+
+Player 1: Name=MCPlayer, Nr of wins=0.0, Avg score=-8.0
+Player 2: Name=GAMCplayer, Nr of wins=0.0, Avg score=-27.0
+Player 3: Name=GA depth 1, Nr of wins=0.0, Avg score=-11.0
+Player 4: Name=GaMcTplayer, Nr of wins=1.0, Avg score=-7.0
+Avg time per game=0.8791 minutes
+
+Player 1: Name=MCPlayer, Nr of wins=0.0, Avg score=-13.0
+Player 2: Name=GAMCplayer, Nr of wins=0.6666667, Avg score=-8.0
+Player 3: Name=GaMcTplayer, Nr of wins=0.33333334, Avg score=-8.0
+Player 4: Name=GA depth 1, Nr of wins=0.0, Avg score=-22.0
+Avg time per game=0.9464167 minutes
+
+Player 1: Name=GA depth 1, Nr of wins=0.0, Avg score=-18.0
+Player 2: Name=GAMCplayer, Nr of wins=0.0, Avg score=-18.0
+Player 3: Name=MCPlayer, Nr of wins=1.0, Avg score=-7.0
+Player 4: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-18.0
+Avg time per game=0.8954 minutes
+
+Player 1: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-11.0
+Player 2: Name=GAMCplayer, Nr of wins=1.0, Avg score=-9.0
+Player 3: Name=MCPlayer, Nr of wins=0.0, Avg score=-13.0
+Player 4: Name=GA depth 1, Nr of wins=0.0, Avg score=-23.0
+Avg time per game=0.9278833 minutes
+
+Player 1: Name=GA depth 1, Nr of wins=0.0, Avg score=-13.0
+Player 2: Name=GAMCplayer, Nr of wins=1.0, Avg score=-9.0
+Player 3: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-14.0
+Player 4: Name=MCPlayer, Nr of wins=0.0, Avg score=-18.0
+Avg time per game=0.89433336 minutes
+
+Player 1: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-11.0
+Player 2: Name=GAMCplayer, Nr of wins=0.0, Avg score=-13.0
+Player 3: Name=GA depth 1, Nr of wins=0.0, Avg score=-20.0
+Player 4: Name=MCPlayer, Nr of wins=1.0, Avg score=-8.0
+Avg time per game=0.92705 minutes
+
+Player 1: Name=MCPlayer, Nr of wins=0.0, Avg score=-11.0
+Player 2: Name=GA depth 1, Nr of wins=0.0, Avg score=-16.0
+Player 3: Name=GAMCplayer, Nr of wins=1.0, Avg score=-8.0
+Player 4: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-14.0
+Avg time per game=0.9108833 minutes
+
+Player 1: Name=MCPlayer, Nr of wins=1.0, Avg score=-5.0
+Player 2: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-19.0
+Player 3: Name=GAMCplayer, Nr of wins=0.0, Avg score=-13.0
+Player 4: Name=GA depth 1, Nr of wins=0.0, Avg score=-11.0
+Avg time per game=0.9101833 minutes
+
+Player 1: Name=GA depth 1, Nr of wins=1.0, Avg score=-4.0
+Player 2: Name=MCPlayer, Nr of wins=0.0, Avg score=-15.0
+Player 3: Name=GAMCplayer, Nr of wins=0.0, Avg score=-9.0
+Player 4: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-18.0
+Avg time per game=0.89391667 minutes
+
+Player 1: Name=GaMcTplayer, Nr of wins=1.0, Avg score=-8.0
+Player 2: Name=MCPlayer, Nr of wins=0.0, Avg score=-13.0
+Player 3: Name=GAMCplayer, Nr of wins=0.0, Avg score=-10.0
+Player 4: Name=GA depth 1, Nr of wins=0.0, Avg score=-19.0
+Avg time per game=0.92863333 minutes
+
+Player 1: Name=GA depth 1, Nr of wins=0.0, Avg score=-15.0
+Player 2: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-13.0
+Player 3: Name=GAMCplayer, Nr of wins=1.0, Avg score=-12.0
+Player 4: Name=MCPlayer, Nr of wins=0.0, Avg score=-21.0
+Avg time per game=0.87763333 minutes
+
+Player 1: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-20.0
+Player 2: Name=GA depth 1, Nr of wins=0.0, Avg score=-20.0
+Player 3: Name=GAMCplayer, Nr of wins=0.0, Avg score=-16.0
+Player 4: Name=MCPlayer, Nr of wins=1.0, Avg score=-14.0
+Avg time per game=0.84415 minutes
+
+Player 1: Name=MCPlayer, Nr of wins=1.0, Avg score=-9.0
+Player 2: Name=GA depth 1, Nr of wins=0.0, Avg score=-15.0
+Player 3: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-21.0
+Player 4: Name=GAMCplayer, Nr of wins=0.0, Avg score=-24.0
+Avg time per game=0.81161666 minutes
+
+Player 1: Name=MCPlayer, Nr of wins=1.0, Avg score=-9.0
+Player 2: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-13.0
+Player 3: Name=GA depth 1, Nr of wins=0.0, Avg score=-18.0
+Player 4: Name=GAMCplayer, Nr of wins=0.0, Avg score=-20.0
+Avg time per game=0.87806666 minutes
+
+Player 1: Name=GA depth 1, Nr of wins=0.0, Avg score=-19.0
+Player 2: Name=MCPlayer, Nr of wins=0.0, Avg score=-17.0
+Player 3: Name=GaMcTplayer, Nr of wins=1.0, Avg score=-4.0
+Player 4: Name=GAMCplayer, Nr of wins=0.0, Avg score=-16.0
+Avg time per game=0.91143334 minutes
+
+Player 1: Name=GaMcTplayer, Nr of wins=1.0, Avg score=-12.0
+Player 2: Name=MCPlayer, Nr of wins=0.0, Avg score=-14.0
+Player 3: Name=GA depth 1, Nr of wins=0.0, Avg score=-24.0
+Player 4: Name=GAMCplayer, Nr of wins=0.0, Avg score=-21.0
+Avg time per game=0.8447 minutes
+
+Player 1: Name=GA depth 1, Nr of wins=0.0, Avg score=-24.0
+Player 2: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-16.0
+Player 3: Name=MCPlayer, Nr of wins=0.0, Avg score=-17.0
+Player 4: Name=GAMCplayer, Nr of wins=1.0, Avg score=-12.0
+Avg time per game=0.8778167 minutes
+
+Player 1: Name=GaMcTplayer, Nr of wins=0.0, Avg score=-17.0
+Player 2: Name=GA depth 1, Nr of wins=0.0, Avg score=-32.0
+Player 3: Name=MCPlayer, Nr of wins=1.0, Avg score=-8.0
+Player 4: Name=GAMCplayer, Nr of wins=0.0, Avg score=-11.0
+Avg time per game=0.912 minutes
+
+--------------------------------------------------------------------------------------
+
