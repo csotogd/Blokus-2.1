@@ -45,6 +45,7 @@ import java.util.Scanner;
 public class Game extends Application {
 
     private Player[] players;
+    public static int nbrPlayers=0;
     private int DIMENSION = Data.getDIMENSION();
     private BoardUI boardUI;
 
@@ -108,8 +109,11 @@ public class Game extends Application {
      * initialization of the game parameters
      */
     public void initializeGame(){
+
         players=initializePlayers(Data.getPlayersName(), DIMENSION, players);
         actualPlayer = players[0];
+        nbrPlayers=players.length;
+        //System.out.println("nbrplayers"+nbrPlayers);
         for(Player player:players)
             System.out.println(player.getPlayerNumber());
         board = new Board(players);
@@ -133,6 +137,7 @@ public class Game extends Application {
     public static Player[] initializePlayers(String[] playersName, int DIMENSION, Player[] players){
         Color[] colors = {Color.RED,Color.YELLOW,Color.GREEN,Color.BLUE};
         players= new Player[playersName.length];
+        nbrPlayers=players.length;
         //System.out.println("this code is in game.java line 66,67,68, jo, martin and gyu, comment where necessary it please");
 
         for(int i=1; i<= playersName.length; i++){
