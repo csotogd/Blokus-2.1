@@ -370,29 +370,6 @@ public abstract class Player {
         return this.piecesUsed;
     }
 
-    public static void main(String[] args){
-        HumanPlayer p1 = new HumanPlayer(1,"jo");
-        HumanPlayer p2 = new HumanPlayer(2,"dos");
-        p1.setStartingCorner(new Vector2d(0,0));
-        p2.setStartingCorner(new Vector2d(19,19));
-        p1.setPiecesList(PieceFactory.get().getAllPieces());
-        p2.setPiecesList(PieceFactory.get().getAllPieces());
-        Board board = new Board(new Player[]{p1,p2});
-
-        Move m;
-
-        //ArrayList<Move> moveset = p1.possibleMoveSet(board);
-        int i = 15;
-        while(i>0){
-            m = (Move)p1.randomPossibleMove(board);
-            System.out.println(m.getPiece()+" "+m.getPosition().get_x()+" "+m.getPosition().get_y());
-            m.writePieceIntoBoard(board);
-            i--;
-        }
-
-        board.print();
-    }
-
     public void setNumber(int number) {
         this.number = number;
     }

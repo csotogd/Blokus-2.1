@@ -187,29 +187,5 @@ public class Corner {
         return copy;
     }
 
-    public static void main(String[] args){
-        Player p1= new HumanPlayer(1,"j");
-        Player p2= new HumanPlayer(2,"i");
-
-        p1.setStartingCorner(new Vector2d(0,0));
-        p2.setStartingCorner(new Vector2d(19,19));
-
-        p1.setPiecesList(PieceFactory.get().getAllPieces());
-        p2.setPiecesList(PieceFactory.get().getAllPieces());
-
-        Player[] players=new Player[]{p1,p2};
-        Board board = new Board(players);
-
-        board.boardArray=new int[20][20];
-
-        for (int i = 0; i < 10; i++) {
-            p1.randomPossibleMove(board).makeMove(board);
-            board.print();
-        }
-
-
-
-    }
-
 
 }
