@@ -155,6 +155,8 @@ public class SettingsScreen extends Application {
             @Override
             public void handle(ActionEvent event) {
                 try {
+                    Data.setPlayerTypes(new String[]{(String) c1P1.getSelectionModel().getSelectedItem(), (String) c1P2.getSelectionModel().getSelectedItem(),
+                            (String) c1P3.getSelectionModel().getSelectedItem(), (String) c1P4.getSelectionModel().getSelectedItem()});
                     if(opt6X.getText().equals("")){
                         Data.setDIMENSION(20);
                     }else{
@@ -177,7 +179,6 @@ public class SettingsScreen extends Application {
                         if (opt6X.getText().equals("")){
                             Data.setDIMENSION(16);
                         }
-
                     }else{
                         playersName = new String[4];
                         if(opt2TextField.getText().equals("")){
@@ -203,10 +204,9 @@ public class SettingsScreen extends Application {
                         }else{
                             playersName[3] = opt5TextField.getText();
                         }
+                        if(Data.containMin())Data.setDIMENSION(10);
                     }
                     Data.setPlayersName(playersName);
-                    Data.setPlayerTypes(new String[]{(String) c1P1.getSelectionModel().getSelectedItem(), (String) c1P2.getSelectionModel().getSelectedItem(),
-                            (String) c1P3.getSelectionModel().getSelectedItem(), (String) c1P4.getSelectionModel().getSelectedItem()});
                     new StartScreen().start(stage);
                 } catch (Exception e) {
                     e.printStackTrace();

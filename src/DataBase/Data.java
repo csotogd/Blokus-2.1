@@ -6,11 +6,24 @@ import javafx.scene.layout.*;
 public class Data {
     private static String[] playersName = {"PLAYER 1","PLAYER 2","PLAYER 3","PLAYER 4"};
 
-    private static String[] playerTypes = {"Human Player","Monte Carlo Player","Monte Carlo Player","Monte Carlo Player"};
+    private static String[] playerTypes = {"Human Player","Human Player","Human Player","Human Player"};
 
     private static String algo = "";
 
     private static int DIMENSION = 20;
+
+    /**
+     * method used to get whether one of the players is a minimax search
+     * @return true if there is a minimax search, false otherwise
+     */
+    public static boolean containMin(){
+        for (int j = 0; j < Data.getPlayerTypes().length; j++) {
+            if(Data.getPlayerTypes()[j].equals("MiniMax-MaxN Player")||Data.getPlayerTypes()[j].equals("MiniMax-Paranoid Player")){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static Background createBackGround(){
         Image image = new Image(String.valueOf(Data.class.getResource("background.jpg")),800,800,false,true);

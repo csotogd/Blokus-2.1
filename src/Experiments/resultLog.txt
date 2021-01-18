@@ -152,3 +152,35 @@ Avg time per game=0.912 minutes
 
 --------------------------------------------------------------------------------------
 
+EXPERIMENT: 
+Start time: 2021-01-16T17:25:07.571620200
+End time: 2021-01-16T17:55:21.185464
+Number of runs: 20
+Board dimension: 16
+Time limit for MC-related bots: 10000
+
+RESULTS: 
+Player 1: Name=MiniMaxPlayer, Nr of wins=13.333329, Avg score=0.0
+Player 2: Name=GaMcTplayer, Nr of wins=6.6666675, Avg score=0.0
+Avg time per game=1.5111 minutes
+
+--------------------------------------------------------------------------------------
+
+EXPERIMENT: 
+Start time: 2021-01-16T19:26:38.032334
+End time: 2021-01-16T20:03:49.372439
+Number of runs: 10
+Board dimension: 16
+Time limit for MC-related bots: 3000
+
+RESULTS: 
+Player 1: Name=MiniMaxPlayer, Nr of wins=1.0, Avg score=-14.2
+Player 2: Name=GAMCplayer, Nr of wins=9.0, Avg score=1.4
+Avg time per game=2.1225166 minutes
+
+Player 1: Name=GAMCplayer, Nr of wins=10.0, Avg score=-2.2
+Player 2: Name=MiniMaxPlayer, Nr of wins=0.0, Avg score=-16.6
+Avg time per game=1.5962666 minutes
+
+--------------------------------------------------------------------------------------
+

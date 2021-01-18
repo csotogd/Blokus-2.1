@@ -181,10 +181,17 @@ public class Game extends Application {
 
         for(int i=1; i<= playersName.length; i++){
             PieceFactory pieceFactory= PieceFactory.get();
-            List<Piece> pieces = pieceFactory.getAllPieces();
-
+            List<Piece> pieces;
+            if(players.length==4){
+                if(Data.containMin()){
+                    pieces = pieceFactory.getSomePieces();
+                }else{
+                    pieces = pieceFactory.getAllPieces();
+                }
+            }else{
+                pieces = pieceFactory.getAllPieces();
+            }
             players[i-1].setPiecesList(pieces);
-
         }
 
     }

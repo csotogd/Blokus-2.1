@@ -31,23 +31,9 @@ public class MiniMax {
     weights[2] = closestToMiddle
     weights[3] = biggestPiece
     weights[4] = farFromStartingPoint
-
-    WEIGHTS FOR 4 PLAYERS MODE
-    protected float[][] weights = new float[][]{
-            {0.5312532f, 0.38739195f, 0.6310179f, 0.80074483f, 0.43988678f},
-            { 0.03257805f, 0.21643633f, 0.56497073f, 0.8927979f, 0.68175447f},
-            {0.06342363f, 0.5615145f, 0.099959135f, 0.94023997f, 0.013810515f},
-    };
-    protected int[] phasesStartTurns = {5,12};
-
      */
-    //WEIGHTS FOR 2 PLAYERS MODE
-    protected float[][] weights = new float[][]{
-            {0.5312532f, 0.38739195f, 0.6310179f, 0.80074483f, 0.43988678f},
-            {0.35296708f, 0.98730946f, 0.050320804f, 0.73727065f, 0.014046907f},
-            {0.2961447f, 0.87143975f, 0.40821207f, 0.8513078f, 0.49246377f},
-    };
-    protected int[] phasesStartTurns = {4,10};
+    protected float[][] weights;
+    protected int[] phasesStartTurns;
 
     protected float[] maxHeuristics = new float[]{
             6,15,1,5,1
@@ -62,6 +48,21 @@ public class MiniMax {
         this.players = players;
         this.boardOrigin = board;
         maxDepth = players.length*NBR_OF_TURNS;
+        if(players.length==2){
+            weights = new float[][]{
+                    {0.5312532f, 0.38739195f, 0.6310179f, 0.80074483f, 0.43988678f},
+                    {0.35296708f, 0.98730946f, 0.050320804f, 0.73727065f, 0.014046907f},
+                    {0.2961447f, 0.87143975f, 0.40821207f, 0.8513078f, 0.49246377f},
+            };
+            phasesStartTurns = new int[]{4,10};
+        }else{
+            weights = new float[][]{
+                    {0.5312532f, 0.38739195f, 0.6310179f, 0.80074483f, 0.43988678f},
+                    { 0.03257805f, 0.21643633f, 0.56497073f, 0.8927979f, 0.68175447f},
+                    {0.06342363f, 0.5615145f, 0.099959135f, 0.94023997f, 0.013810515f},
+            };
+            phasesStartTurns = new int[]{5,12};
+        }
     }
 
     /**
@@ -76,8 +77,7 @@ public class MiniMax {
 
         Move bestMove;
         long start = System.currentTimeMillis(); //start of the timer
-        if("MiniMax-MaxN Player".equals(Data.getPlayerTypes()[rootPlayerNbr-1])){
-            System.out.println("Yessss");
+        if(Data.getPlayerTypes()[rootPlayerNbr-1]=="MiniMax-MaxN Player"){
             int state = players[playerNbr-1].getPiecesUsed().size();
             this.u = 0;
             if (state >= phasesStartTurns[0] && state < phasesStartTurns[1]){
@@ -96,13 +96,15 @@ public class MiniMax {
             //maxN
             this.cutOffMoveOccurence = new ArrayList<Move>(killerMovesLength);
             float[] score = maxN(root,maxDepth,playerNbr,Float.MIN_VALUE);
+            /*
             System.out.print("best score = ");
             for (int i = 0; i < score.length; i++) {
                 System.out.print(score[i] + ",");
             }
             System.out.println();
-            bestMove = getBestMove(root,score,playerNbr);
             System.out.println("MOVE DONE USING MAX-N");
+             */
+            bestMove = getBestMove(root,score,playerNbr);
         }else{
             //paranoid
             this.cutOffMoveOccurenceP = new ArrayList[players.length];
@@ -110,12 +112,15 @@ public class MiniMax {
                 cutOffMoveOccurenceP[i] = new ArrayList<>();
             }
             float score = paranoidSearch(root,maxDepth,playerNbr,Float.MIN_VALUE,Float.MAX_VALUE);
+            /*
             System.out.println("best score = " + score);
-            bestMove = getpBestMove(root,score,playerNbr);
+
             System.out.println("MOVE DONE USING PARANOID");
+             */
+            bestMove = getpBestMove(root,score,playerNbr);
         }
         long stop = System.currentTimeMillis()-start ;//end of the timer
-        System.out.println(stop + "millisecond(s)");
+        //System.out.println(stop + "millisecond(s)");
 
         return bestMove;
     }
@@ -721,7 +726,7 @@ public class MiniMax {
         p3.setPiecesList(PieceFactory.get().getAllPieces());
         p4.setPiecesList(PieceFactory.get().getAllPieces());
 
-        Data.setPlayerTypes(new String[]{"MiniMax-MaxN Player","MiniMax-Paranoid Player"});
+        Data.setPlayerTypes(new String[]{"MiniMax-Paranoid Player","MiniMax-Paranoid Player"});
 
         Board b = new Board(new Player[]{p1, p2});
         MiniMax m = new MiniMax(new Player[]{p1,p2},b);
