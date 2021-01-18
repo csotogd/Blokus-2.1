@@ -22,7 +22,7 @@ public abstract class Player {
     protected int points=0;
     protected boolean firstMove; // first time the player plays, he can place a piece in his starting corner
     protected Stack <Move> moveLog = new Stack<>();
-    protected List<Piece> unplayablePiece;
+    protected List<Piece> unplayablePiece; //piece that couldn't be place last time we called "possibleMoveUpdate()" method
 
     public boolean isFirstMove() {
         return firstMove;
@@ -296,7 +296,12 @@ public abstract class Player {
         return null; // if no piece can be placed in any of the corners
     }
 
-
+    /**
+     * same as above method but clone the piece
+     * @param board board on which the move can be made
+     * @param piecesList list of piece to try to fit
+     * @return a random move
+     */
 
     public Move randomPossibleMoveClone(Board board, List<Piece> piecesList){
         ArrayList<Corner> cornersOnBoard = board.getCorner(this.getStartingCorner());//list of corners on the board
@@ -401,6 +406,15 @@ public abstract class Player {
         return true;
     }
 
+    /**
+     * method used to gain computational time:
+     * return a list of possible moves taking care of not looking
+     * at smaller piece if the number of moves exceed the numMoves
+     * also set the unplayable biggest piece encountered along the way
+     * @param board board on which to find the moves
+     * @param numMoves limit of moves that is interesting to see
+     * @return list of moves(with biggest piece in general)
+     */
     public List<Move> possibleMoveSetUpdate(Board board, int numMoves) {
         unplayablePiece = new ArrayList<>();
         ArrayList<Move> moveSet=new ArrayList<>();

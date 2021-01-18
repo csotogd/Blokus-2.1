@@ -1,6 +1,5 @@
 package MonteCarlo;
 import DataBase.Piece;
-import DataBase.PieceFactory;
 import GameBoard.Board;
 import GameBoard.Corner;
 import Move.Move;
@@ -84,8 +83,6 @@ public class MCTS {
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()==res.getScore()&&children.getMove().getPiece().getNumberOfBlocks()>res.getMove().getPiece().getNumberOfBlocks())) res=children;
 
         numMoves = root.getVisitedNum()/7; // next time we do simulations, we will explore a number of moves such that we can visit 7 times each
-//        System.out.println("visit:"+res.getVisitedNum()+"\nscore:"+res.getScore()+"\nmove:"+res.getMove().getPiece()+"@"+res.getMove().getPosition());
-//        System.out.println("MCTS number of simulations: "+root.getVisitedNum());
         for(Player p: players) if(p.getPlayerNumber()==res.getMove().getPlayer().getPlayerNumber()) return new Move(p,res.getMove().getPiece(), res.getMove().getPosition());
         return res.getMove();
     }
@@ -306,8 +303,6 @@ public class MCTS {
                 }
             }
         }
-
-//        System.out.println("cornersize"+corners.size());
         return corners;
     }
 
@@ -378,9 +373,6 @@ public class MCTS {
         }
     }
 
-
-
-
     /**
      * Constructing the tree from the root node
      * @param player index of the player you want to find a move for
@@ -438,85 +430,8 @@ public class MCTS {
                 (children.getVisitedNum()==res.getVisitedNum()&&children.getScore()==res.getScore()&&children.getMove().getPiece().getNumberOfBlocks()>res.getMove().getPiece().getNumberOfBlocks())) res=children;
 
         numMoves = root.getVisitedNum()/7; // next time we do simulations, we will explore a number of moves such that we can visit 7 times each
-//        System.out.println("visit:"+res.getVisitedNum()+"\nscore:"+res.getScore()+"\nmove:"+res.getMove().getPiece()+"@"+res.getMove().getPosition());
-//        System.out.println("GaMcT number of simulations: "+root.getVisitedNum());
         for(Player p: players) if(p.getPlayerNumber()==res.getMove().getPlayer().getPlayerNumber()) return new Move(p,res.getMove().getPiece(), res.getMove().getPosition());
         return res.getMove();
     }
-
-
-    public static void main(String[] args){
-        int time = 3500;
-        Player p1 = new MiniMaxPlayer(1);
-        Player p2 = new MCPlayer(2, "notJo");
-        Player p3 = new HumanPlayer(3, "jo2");
-        Player p4 = new HumanPlayer(4, "notJo2");
-        p1.setStartingCorner(new Vector2d(0,0));
-        p2.setStartingCorner(new Vector2d(19,0));
-        p3.setStartingCorner(new Vector2d(19,19));
-        p4.setStartingCorner(new Vector2d(0,19));
-        p1.setPiecesList(PieceFactory.get().getAllPieces());
-        p2.setPiecesList(PieceFactory.get().getAllPieces());
-        p3.setPiecesList(PieceFactory.get().getAllPieces());
-        p4.setPiecesList(PieceFactory.get().getAllPieces());
-        Board b = new Board(new Player[]{p1,p2,p3,p4});
-        MCTS mc = new MCTS(new Player[]{p1,p2,p3,p4},b);
-
-        int i= 0;
-        boolean[] passed = new boolean[4];
-        int passcount =0;
-        while(passcount<4){
-            //mc = new MonteCarlo(mc.players,b);
-            if(!passed[0]) {
-                Move move1 = mc.simulation(0, time);
-                if (move1!=null&&move1.makeMove(b)) p1.removePiece(move1.getPiece().getLabel());
-                else {
-                    passed[0]=true;
-                    passcount++;
-                }
-                if (move1==null) System.out.println(p1.possibleMove(b));
-            }
-
-            //mc = new MonteCarlo(mc.players,b);
-            if(!passed[1]) {
-                Move move2 = mc.simulation(1,time);
-                if(move2!=null&&move2.makeMove(b)) p2.removePiece(move2.getPiece().getLabel());
-                else {
-                    passed[1]=true;
-                    passcount++;
-                }
-                if (move2==null) System.out.println(p2.possibleMove(b));
-            }
-
-            //mc = new MonteCarlo(mc.players,b);
-            if(!passed[2]) {
-                Move move3 = mc.simulation(2,time);
-                if(move3!=null&&move3.makeMove(b)) p3.removePiece(move3.getPiece().getLabel());
-                else {
-                    passed[2]=true;
-                    passcount++;
-                }
-                if (move3==null) System.out.println(p3.possibleMove(b));
-            }
-
-            //mc = new MonteCarlo(mc.players,b);
-            if(!passed[3]) {
-                Move move4 = mc.simulation(3,time);
-                if(move4!=null&&move4.makeMove(b)) p4.removePiece(move4.getPiece().getLabel());
-                else {
-                    passed[3]=true;
-                    passcount++;
-                }
-                if (move4==null) System.out.println(p4.possibleMove(b));
-            }
-
-            b.print();
-            i++;
-        }
-
-    }
-
-
-
 
 }
