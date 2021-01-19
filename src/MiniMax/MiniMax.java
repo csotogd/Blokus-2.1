@@ -32,7 +32,6 @@ public class MiniMax {
     weights[3] = biggestPiece
     weights[4] = farFromStartingPoint
      */
-    //WEIGHTS FOR 2 PLAYERS MODE
     protected float[][] weights;
     protected int[] phasesStartTurns;
 
@@ -727,7 +726,7 @@ public class MiniMax {
         p3.setPiecesList(PieceFactory.get().getAllPieces());
         p4.setPiecesList(PieceFactory.get().getAllPieces());
 
-        Data.setPlayerTypes(new String[]{"MiniMax-MaxN Player","MiniMax-Paranoid Player"});
+        Data.setPlayerTypes(new String[]{"MiniMax-Paranoid Player","MiniMax-Paranoid Player"});
 
         Board b = new Board(new Player[]{p1, p2});
         MiniMax m = new MiniMax(new Player[]{p1,p2},b);

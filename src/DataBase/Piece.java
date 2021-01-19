@@ -302,31 +302,6 @@ public abstract class Piece {
     public int hashCode(){
         return current_state+10*label.hashCode();
     }
-
-    public static void main(String[]args) {
-        int count = 1;
-        //for(Piece p: PieceFactory.get().getAllPieces()) System.out.println((count++)+" "+p);
-
-        Piece p = new L4Piece();
-        System.out.println(p);
-
-
-        for(Corner c: p.getCornersContacts(new Vector2d(5,5))){
-            System.out.println(c.getPosition()+":");
-            for(Vector2d v:c.getToCornerPositions()) System.out.print(" "+v+" ");
-            System.out.println();
-        }
-        p.rotateRight();
-
-        System.out.println(p);
-        for(Corner c: p.getCornersContacts(new Vector2d(2,2))){
-            System.out.println(c.getPosition()+":");
-            for(Vector2d v:c.getToCornerPositions()) System.out.print(" "+v+" ");
-            System.out.println();
-        }
-    }
-
-
 }
 
 

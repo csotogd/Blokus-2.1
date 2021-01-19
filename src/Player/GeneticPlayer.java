@@ -1,6 +1,7 @@
 package Player;
 
 import DataBase.Piece;
+import Game.Game;
 import GameBoard.Board;
 import GameBoard.Corner;
 import Move.Move;
@@ -31,15 +32,15 @@ public class GeneticPlayer extends BotPlayer {
     {0.06342363f, 0.5615145f, 0.099959135f, 0.94023997f, 0.013810515f},
                                                                             };
     protected int[] phasesStartTurns = {5,12};
-     /*
 
-    protected float[][] weights = new float[][]{
+
+    protected float[][] weights2Players = new float[][]{
             {0.9188718f, 0.012969911f, 0.099914074f, 0.19596231f, 0.41667646f},
             { 0.35296708f, 0.98730946f, 0.050320804f, 0.73727065f, 0.014046907f},
             {0.2961447f, 0.87143975f, 0.40821207f, 0.8513078f, 0.49246377f},
     };
-    protected int[] phasesStartTurns = {7,12};
-      */
+    protected int[] phasesStartTurns2Players = {7,12};
+
 
 
     protected float[] currentWeights = weights[0];
@@ -47,6 +48,13 @@ public class GeneticPlayer extends BotPlayer {
 
     public GeneticPlayer(int number) {
         super(number);
+        System.out.println("nbr of players: "+Game.nbrPlayers);
+        if(Game.nbrPlayers==2){
+            weights=weights2Players;
+            phasesStartTurns=phasesStartTurns2Players;
+            System.out.println("2 players game");
+        }
+
     }
 
     /**
@@ -63,6 +71,12 @@ public class GeneticPlayer extends BotPlayer {
     public GeneticPlayer(int number, float[][] weights) {
         super(number);
         this.weights=weights;
+        System.out.println("nbr of players: "+Game.nbrPlayers);
+        if(Game.nbrPlayers==2){
+            weights=weights2Players;
+            phasesStartTurns=phasesStartTurns2Players;
+            System.out.println("2 players game");
+        }
     }
 
     public int getPhase(){

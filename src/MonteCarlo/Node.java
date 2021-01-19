@@ -18,8 +18,8 @@ public class Node {
     private double score; // number of time we wins (1) or draw (0.5)
     private static double c=2; // constant for ucb1
     private Player[] players; // players typically cloned to do simulations
-    private double ucbScore;
-    private int depth;
+    private double ucbScore; // score used to select node to expand
+    private int depth; // distance from the root (-1)
 
     /**
      * CONSTRUCTOR for the root (parent point to itself)
@@ -222,32 +222,24 @@ public class Node {
         while(countPass<players.length){ //while not everyone has passed in a turn
             if(!passed[playerturn]) {
                 Move move = players[playerturn].randomPossibleMove(board); //random move
-                if(move!=null) {
+                if(move!=null) { //if a move is possible
                     move.writePieceIntoBoard(board);
                     players[playerturn].getPiecesList().remove(move.getPiece());
-                }else{
+                }else{ //else that player will pass his turn
                     passed[playerturn]=true;
                     countPass++;
                 }
             }
-            playerturn = (playerturn+1)%players.length;
+            playerturn = (playerturn+1)%players.length; //new turn
         }
-//        board.print();
-//        for (int i = 0; i < players.length; i++) {
-//            if(players[i].possibleMove(board)) System.out.println("noooooo");
-//        }
         int[] playerScores=new int[players.length];
         for(Player p: players) for(Piece piece: p.getPiecesList()) playerScores[p.getPlayerNumber()-1]+=piece.getNumberOfBlocks();
         int same=0;
-        // System.out.println(move.getPiece().getLabel()+" "+playerScores[0]+" "+playerScores[1]+" "+playerScores[2]+" "+playerScores[3]);
         for(int score:playerScores) {
-//            System.out.println(score);
             if(playerScores[playerOfInterest]>score) return 0;//loss
             else if(playerScores[playerOfInterest]==score) same++;
         }
-//        System.out.println("draw?");
         if(same>1) return 1.0/same;//draw
-//        System.out.println("win");
         return 1;//win
     }
 
@@ -257,9 +249,12 @@ public class Node {
     public void initializeNode(){
         state = getState();
         players = getPlayers();
-//        move.writePieceIntoBoard(state);
     }
 
+    /**
+     * accessor method that fetch players clones up to that point
+     * @return
+     */
     public Player[] getPlayers() {
         Player[] result;
         if(parent==this) {
@@ -275,6 +270,11 @@ public class Node {
         return result;
     }
 
+    /**
+     * clone the board of the root and take care of writing the moves
+     * of the node and the parents'
+     * @return board state of the current node
+     */
     public Board getState() {
         if(this.parent==this) return state.clone();
         Board result = parent.getState();
@@ -316,10 +316,17 @@ public class Node {
         this.move = move;
     }
 
+    /**
+     * accessor for the number of time a node has been visited
+     * @return the number of time a node has been visited
+     */
     public int getVisitedNum() {
         return visitedNum;
     }
 
+    /**
+     * updates the visited count, and those of the parents
+     */
     public void addVisitiedNum() {
         this.visitedNum++;
         if(parent!=this) {
@@ -327,23 +334,28 @@ public class Node {
         }
     }
 
+    /**
+     * number of 'wins' of the node
+     * @return the score
+     */
     public double getScore() {
         return score;
     }
 
+    /**
+     * updates the score of the node
+     * @param s 1= win, 0=loss and draw is somewhere in between
+     *          depending on the number of winners
+     */
     public void addScore(double s) {
         this.score +=s;
         if(parent!=this) parent.addScore(s);
     }
 
-    public Node expandOne(){
-        if(children==null) children = new ArrayList<Node>();
-        Node n = new Node(this,players[(depth+1)%players.length].randomPossibleMove(getState()));
-        children.add(n) ; //TODO clone only once
-        //TODO : make sure it's a new move
-        return n;
-    }
-
+    /**
+     * accessor method
+     * @return the distance of the node to the root -1
+     */
     public int getDepth() {
         return depth;
     }

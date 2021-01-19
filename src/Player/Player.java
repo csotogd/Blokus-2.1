@@ -22,7 +22,7 @@ public abstract class Player {
     protected int points=0;
     protected boolean firstMove; // first time the player plays, he can place a piece in his starting corner
     protected Stack <Move> moveLog = new Stack<>();
-    protected List<Piece> unplayablePiece;
+    protected List<Piece> unplayablePiece; //piece that couldn't be place last time we called "possibleMoveUpdate()" method
 
     public boolean isFirstMove() {
         return firstMove;
@@ -296,7 +296,12 @@ public abstract class Player {
         return null; // if no piece can be placed in any of the corners
     }
 
-
+    /**
+     * same as above method but clone the piece
+     * @param board board on which the move can be made
+     * @param piecesList list of piece to try to fit
+     * @return a random move
+     */
 
     public Move randomPossibleMoveClone(Board board, List<Piece> piecesList){
         ArrayList<Corner> cornersOnBoard = board.getCorner(this.getStartingCorner());//list of corners on the board
@@ -365,29 +370,6 @@ public abstract class Player {
         return this.piecesUsed;
     }
 
-    public static void main(String[] args){
-        HumanPlayer p1 = new HumanPlayer(1,"jo");
-        HumanPlayer p2 = new HumanPlayer(2,"dos");
-        p1.setStartingCorner(new Vector2d(0,0));
-        p2.setStartingCorner(new Vector2d(19,19));
-        p1.setPiecesList(PieceFactory.get().getAllPieces());
-        p2.setPiecesList(PieceFactory.get().getAllPieces());
-        Board board = new Board(new Player[]{p1,p2});
-
-        Move m;
-
-        //ArrayList<Move> moveset = p1.possibleMoveSet(board);
-        int i = 15;
-        while(i>0){
-            m = (Move)p1.randomPossibleMove(board);
-            System.out.println(m.getPiece()+" "+m.getPosition().get_x()+" "+m.getPosition().get_y());
-            m.writePieceIntoBoard(board);
-            i--;
-        }
-
-        board.print();
-    }
-
     public void setNumber(int number) {
         this.number = number;
     }
@@ -401,6 +383,15 @@ public abstract class Player {
         return true;
     }
 
+    /**
+     * method used to gain computational time:
+     * return a list of possible moves taking care of not looking
+     * at smaller piece if the number of moves exceed the numMoves
+     * also set the unplayable biggest piece encountered along the way
+     * @param board board on which to find the moves
+     * @param numMoves limit of moves that is interesting to see
+     * @return list of moves(with biggest piece in general)
+     */
     public List<Move> possibleMoveSetUpdate(Board board, int numMoves) {
         unplayablePiece = new ArrayList<>();
         ArrayList<Move> moveSet=new ArrayList<>();

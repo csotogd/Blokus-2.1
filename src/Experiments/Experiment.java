@@ -11,25 +11,31 @@ import java.util.ArrayList;
 
 public class Experiment {
     private int runs = 100; //The number of times this experiment will be performed
-    private int nbrOfPlayers = 4;
+    private int nbrOfPlayers = 2;
     private int dimension = 10;
-    private int timeLimit = 10;//Time limit for MC related bots (in ms)
+    private int timeLimit = 3000;//Time limit for MC related bots (in ms)
     private Player[] players;
-    private boolean allPlayerCombinations = false;//Does *runs* number of runs with every possible player combination:
-                                                  //So for example, 100 runs of [player1, player2] and 100 runs of [player2, player1]
+    private boolean allPlayerCombinations = false;//Does runs number of runs with every possible player combination:
+    //So for example, 100 runs of [player1, player2] and 100 runs of [player2, player1]
     private ArrayList<Result> results = new ArrayList<>();
     private LocalDateTime startTime;
 
     public static void main(String[] args) {
         Player p = new MiniMaxPlayer(1);//new GeneticPlayer(1);
-        Player p2 = new MCPlayer(2);
+        Player p3 = new GeneticPlayer(2);
+        ((GeneticPlayer)p3).setDepth(1);
+        p3.setName("GA depth 1");
+        /*
         Player p3 = new GeneticPlayer(3);
         ((GeneticPlayer)p3).setDepth(1);
         p3.setName("GA depth 1");
         Player p4 = new GaMcTplayer(4);
         Player[] players = {p, p2, p3, p4};
         Data.setPlayerTypes(new String[]{"MiniMax-MaxN Player", "", "", ""});
-        Experiment exp = new Experiment(20, 4, 10, 1000, players, true);
+         */
+        Player[] players = {p, p3};
+        Data.setPlayerTypes(new String[]{"MiniMax-MaxN Player", ""});
+        Experiment exp = new Experiment(10, 2, 10, 3000, players, false);
         exp.run();
         exp.logExperiment("src/Experiments/resultLog.txt");
     }
@@ -54,7 +60,7 @@ public class Experiment {
         startTime = LocalDateTime.now();
         results.clear();
 
-        if (!allPlayerCombinations){
+        if (! allPlayerCombinations){
             doSimulations(players);
             return;
         }
@@ -123,12 +129,12 @@ public class Experiment {
             //Experiment info
             w.write(
                     "EXPERIMENT: " +
-                        "\nStart time: " + startTime.toString() +
-                        "\nEnd time: " + LocalDateTime.now().toString() +
-                        "\nNumber of runs: " + runs +
-                        "\nBoard dimension: " + dimension +
-                        "\nTime limit for MC-related bots: " + timeLimit +
-                        "\n\nRESULTS: \n"
+                            "\nStart time: " + startTime.toString() +
+                            "\nEnd time: " + LocalDateTime.now().toString() +
+                            "\nNumber of runs: " + runs +
+                            "\nBoard dimension: " + dimension +
+                            "\nTime limit for MC-related bots: " + timeLimit +
+                            "\n\nRESULTS: \n"
             );
 
             //Results info

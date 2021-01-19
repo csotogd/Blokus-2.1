@@ -327,12 +327,12 @@ public class SimulatedGame {
         ArrayList<Player> winners = new ArrayList<>();
 
         for (Player player : players){
+            if (player.getPoints() == winnerScore){
+                winners.add(player);
+            }
             if (player.getPoints() > winnerScore){
                 winnerScore = player.getPoints();
                 winners.clear();
-                winners.add(player);
-            }
-            if (player.getPoints() == winnerScore){
                 winners.add(player);
             }
         }

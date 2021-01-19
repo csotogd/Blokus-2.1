@@ -56,6 +56,10 @@ public class PieceFactory {
         return result;
     }
 
+    /**
+     * method used to minimize the nbr of pieces in order to be able to use the minimax searches in 4 players
+     * @return a new list containing some of the existing pieces (new objects as well)
+     */
     public ArrayList<Piece> getSomePieces(){
         ArrayList<Piece> result = new ArrayList<>();
         for(Piece p : prototype) {
@@ -64,16 +68,6 @@ public class PieceFactory {
             }
         }
 
-        return result;
-    }
-    public ArrayList<Piece> getSomePieces1(){
-        ArrayList<Piece> result = new ArrayList<>();
-        for(Piece p : prototype) {
-            if(p.getNumberOfBlocks()!=5){
-                result.add(p.getPiece());
-            }
-        }
-        result.remove(0);result.remove(0);result.remove(0);result.remove(0);result.remove(0);
         return result;
     }
 }
