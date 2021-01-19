@@ -22,21 +22,23 @@ import java.util.List;
 
 public class StartScreen extends Application {
 
-    private static final int WIDTH = 800;
+    private static final int WIDTH = 1500;
     private static final int HEIGHT = 800;
+
+    private Stage stage;
 
 
     //each button contains a function that is run everytime it is pressed
 
-    private Stage stage;
-
     private List<Pair<String, Runnable>> menuData = Arrays.asList(
             new Pair<String, Runnable>("Play", () -> {
-                new Game(stage);
+                new Game();
+                this.stage.close();
             }),
             new Pair<String, Runnable>("Settings", () -> {
                 try {
-                    new SettingsScreen().start(stage);
+                    new SettingsScreen();
+                    this.stage.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -48,25 +50,26 @@ public class StartScreen extends Application {
     private StackPane root = new StackPane();
     private VBox menuBox = new VBox(-5);
 
+
+
     public static void main(String[] args) {
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        this.stage = primaryStage;
+        primaryStage = new Stage();
         root.setId("start-screen-pane");
         Background background = Data.createBackGround();
         root.setBackground(background);
         Scene scene = new Scene(root, 800, 800);
         addContent();
         scene.setFill(Color.BLACK);
-        this.stage.setTitle("Blokus Start Screen");
-        this.stage.setScene(scene);
-        this.stage.sizeToScene();
-        this.stage.show();
-        this.stage.centerOnScreen();
-        stage = primaryStage;
+        primaryStage.setTitle("Blokus Start Screen");
+        primaryStage.setScene(scene);
+        primaryStage.setMaximized(true);
+        primaryStage.show();
+        this.stage = primaryStage;
     }
 
     private void addContent() {
@@ -78,14 +81,6 @@ public class StartScreen extends Application {
         startAnimation();
     }
 
-    private void addBlur(){
-        BoxBlur bb = new BoxBlur();
-        bb.setWidth(5);
-        bb.setHeight(5);
-        bb.setIterations(3);
-
-        root.setEffect(bb);
-    }
 
     private void addTitle() {
         MenuTitle title = new MenuTitle("BLOKUS");

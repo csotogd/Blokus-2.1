@@ -615,7 +615,11 @@ public class BoardUI{
                 Move move = new Move(game.getActualPlayer(),pieceRoot,position);
 
                 if(game.makeMove(move)){
-                    game.moveAllowed(piece,pieceRoot,allPieces);
+                    try {
+                        game.moveAllowed(piece,pieceRoot,allPieces);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }else{
                     piece.setScaleX(1);piece.setScaleY(1);
                     piece.setTranslateX(pieceRoot.getPosInBoardX());

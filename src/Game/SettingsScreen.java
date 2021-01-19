@@ -33,6 +33,11 @@ public class SettingsScreen extends Application {
     private StackPane root = new StackPane();
     private VBox menuBox = new VBox(-5);
 
+    public SettingsScreen() throws Exception {
+        this.stage = new Stage();
+        start(stage);
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         root.setId("settings-screen-pane");
@@ -41,12 +46,11 @@ public class SettingsScreen extends Application {
         Scene scene = new Scene(root, 800, 800);
         addContent();
         scene.setFill(Color.BLACK);
-        //TODO fix issues with the settings
         primaryStage.setTitle("Blokus Settings Screen");
         primaryStage.setScene(scene);
+        primaryStage.setMaximized(true);
         primaryStage.show();
-        primaryStage.centerOnScreen();
-        stage = primaryStage;
+        this.stage = primaryStage;
     }
 
     private void addContent() {
@@ -60,8 +64,8 @@ public class SettingsScreen extends Application {
 
     private void addTitle() {
         MenuTitle title = new MenuTitle("BLOKUS:Settings");
-        title.setTranslateX(WIDTH / 2. - title.getTitleWidth() / 2);
-        title.setTranslateY(HEIGHT / 3.);
+        title.setTranslateX(WIDTH / 2.+ 130);
+        title.setTranslateY(HEIGHT / 3. - 30);
         root.getChildren().add(title);
     }
 
@@ -208,6 +212,7 @@ public class SettingsScreen extends Application {
                     }
                     Data.setPlayersName(playersName);
                     new StartScreen().start(stage);
+                    stage.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

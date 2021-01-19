@@ -75,8 +75,8 @@ public class Game extends Application {
 
     }
 
-    public Game(Stage stage){
-        this.stage = stage;
+    public Game(){
+        this.stage = new Stage();
         initializeGame();
         start(stage);
     }
@@ -87,20 +87,13 @@ public class Game extends Application {
      */
     @Override
     public void start(Stage stage){
-        stage = this.stage;
         Parent root = this.boardUI.gameBoard;
-        this.stage.setTitle("Blokus Game Group 15");
         scene = new Scene(root, 1000, 800);
+        this.stage = stage;
+        this.stage.setTitle("Blokus Board Screen");
         this.stage.setScene(scene);
-
-        Screen screen = Screen.getPrimary();
-        Rectangle2D bounds = screen.getVisualBounds();
         this.stage.centerOnScreen();
-        this.stage.setX(bounds.getMinX());
-        this.stage.setY(bounds.getMinY());
-        this.stage.setWidth(bounds.getWidth());
-        this.stage.setHeight(bounds.getHeight());
-        this.stage.setMaximized(false);
+        this.stage.setMaximized(true);
         this.stage.show();
 
     }
@@ -202,7 +195,7 @@ public class Game extends Application {
      * @param pieceRoot is the object of the piece of the player
      * @param allPieces is the array of all the left pieces of each player
      */
-    public void moveAllowed(Pane piece, Piece pieceRoot, Pane allPieces){
+    public void moveAllowed(Pane piece, Piece pieceRoot, Pane allPieces) throws Exception {
         //System.out.println("piece removed");
         if(piece!=null){
             allPieces.getChildren().remove(piece); //every piece also has an internal used state which is updated
@@ -218,7 +211,7 @@ public class Game extends Application {
      * If if it is player 1 turn, then next turn will correspond to player 2,
      after the last player, we go back to the first one
      */
-    public void nextTurn(){
+    public void nextTurn() throws Exception {
         if (actualPlayer.getPlayerNumber()<players.length)
             actualPlayer=players[actualPlayer.getPlayerNumber()]; //player 2 occupies index 1 in array of players
         else
@@ -239,7 +232,7 @@ public class Game extends Application {
      * to be called in every move
      * method that updates the game display
      */
-    public void updateState(){
+    public void updateState() throws Exception {
         if(state== GameState.HUMAN_MOVE || state== GameState.AI_MOVE) {
             if (noOneMoved()){
                 state = GameState.END;
@@ -269,124 +262,9 @@ public class Game extends Application {
 
         if (state== GameState.END){
             countPoints();
-            endPage();
+            new EndScreen();
+            this.stage.close();
         }
-    }
-
-    public void endPage(){
-        List<Pair<String, Runnable>> menuData = Arrays.asList(
-                new Pair<String, Runnable>("Restart", () -> {
-                    new Game(stage);
-                }),
-                new Pair<String, Runnable>("Game Board", () -> {
-                    try {
-                        if(boardUI.principal.isVisible()){
-                            boardUI.principal.setVisible(false);
-                        }else{
-                            boardUI.principal.setVisible(true);
-                        }
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }),
-
-                new Pair<String, Runnable>("Exit to Menu", () -> {
-                    try {
-                        new StartScreen().start(stage);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                })
-        );
-        VBox menuBox = new VBox(-5);
-
-        int bestPts = Integer.MIN_VALUE;
-        String winner = "";
-        Color winnerColor = Color.WHITE;
-        for (Player player:players) {
-            if(player.getPoints()>bestPts){
-                bestPts = player.getPoints();
-                winner = player.getName();
-                winnerColor = player.getColor();
-            }
-        }
-        Text win = new Text("GAME END - The winner is " + winner);
-        win.setFill(winnerColor);
-
-        VBox scores = new VBox(20);
-        for (Player player:players) {
-            Text score = new Text();
-            score.setFill(player.getColor());
-            score.setText(player.getName() + " score: " + player.getPoints());
-            scores.getChildren().add(score);
-        }
-
-        menuData.forEach(data -> {
-            menu.MenuItem item = new MenuItem(data.getKey());
-            item.setOnAction(data.getValue());
-            //item.setTranslateX(-300);
-
-            javafx.scene.shape.Rectangle clip = new Rectangle(300, 30);
-            clip.translateXProperty().bind(item.translateXProperty().negate());
-
-            item.setClip(clip);
-
-            menuBox.getChildren().addAll(item);
-        });
-        ScaleTransition st = new ScaleTransition(Duration.seconds(1));
-        st.setToY(1);
-        st.setOnFinished(e -> {
-
-            for (int i = 0; i < menuBox.getChildren().size(); i++) {
-                Node n = menuBox.getChildren().get(i);
-
-                TranslateTransition tt = new TranslateTransition(Duration.seconds(1 + i * 0.15), n);
-                tt.setToX(0);
-                tt.setOnFinished(e2 -> n.setClip(null));
-                tt.play();
-            }
-        });
-        st.play();
-
-        GridPane pieces = new GridPane();
-        pieces.add(boardUI.pieceOfPlayer(0),0,0);
-        if(players.length==4){
-            pieces.add(boardUI.pieceOfPlayer(1),0,1);
-            pieces.add(boardUI.pieceOfPlayer(2),0,2);
-            pieces.add(boardUI.pieceOfPlayer(3),0,3);
-        }else{
-            pieces.add(boardUI.pieceOfPlayer(1),0,1);
-        }
-        pieces.setDisable(true);
-
-        BorderPane principal = new BorderPane();
-        principal.setBackground(Data.createBackGround());
-        principal.setTop(win);
-        FlowPane left = new FlowPane();
-        left.getChildren().add(scores);
-        left.getChildren().add(menuBox);
-        principal.setLeft(left);
-        principal.setCenter(boardUI.principal);
-        boardUI.principal.setVisible(false);
-        //boardUI.principal.setScaleX(5);boardUI.principal.setScaleY(5);
-        principal.setRight(pieces);
-
-        scene = new Scene(principal, 1400, 800);
-        stage.setScene(scene);
-
-        /*
-        Screen screen = Screen.getPrimary();
-        Rectangle2D bounds = screen.getVisualBounds();
-        this.stage.centerOnScreen();
-        this.stage.setX(bounds.getMinX());
-        this.stage.setY(bounds.getMinY());
-        this.stage.setWidth(bounds.getWidth());
-        this.stage.setHeight(bounds.getHeight());
-
-         */
-        this.stage.show();
-        this.stage.setMaximized(false);
     }
 
     /**
@@ -434,7 +312,13 @@ public class Game extends Application {
             Move move = calculateMove.getValue();
             if (move!=null&&move.makeMove(board)) {
                 Transition transition = boardUI.animateAIMove(move);
-                transition.setOnFinished(f -> moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]));
+                transition.setOnFinished(f -> {
+                    try {
+                        moveAllowed(null, move.getPiece(), boardUI.allPieces[actualPlayer.getNumber() - 1]);
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
+                });
                 transition.play();
             }
         });
@@ -539,5 +423,109 @@ public class Game extends Application {
 
     public Player[] getPlayers() {
         return players;
+    }
+    public class EndScreen extends Application{
+        Stage stage;
+
+        public EndScreen() throws Exception {
+            this.stage = new Stage();
+            start(stage);
+        }
+
+        @Override
+        public void start(Stage primaryStage) throws Exception {
+            List<Pair<String, Runnable>> menuData = Arrays.asList(
+                    new Pair<String, Runnable>("Restart", () -> {
+                        new Game();
+                        this.stage.close();
+                    }),
+
+                    new Pair<String, Runnable>("Exit to Menu", () -> {
+                        try {
+                            new StartScreen().start(stage);
+                            this.stage.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    })
+            );
+            VBox menuBox = new VBox(-5);
+
+            int bestPts = Integer.MIN_VALUE;
+            String winner = "";
+            Color winnerColor = Color.WHITE;
+            for (Player player:players) {
+                if(player.getPoints()>bestPts){
+                    bestPts = player.getPoints();
+                    winner = player.getName();
+                    winnerColor = player.getColor();
+                }
+            }
+            Text win = new Text("GAME END - The winner is " + winner);
+            win.setFill(winnerColor);
+
+            VBox scores = new VBox(20);
+            for (Player player:players) {
+                Text score = new Text();
+                score.setFill(player.getColor());
+                score.setText(player.getName() + " score: " + player.getPoints());
+                scores.getChildren().add(score);
+            }
+
+            menuData.forEach(data -> {
+                menu.MenuItem item = new MenuItem(data.getKey());
+                item.setOnAction(data.getValue());
+                //item.setTranslateX(-300);
+
+                javafx.scene.shape.Rectangle clip = new Rectangle(300, 30);
+                clip.translateXProperty().bind(item.translateXProperty().negate());
+
+                item.setClip(clip);
+
+                menuBox.getChildren().addAll(item);
+            });
+            ScaleTransition st = new ScaleTransition(Duration.seconds(1));
+            st.setToY(1);
+            st.setOnFinished(e -> {
+
+                for (int i = 0; i < menuBox.getChildren().size(); i++) {
+                    Node n = menuBox.getChildren().get(i);
+
+                    TranslateTransition tt = new TranslateTransition(Duration.seconds(1 + i * 0.15), n);
+                    tt.setToX(0);
+                    tt.setOnFinished(e2 -> n.setClip(null));
+                    tt.play();
+                }
+            });
+            st.play();
+
+            GridPane pieces = new GridPane();
+            pieces.add(boardUI.pieceOfPlayer(0),0,0);
+            if(players.length==4){
+                pieces.add(boardUI.pieceOfPlayer(1),0,1);
+                pieces.add(boardUI.pieceOfPlayer(2),0,2);
+                pieces.add(boardUI.pieceOfPlayer(3),0,3);
+            }else{
+                pieces.add(boardUI.pieceOfPlayer(1),0,1);
+            }
+            pieces.setDisable(true);
+
+            BorderPane principal = new BorderPane();
+            principal.setBackground(Data.createBackGround());
+            principal.setTop(win);
+            FlowPane left = new FlowPane();
+            left.getChildren().add(scores);
+            left.getChildren().add(menuBox);
+            principal.setLeft(left);
+            principal.setCenter(boardUI.principal);
+            boardUI.principal.setVisible(true);
+            //boardUI.principal.setScaleX(5);boardUI.principal.setScaleY(5);
+            principal.setRight(pieces);
+
+            scene = new Scene(principal, 1400, 800);
+            stage.setScene(scene);
+            this.stage.setMaximized(true);
+            this.stage.show();
+        }
     }
 }
