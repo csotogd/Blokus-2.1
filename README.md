@@ -1,5 +1,9 @@
-# Blokus-2.1
-DSAI project 2.1. Blokus game
+# AI that plays the boardgame Blokus.
+
+We create an .jar program of the Blokus boardgame. When running such program when can play blokus vs friends or vs one/multiple AI agents.
+The Ai agent was implemented using MCTS, evolutionary algorithms to compute the optimal evaluation function and modifications of alpha-beta pruning. 
+We challenge you to beat the AI! We can not.
+
 
 
 The following instructions work in IntelliJ Idea as it is the IDE we all used
