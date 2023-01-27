@@ -1,7 +1,7 @@
 # AI that plays the boardgame Blokus.
 
-We create an .jar program of the Blokus boardgame. When running such program when can play blokus vs friends or vs one/multiple AI agents.
-The Ai agent was implemented using MCTS, evolutionary algorithms to compute the optimal evaluation function and modifications of alpha-beta pruning. 
+We create a program of the Blokus boardgame (.jar). When running such program you can play blokus vs friends or vs one/multiple AI agents.
+The AI agent was implemented using MCTS, evolutionary algorithms to compute the optimal evaluation function and modifications of alpha-beta pruning. 
 We challenge you to beat the AI! We can not.
 
 
